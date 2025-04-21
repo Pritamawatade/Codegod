@@ -15,7 +15,7 @@ yarn-error.log*when
 # Prisma
 prisma/migrations/
 prisma/dev.db
-generated/prisma
+generated
 
 # Environment files
 .env.*
