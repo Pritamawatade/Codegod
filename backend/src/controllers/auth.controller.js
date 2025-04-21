@@ -9,7 +9,9 @@ const register = async (req, res) => {
   const { name, password, email } = req.body;
   try {
     if (!name || !email || !password) {
-      return res.status(400).json(new ApiError(400, "Invalid Credentials").toJSON());
+      return res
+        .status(400)
+        .json(new ApiError(400, "Invalid Credentials").toJSON());
     }
 
     const existingUser = await db.User.findUnique({
@@ -19,7 +21,9 @@ const register = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json(new ApiError(400, "User already exists").toJSON());
+      return res
+        .status(400)
+        .json(new ApiError(400, "User already exists").toJSON());
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,7 +39,9 @@ const register = async (req, res) => {
       });
     } catch (error) {
       console.error("Error inserting user in DB:", error);
-      return res.status(400).json(new ApiError(400, "Error inserting user in DB").toJSON());
+      return res
+        .status(400)
+        .json(new ApiError(400, "Error inserting user in DB").toJSON());
     }
 
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
@@ -65,33 +71,77 @@ const register = async (req, res) => {
     );
   } catch (error) {
     console.error("Unexpected error:", error);
-    return res.status(500).json(new ApiError(500, "Internal Server Error").toJSON());
+    return res
+      .status(500)
+      .json(new ApiError(500, "Internal Server Error").toJSON());
   }
 };
 
 const login = async (req, res) => {
+  const { email, password } = req.body;
 
-  const {email, password} = req.body;
-
-  if(!email || !password){
-
-    return res.status(400).json(
-      new ApiError(400, "Invalid creaditials")
-    )
-
-    const user = db.User.findUnique({
-      where:{
-        email
-      }
-    })
-
-    if(!user){
-      
-    return res.status(400).json(
-      new ApiError(400, "User not exist")
-    )
+  console.log("1");
+  
+  try {
+    console.log("2");
+    if (!email || !password) {
+      return res.status(400).json(new ApiError(400, "Invalid creaditials"));
     }
+    
+    const user = await db.User.findUnique({
+      where: {
+        email,
+      },
+    });
 
+    console.log("user = ", user);
+    
+    
+    console.log("4");
+    if (!user) {
+      return res.status(400).json(new ApiError(400, "User not exist"));
+    }
+    console.log("5");
+    
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    
+    console.log("6");
+    
+    if (!isMatch) {
+      return res.status(401).json(new ApiError(401, "Wrong password"));
+    }
+    console.log("7");
+  
+    const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+  
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "strict",
+    });
+  
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            name: user.name,
+          },
+        },
+        "user logged in successfully"
+      )
+    );
+  } catch (error) {
+    return res
+    .status(500)
+    .json(new ApiError(500, "Internal Server Error"))
   }
 };
 
