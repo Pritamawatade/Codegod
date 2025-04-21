@@ -1,17 +1,102 @@
-import {ApiError} from "../utilis/api-error.js"
+import { ApiError } from "../utilis/api-error.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { db } from "../libs/db.js";
+import { UserRole } from "../../generated/prisma/index.js";
+import { ApiResponse } from "../utilis/api-response.js";
 
-const register = async(req,res,next)=>{
-    try {
-        const {name, email, password} = req.body;
-        if(!name || !email || !password){
-            return ApiError(400,"Invalid Creaditials")
-        }
-
-        
-    } catch (error) {
-        console.log(error)
-        return ApiError(400,"Invalid Creaditials")
+const register = async (req, res) => {
+  const { name, password, email } = req.body;
+  try {
+    if (!name || !email || !password) {
+      return res.status(400).json(new ApiError(400, "Invalid Credentials").toJSON());
     }
-}
 
-export {register}
+    const existingUser = await db.User.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (existingUser) {
+      return res.status(400).json(new ApiError(400, "User already exists").toJSON());
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    let newUser;
+    try {
+      newUser = await db.User.create({
+        data: {
+          name,
+          password: hashedPassword,
+          email,
+          role: UserRole.USER,
+        },
+      });
+    } catch (error) {
+      console.error("Error inserting user in DB:", error);
+      return res.status(400).json(new ApiError(400, "Error inserting user in DB").toJSON());
+    }
+
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          user: {
+            id: newUser.id,
+            email: newUser.email,
+            name: newUser.name,
+            role: newUser.role,
+          },
+        },
+        "User created successfully"
+      )
+    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json(new ApiError(500, "Internal Server Error").toJSON());
+  }
+};
+
+const login = async (req, res) => {
+
+  const {email, password} = req.body;
+
+  if(!email || !password){
+
+    return res.status(400).json(
+      new ApiError(400, "Invalid creaditials")
+    )
+
+    const user = db.User.findUnique({
+      where:{
+        email
+      }
+    })
+
+    if(!user){
+      
+    return res.status(400).json(
+      new ApiError(400, "User not exist")
+    )
+    }
+
+  }
+};
+
+const logout = async (req, res) => {};
+
+const getMe = async (req, res) => {};
+
+export { register, login, logout, getMe };
