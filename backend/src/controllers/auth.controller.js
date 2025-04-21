@@ -80,10 +80,8 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log("1");
   
   try {
-    console.log("2");
     if (!email || !password) {
       return res.status(400).json(new ApiError(400, "Invalid creaditials"));
     }
@@ -94,30 +92,25 @@ const login = async (req, res) => {
       },
     });
 
-    console.log("user = ", user);
     
     
-    console.log("4");
     if (!user) {
       return res.status(400).json(new ApiError(400, "User not exist"));
     }
-    console.log("5");
     
     const isMatch = await bcrypt.compare(password, user.password);
 
     
-    console.log("6");
     
     if (!isMatch) {
       return res.status(401).json(new ApiError(401, "Wrong password"));
     }
-    console.log("7");
   
     const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
   
-    res.cookie("token", token, {
+    res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -145,8 +138,34 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {};
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("jwt",{
+      httpOnly:true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV !== 'development'
+    })
 
-const getMe = async (req, res) => {};
+    res.status(200).json( new ApiResponse(200, {}, "user logged out successfully"))
+    
+  } catch (error) {
+    return res
+    .status(500)
+    .json(new ApiError(500, "Internal Server Error"))
+  }
+};
 
-export { register, login, logout, getMe };
+const check = async (req, res) => {
+
+  try {
+    return  res.status(200).json(
+      new ApiResponse(200,{}, "user fetched")
+    )
+  } catch (error) {
+    return res
+    .status(500)
+    .json(new ApiError(500, "Internal Server Error"))
+  }
+};
+
+export { register, login, logout, check };
