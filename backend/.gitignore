@@ -1,0 +1,35 @@
+node_modules
+# Keep environment variables out of version control
+.env
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*when
+
+# Database files
+*.sqlite
+*.sqlite3
+
+# Prisma
+prisma/migrations/
+prisma/dev.db
+generated/prisma
+
+# Environment files
+.env.*
+.env.local
+
+# Build output
+dist/
+build/
+
+# Dependency directories
+/.pnp
+.pnp.js
+
+# IDE files
+.vscode/
+.idea/
+*.swp
