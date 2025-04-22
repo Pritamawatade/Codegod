@@ -5,6 +5,8 @@ import { db } from "../libs/db.js";
 import { UserRole } from "../../generated/prisma/index.js";
 import { ApiResponse } from "../utilis/api-response.js";
 
+
+
 const register = async (req, res) => {
   const { name, password, email } = req.body;
   try {

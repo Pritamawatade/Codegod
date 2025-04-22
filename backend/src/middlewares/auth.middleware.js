@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { db } from "../libs/db.js";
 import { ApiError } from "../utilis/api-error.js";
+
 const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;

@@ -19,6 +19,12 @@ enum UserRole {
   USER
 }
 
+enum Difficult {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String?
@@ -28,4 +34,30 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  problems Problem[]
+}
+
+model Problem {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  difficult   Difficult
+  tags        String[] // array of tags like what type of questions
+  constrains  String
+  userid      String
+  example     Json
+  hints       String
+  editorial   String
+
+  testCases         Json
+  codeSnippet       Json
+  referenceSolution Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  // relation :- it's like a foreign key
+
+  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
