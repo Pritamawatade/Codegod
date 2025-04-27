@@ -1,27 +1,11 @@
+import { ApiError } from "../utils/api-error";
+import { ApiResponse } from "../utils/api-response";
+
 const createProblem = async (req, res) => {
-  /* 
-    id          String    @id @default(uuid())
-  title       String
-  description String
-  difficult   Difficult
-  tags        String[] // array of tags like what type of questions
-  constrains  String
-  userid      String
-  example     Json
-  hints       String
-  editorial   String
-
-  testCases         Json
-  codeSnippet       Json
-  referenceSolution Json
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-    */
   const {
     title,
     description,
-    defficulty,
+    difficulty,
     tags,
     constrains,
     examples,
@@ -33,9 +17,37 @@ const createProblem = async (req, res) => {
   } = req.body;
 };
 
+ if(req.user.role !== "ADMIN"){
+    throw new ApiError(403, "Unauthorized access, ADMIN only")
+ }
+
+
+
+
+
 const getAllProblems = async (req, res) => {};
 
-const getProblem = async (req, res) => {};
+const getProblem = async (req, res) => {
+    const {id} = req.params;
+
+    try {
+        const problem  = await db.problem.findUnique({
+            where:{
+                id
+            }
+        })
+
+        if(!problem){
+            throw new ApiError(404, "problem not found")
+        }
+
+        res.status(200).json(
+            new ApiResponse(200,problem, "problem fetched")
+        )
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong at getProblem controller")
+    }
+};
 
 const deleteProblem = async (req, res) => {};
 

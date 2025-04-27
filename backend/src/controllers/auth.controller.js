@@ -1,9 +1,9 @@
-import { ApiError } from "../utilis/api-error.js";
+import { ApiError } from "../utils/api-error.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { db } from "../libs/db.js";
 import { UserRole } from "../../generated/prisma/index.js";
-import { ApiResponse } from "../utilis/api-response.js";
+import { ApiResponse } from "../utils/api-response.js";
 
 
 
@@ -84,7 +84,7 @@ const login = async (req, res) => {
   
   try {
     if (!email || !password) {
-      return res.status(400).json(new ApiError(400, "Invalid creaditials"));
+      return res.status(400).json(new ApiError(400, "Invalid credentials"));
     }
     
     const user = await db.User.findUnique({

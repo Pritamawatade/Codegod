@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { db } from "../libs/db.js";
-import { ApiError } from "../utilis/api-error.js";
+import { ApiError } from "../utils/api-error.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ const authMiddleware = async (req, res, next) => {
     if (!token) {
       return res
         .status(500)
-        .json(new ApiError(500, "unautheriezed, provide the token bro"));
+        .json(new ApiError(500, "unauthorized, provide the token bro"));
     }
 
     let decoded;
@@ -58,7 +58,7 @@ const checkAdmin = async (req, res, next) => {
     
 
     if (!user || user.role !== "ADMIN") {
-      throw new ApiError(403, "Unautherised access, ADMIN only");
+      throw new ApiError(403, "unauthorized access, ADMIN only");
     }
 
     next();
