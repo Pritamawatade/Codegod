@@ -21,32 +21,50 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const user = await db.user.findUnique({
-        where:{
-            id:decoded.id
-        },
-        select:{
-            id:true,
-            name:true,
-            email :true,  
-            role :true,  
-        }
+      where: {
+        id: decoded.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
 
-    })
-
-    if(!user){
-        res.status(404).json(
-            new ApiError(404, "User not found")
-        )
+    if (!user) {
+      res.status(404).json(new ApiError(404, "User not found"));
     }
 
     req.user = user;
-    next()
-
+    next();
   } catch (error) {
     return res.status(500).json(new ApiError(500, "Internal Server Error"));
   }
-
-
 };
 
-export {authMiddleware}
+const checkAdmin = async (req, res, next) => {
+  const userId = req.user.id;
+  try {
+    const user = await db.User.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        role: true,
+      },
+    });
+    
+    
+
+    if (!user || user.role !== "ADMIN") {
+      throw new ApiError(403, "Unautherised access, ADMIN only");
+    }
+
+    next();
+  } catch (error) {
+    throw new ApiError(500,"Something went wrong at CheckAdmin", error)
+  }
+};
+
+export { authMiddleware ,checkAdmin};

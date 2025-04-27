@@ -11,11 +11,10 @@ const register = async (req, res) => {
   const { name, password, email } = req.body;
   try {
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json(new ApiError(400, "Invalid Credentials").toJSON());
+     throw new ApiError(400, "Invalid data")
     }
 
+    
     const existingUser = await db.User.findUnique({
       where: {
         email,
