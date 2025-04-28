@@ -160,7 +160,7 @@ const check = async (req, res) => {
 
   try {
     return  res.status(200).json(
-      new ApiResponse(200,{}, "user fetched")
+      new ApiResponse(200,{}, "Checked system")
     )
   } catch (error) {
     return res

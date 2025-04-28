@@ -1,5 +1,10 @@
-import { ApiError } from "../utils/api-error";
-import { ApiResponse } from "../utils/api-response";
+import {
+  getJudge0LanguageId,
+  poolBatchResult,
+  submitBatch,
+} from '../libs/judge0.libs';
+import { ApiError } from '../utils/api-error';
+import { ApiResponse } from '../utils/api-response';
 
 const createProblem = async (req, res) => {
   const {
@@ -15,44 +20,103 @@ const createProblem = async (req, res) => {
     codeSnippet,
     referenceSolution,
   } = req.body;
+
+  if (req.user.role !== 'ADMIN') {
+    throw new ApiError(403, 'Unauthorized access, ADMIN only');
+  }
+  try {
+    for (const [language, solutionCode] of Object.entries(referenceSolution)) {
+      const languageId = getJudge0LanguageId(language);
+
+      if (!languageId) {
+        throw new ApiError(400, `don't have support of ${language} language`);
+      }
+
+      const submission = testCases.map(({ input, output }) => ({
+        source_code: solutionCode,
+        language_id: languageId,
+        stdin: input,
+        expected_output: output,
+      }));
+
+      const submissionResults = await submitBatch(submission);
+
+      const tokens = submissionResults.map((res) => res.token);
+
+      const results = await poolBatchResult(tokens);
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+
+        if (result.id.status !== 3) {
+          throw new ApiError(
+            400,
+            ` Test case failed for ${i + 1} for language ${language} `
+          );
+        }
+      }
+
+      const newProblem = await db.problem.create({
+        data: {
+          title,
+          description,
+          difficulty,
+          tags,
+          constrains,
+          examples,
+          hints,
+          editorial,
+          testCases,
+          codeSnippet,
+          referenceSolution,
+          userId: req.user.id,
+        },
+      });
+
+      return res
+        .status(200)
+        .json(new ApiResponse(201, newProblem, 'Problem created'));
+    }
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at createProblem', error);
+  }
 };
 
- if(req.user.role !== "ADMIN"){
-    throw new ApiError(403, "Unauthorized access, ADMIN only")
- }
-
-
-
-
-
-const getAllProblems = async (req, res) => {};
+const getAllProblems = async (req, res) => {
+  try {
+    const problems = await db.Problem;
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at getAllProblems', error);
+  }
+};
 
 const getProblem = async (req, res) => {
-    const {id} = req.params;
+  const { id } = req.params;
 
-    try {
-        const problem  = await db.problem.findUnique({
-            where:{
-                id
-            }
-        })
+  try {
+    const problem = await db.problem.findUnique({
+      where: {
+        id,
+      },
+    });
 
-        if(!problem){
-            throw new ApiError(404, "problem not found")
-        }
-
-        res.status(200).json(
-            new ApiResponse(200,problem, "problem fetched")
-        )
-    } catch (error) {
-        throw new ApiError(500, "Something went wrong at getProblem controller")
+    if (!problem) {
+      throw new ApiError(404, 'problem not found');
     }
+
+    res.status(200).json(new ApiResponse(200, problem, 'problem fetched'));
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at getProblem controller');
+  }
 };
 
 const deleteProblem = async (req, res) => {};
 
 const updateProblem = async (req, res) => {};
+
 const getProblemsSolvedByUser = async (req, res) => {};
+
+
 export {
   createProblem,
   getAllProblems,
