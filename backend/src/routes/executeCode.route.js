@@ -1,5 +1,5 @@
 import express from 'express';
-import { executeCode } from '../controllers/executeCode.controller';
+import { executeCode } from '../controllers/executeCode.controller.js';
 
 const executionRoute = express.Router();
 

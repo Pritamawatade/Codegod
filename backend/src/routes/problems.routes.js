@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 import { authMiddleware, checkAdmin } from "../middlewares/auth.middleware.js";
 import {
   createProblem,
@@ -9,9 +9,9 @@ import {
   updateProblem,
 } from "../controllers/problem.controller.js";
 
-const problemRouter = express.Router();
+const problemRouter = Router();
 
-problemRouter.post("/create", authMiddleware, checkAdmin, createProblem);
+problemRouter.post("/create-problem", authMiddleware, checkAdmin, createProblem);
 problemRouter.get("/get-all-problems", authMiddleware, getAllProblems);
 problemRouter.get("/get-problem/:id", authMiddleware, getProblem);
 problemRouter.delete("/delete-problem/:id", authMiddleware, checkAdmin, deleteProblem);

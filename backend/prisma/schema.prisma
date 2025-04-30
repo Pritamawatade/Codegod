@@ -45,15 +45,15 @@ model Problem {
   description String
   difficulty  Difficult
   tags        String[] // array of tags like what type of questions
-  constrains  String
+  constraints  String
   userId      String
   examples    Json
-  hints       String
-  editorial   String
+  hints       String?
+  editorial   String?
 
   testCases         Json
-  codeSnippet       Json
-  referenceSolution Json
+  codeSnippets       Json
+  referenceSolutions Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

@@ -8,7 +8,7 @@ import { ApiResponse } from "../utils/api-response.js";
 
 
 const register = async (req, res) => {
-  const { name, password, email } = req.body;
+  const { name, password, email, role } = req.body;
   try {
     if (!name || !email || !password) {
      throw new ApiError(400, "Invalid data")

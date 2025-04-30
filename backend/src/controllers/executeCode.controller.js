@@ -1,5 +1,5 @@
-import { ApiError } from '../utils/api-error';
-import { ApiResponse } from '../utils/api-response';
+import { ApiError } from '../utils/api-error.js';
+import { ApiResponse } from '../utils/api-response.js';
 
 export const executeCode = async (req, res) => {
   const { source_code, language_code, stdin, expected_outputs, problemId } =

@@ -7,9 +7,7 @@ const authMiddleware = async (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (!token) {
-      return res
-        .status(500)
-        .json(new ApiError(500, "unauthorized, provide the token bro"));
+     throw new ApiError(500, "unauthorized, provide the token bro")
     }
 
     let decoded;
@@ -17,8 +15,10 @@ const authMiddleware = async (req, res, next) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-      return res.status(401).json(new ApiError(401, "error in jwt verify"));
+      throw new ApiError(401, "error in jwt verify")
     }
+    
+    
 
     const user = await db.user.findUnique({
       where: {
@@ -33,13 +33,15 @@ const authMiddleware = async (req, res, next) => {
     });
 
     if (!user) {
-      res.status(404).json(new ApiError(404, "User not found"));
+      throw new ApiError(404, "User not found");
     }
 
     req.user = user;
     next();
   } catch (error) {
-    return res.status(500).json(new ApiError(500, "Internal Server Error"));
+    console.log(error);
+    
+    throw new ApiError(500, "Error in authMiddleware")
   }
 };
 
@@ -63,6 +65,8 @@ const checkAdmin = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log(error);
+    
     throw new ApiError(500,"Something went wrong at CheckAdmin", error)
   }
 };

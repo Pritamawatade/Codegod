@@ -2,44 +2,51 @@ import {
   getJudge0LanguageId,
   poolBatchResult,
   submitBatch,
-} from '../libs/judge0.libs';
-import { ApiError } from '../utils/api-error';
-import { ApiResponse } from '../utils/api-response';
-
+} from '../libs/judge0.libs.js';
+import { ApiError } from '../utils/api-error.js';
+import { ApiResponse } from '../utils/api-response.js';
+import { db } from '../libs/db.js';
 const createProblem = async (req, res) => {
   const {
     title,
     description,
     difficulty,
     tags,
-    constrains,
+    constraints,
     examples,
     hints,
     editorial,
     testCases,
-    codeSnippet,
-    referenceSolution,
+    codeSnippets,
+    referenceSolutions,
   } = req.body;
 
   if (req.user.role !== 'ADMIN') {
     throw new ApiError(403, 'Unauthorized access, ADMIN only');
   }
+
   try {
-    for (const [language, solutionCode] of Object.entries(referenceSolution)) {
+    for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
 
       if (!languageId) {
-        throw new ApiError(400, `don't have support of ${language} language`);
+        throw new ApiError(400, `Unsupported language: ${language}`);
       }
 
-      const submission = testCases.map(({ input, output }) => ({
+      if (!Array.isArray(testCases) || testCases.length === 0) {
+        throw new ApiError(400, "Test cases are required and cannot be empty");
+      }
+
+      const submissions = testCases.map(({ input, output }) => ({
         source_code: solutionCode,
         language_id: languageId,
         stdin: input,
         expected_output: output,
       }));
+      
 
-      const submissionResults = await submitBatch(submission);
+
+      const submissionResults = await submitBatch(submissions);
 
       const tokens = submissionResults.map((res) => res.token);
 
@@ -48,10 +55,10 @@ const createProblem = async (req, res) => {
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
 
-        if (result.id.status !== 3) {
+        if (result.status.id !== 3) {
           throw new ApiError(
             400,
-            ` Test case failed for ${i + 1} for language ${language} `
+            `Test case failed for ${i + 1} for language ${language}`
           );
         }
       }
@@ -62,13 +69,13 @@ const createProblem = async (req, res) => {
           description,
           difficulty,
           tags,
-          constrains,
+          constraints,
           examples,
           hints,
           editorial,
           testCases,
-          codeSnippet,
-          referenceSolution,
+          codeSnippets,
+          referenceSolutions,
           userId: req.user.id,
         },
       });
@@ -77,7 +84,8 @@ const createProblem = async (req, res) => {
         .status(200)
         .json(new ApiResponse(201, newProblem, 'Problem created'));
     }
-  } catch (error) {
+  } catch (error) { 
+    console.error("Error in createProblem:", error);
     throw new ApiError(500, 'Something went wrong at createProblem', error);
   }
 };
@@ -115,6 +123,8 @@ const deleteProblem = async (req, res) => {};
 const updateProblem = async (req, res) => {};
 
 const getProblemsSolvedByUser = async (req, res) => {};
+
+
 
 
 export {
