@@ -35,8 +35,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  problems   Problem[]
-  submission Submission[]
+  problems      Problem[]
+  submission    Submission[]
+  problemSolved ProblemSolved[]
 }
 
 model Problem {
@@ -45,13 +46,13 @@ model Problem {
   description String
   difficulty  Difficult
   tags        String[] // array of tags like what type of questions
-  constraints  String
+  constraints String
   userId      String
   examples    Json
   hints       String?
   editorial   String?
 
-  testCases         Json
+  testCases          Json
   codeSnippets       Json
   referenceSolutions Json
 
@@ -59,8 +60,9 @@ model Problem {
   updatedAt DateTime @default(now())
 
   // relation :- it's foreign key
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   submission Submission[]
+  solvedBy   ProblemSolved[]
 }
 
 model Submission {
@@ -101,5 +103,18 @@ model TestCaseResult {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  submission Submission @relation(fields:[submissionId], references: [id])
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+model ProblemSolved {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
 }
