@@ -34,7 +34,7 @@ const createProblem = async (req, res) => {
       }
 
       if (!Array.isArray(testCases) || testCases.length === 0) {
-        throw new ApiError(400, "Test cases are required and cannot be empty");
+        throw new ApiError(400, 'Test cases are required and cannot be empty');
       }
 
       const submissions = testCases.map(({ input, output }) => ({
@@ -43,8 +43,6 @@ const createProblem = async (req, res) => {
         stdin: input,
         expected_output: output,
       }));
-      
-
 
       const submissionResults = await submitBatch(submissions);
 
@@ -84,15 +82,23 @@ const createProblem = async (req, res) => {
         .status(200)
         .json(new ApiResponse(201, newProblem, 'Problem created'));
     }
-  } catch (error) { 
-    console.error("Error in createProblem:", error);
+  } catch (error) {
+    console.error('Error in createProblem:', error);
     throw new ApiError(500, 'Something went wrong at createProblem', error);
   }
 };
 
 const getAllProblems = async (req, res) => {
   try {
-    const problems = await db.Problem;
+    const problems = await db.Problem.findMany({});
+
+    if (!problems) {
+      throw new ApiError(404, 'No problems found');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, problems, 'Problems fetched'));
   } catch (error) {
     throw new ApiError(500, 'Something went wrong at getAllProblems', error);
   }
@@ -118,14 +124,100 @@ const getProblem = async (req, res) => {
   }
 };
 
-const deleteProblem = async (req, res) => {};
+const deleteProblem = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedProblem = await db.problem.delete({
+      where: {
+        id,
+      },
+    });
 
-const updateProblem = async (req, res) => {};
+    if (!deletedProblem) {
+      throw new ApiError(404, 'problem not found');
+    }
 
-const getProblemsSolvedByUser = async (req, res) => {};
+    res
+      .status(200)
+      .json(new ApiResponse(200, deletedProblem, 'problem deleted'));
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at deleteProblem');
+  }
+};
 
+const updateProblem = async (req, res) => {
+  const { id } = req.params;
+  const {
+    title,
+    description,
+    difficulty,
+    tags,
+    constraints,
+    examples,
+    hints,
+    editorial,
+    testCases,
+    codeSnippets,
+    referenceSolutions,
+  } = req.body;
 
+  try {
+    if (!id) {
+      throw new ApiError(400, 'Problem id is required');
+    }
 
+    const updatedProblem = await db.problem.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        description,
+        difficulty,
+        tags,
+        constraints,
+        examples,
+        hints,
+        editorial,
+        testCases,
+        codeSnippets,
+        referenceSolutions,
+      },
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedProblem, 'Problem updated successfully')
+      );
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at updateProblem', error);
+  }
+};
+
+const getProblemsSolvedByUser = async (req, res) => {
+
+  const id = req.user.id;
+
+  try {
+    const solvedProblems = await db.problem.findMany({
+      where: {
+        userId: id,
+      }
+    })
+  
+    if (!solvedProblems) {
+      throw new ApiError(404, 'No problems found');
+    }
+  
+    return res
+      .status(200)
+      .json(new ApiResponse(200, solvedProblems, 'Problems fetched'));
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at getAllProblems', error);
+  }
+
+};
 
 export {
   createProblem,
