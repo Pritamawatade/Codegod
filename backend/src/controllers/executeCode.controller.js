@@ -44,6 +44,8 @@ export const executeCode = async (req, res) => {
 
     console.log(`result---------------->`,result);
 
+    let allPassed = true;
+    
     return res.status(200).json(new ApiResponse(200, result, 'success'));
     
     

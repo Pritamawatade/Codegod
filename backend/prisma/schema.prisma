@@ -35,9 +35,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  problems      Problem[]
-  submission    Submission[]
-  problemSolved ProblemSolved[]
+  problems         Problem[]
+  submission       Submission[]
+  problemSolved    ProblemSolved[]
+  Playlist         Playlist[]
+  problemsPlaylist ProblemInPlaylist[]
 }
 
 model Problem {
@@ -60,9 +62,10 @@ model Problem {
   updatedAt DateTime @default(now())
 
   // relation :- it's foreign key
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submission Submission[]
-  solvedBy   ProblemSolved[]
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission        Submission[]
+  solvedBy          ProblemSolved[]
+  ProblemInPlaylist ProblemInPlaylist[]
 }
 
 model Submission {
@@ -117,4 +120,35 @@ model ProblemSolved {
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  name        String
+  userId      String
+  description String
+  public      Boolean? // if user want to make the playlist public or private
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  problems ProblemInPlaylist[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId])
+}
+
+model ProblemInPlaylist {
+  id         String   @id @default(cuid())
+  problemId  String
+  playlistId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  problem  Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  User     User?    @relation(fields: [userId], references: [id])
+  userId   String?
+
+  @@unique([problemId, playlistId])
 }

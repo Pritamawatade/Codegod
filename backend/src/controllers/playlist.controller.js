@@ -1,0 +1,182 @@
+import { db } from '../libs/db.js';
+
+const getAllPlaylists = async (req, res) => {
+  try {
+    const playlists = await db.Playlist.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      include: {
+        problems: {
+          include: {
+            problem: true,
+          },
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, playlists, 'Playlists fetched'));
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(500, 'Something went wrong at getAllPlaylists', error);
+  }
+};
+
+const getPlaylist = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const playlist = await db.Playlist.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        problems: {
+          include: {
+            problem: true,
+          },
+        },
+      },
+    });
+
+    if (!playlist) {
+      throw new ApiError(404, 'Playlist not found');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, playlist, 'Playlist fetched'));
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(500, 'Something went wrong at getPlaylist', error);
+  }
+};
+
+const createPlaylist = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const userId = req.user.id;
+
+    const playlist = await db.Playlist.create({
+      data: {
+        name,
+        description,
+        userId,
+      },
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, playlist, 'Playlist created'));
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(500, 'Something went wrong at createPlaylist', error);
+  }
+};
+
+const updatePlaylist = async (req, res) => {};
+
+const addProblemToPlaylist = async (req, res) => {
+  try {
+    const { playlistId } = req.params.id;
+    const { problemId } = req.body.problemId;
+
+    if (!Array.isArray(problemId) || problemId.length === 0) {
+      throw new ApiError(400, 'problemId array is empty or invalid');
+    }
+
+    // create records for each problem
+
+    const problemsInPlaylist = await db.problemsInPlaylist.createMany({
+      data: {
+        playlistId,
+        problemId,
+      },
+    });
+
+    if (!problemsInPlaylist) {
+      throw new ApiError(500, 'Something went wrong at addProblemToPlaylist');
+    }
+
+    res
+      .status(201)
+      .json(
+        new ApiResponse(201, problemsInPlaylist, 'Problem added to playlist')
+      );
+  } catch (error) {
+    throw new ApiError(
+      500,
+      'Something went wrong at addProblemToPlaylist',
+      error
+    );
+  }
+};
+
+const deletePlaylist = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const playlist = await db.Playlist.delete({
+      where: {
+        id,
+      },
+    });
+
+    if (!playlist) {
+      throw new ApiError(404, 'Playlist not found');
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, playlist, 'Playlist deleted'));
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong at deletePlaylist', error);
+  }
+};
+const removeProblemFromPlaylist = async (req, res) => {
+  try {
+    const { playlistId } = req.params.id;
+    const { problemIds } = req.body;
+
+    const removedProblemFromPlaylist = await db.problemsInPlaylist.deleteMany({
+      where: {
+        playlistId: playlistId,
+        problemId: {
+          in: problemIds,
+        },
+      },
+    });
+
+    if (!removedProblemFromPlaylist) {
+      throw new ApiError(404, 'Playlist not found');
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          removedProblemFromPlaylist,
+          'Problem removed from playlist'
+        )
+      );
+  } catch (error) {
+    console.error("error at removeProblemFromPlaylist--->",error);
+    throw new ApiError(
+      500,
+      'Something went wrong at removeProblemFromPlaylist',
+      error
+    );
+  }
+};
+
+export {
+  addProblemToPlaylist,
+  getAllPlaylists,
+  getPlaylist,
+  createPlaylist,
+  updatePlaylist,
+  deletePlaylist,
+  removeProblemFromPlaylist,
+};
