@@ -57,3 +57,14 @@ export const poolBatchResult = async (tokens) => {
     await sleep(1000);
   }
 };
+
+export const getLanguageName = (languageId) => {
+  const languageMap = {
+    71: 'PYTHON',
+    62: 'JAVA',
+    63: 'JAVASCRIPT',
+    74: 'TYPESCRIPT',
+  };
+
+  return languageMap[languageId] || 'UNKNOWN';
+}
