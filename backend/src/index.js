@@ -17,7 +17,7 @@ app.use('/api/v1/users', authRouter)
 app.use('/api/v1/problems', problemRouter)
 app.use('/api/v1/execute-code', executionRoute )
 app.use('/api/v1/submission', submissionRoute)
-app.use('/api/playlists', playlistRouter)
+app.use('/api/v1/playlists', playlistRouter)
 const port = process.env.PORT || 8080;
 
 

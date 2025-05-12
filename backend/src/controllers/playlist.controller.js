@@ -1,4 +1,6 @@
 import { db } from '../libs/db.js';
+import { ApiError } from '../utils/api-error.js';
+import { ApiResponse } from '../utils/api-response.js';
 
 const getAllPlaylists = async (req, res) => {
   try {
@@ -26,7 +28,7 @@ const getAllPlaylists = async (req, res) => {
 
 const getPlaylist = async (req, res) => {
   try {
-    const id = req.params.id;
+    const {id} = req.params;
     const playlist = await db.Playlist.findUnique({
       where: {
         id,

@@ -202,8 +202,20 @@ const getProblemsSolvedByUser = async (req, res) => {
   try {
     const solvedProblems = await db.problem.findMany({
       where: {
-        userId: id,
-      }
+        solvedBy:{
+          some: {
+            userId: id
+          }
+        }
+      },
+      include: {
+        solvedBy: {
+          where:{
+            userId: id
+          }
+        }
+      },
+
     })
   
     if (!solvedProblems) {
@@ -214,6 +226,7 @@ const getProblemsSolvedByUser = async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, solvedProblems, 'Problems fetched'));
   } catch (error) {
+    console.log(error);
     throw new ApiError(500, 'Something went wrong at getAllProblems', error);
   }
 
