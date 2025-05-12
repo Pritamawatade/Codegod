@@ -1,4 +1,3 @@
-import { all } from 'axios';
 import {
   getLanguageName,
   poolBatchResult,
@@ -6,15 +5,10 @@ import {
 } from '../libs/judge0.libs.js';
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
-
+import { db } from '../libs/db.js';
 export const executeCode = async (req, res) => {
   const { source_code, language_id, stdin, expected_outputs, problemId } =
     req.body;
-
-  const { ...body1 } = req.body;
-  console.log('re bnody == ', body1);
-  console.log('stdin lenght ===========', stdin.length);
-  console.log('expected_outputs ===========', expected_outputs.length);
 
   try {
     const userId = req.user.id;
@@ -68,7 +62,7 @@ export const executeCode = async (req, res) => {
         passed,
         stdout,
         expected: expected_output,
-        stderr: result.stderr,
+        stderr: result.stderr || null,
         compile_output: result.compile_output || null,
         status: result.status.description,
         memory: result.memory ? `${result.memory} KB` : undefined,
@@ -82,17 +76,17 @@ export const executeCode = async (req, res) => {
     console.log(`detailedResult---------------->`, detailedResult);
 
     const submision = await db.submission.create({
-      date: {
+      data: {
         userId,
         problemId,
         sourceCode: source_code,
-        languageName: getLanguageName(language_id),
+        language: getLanguageName(language_id),
         stdin: stdin.join('\n'),
         stdout: JSON.stringify(detailedResult.map((res) => res.stdout)),
         stderr: detailedResult.some((res) => res.stderr)
           ? JSON.stringify(detailedResult.map((res) => res.stderr))
           : null,
-        compileOutput: detailedResult.sme((res) => res.compile_output)
+        compileOutput: detailedResult.some((res) => res.compile_output)
           ? JSON.stringify(detailedResult.map((res) => res.compile_output))
           : null,
         status: allPassed ? 'Accepted' : 'Wrong Answer',
@@ -105,28 +99,51 @@ export const executeCode = async (req, res) => {
       },
     });
 
-      if(allPassed){
-        await db.problemSolved.upsert({
-          where:{
-            userId_problemId: {
-              userId,
-              problemId
-            }
-          },
-          update:{},
-          create:{
+    if (allPassed) {
+      await db.problemSolved.upsert({
+        where: {
+          userId_problemId: {
             userId,
-            problemId
-          }
-        })
-      }
+            problemId,
+          },
+        },
+        update: {},
+        create: {
+          userId,
+          problemId,
+        },
+      });
+    }
 
+    const testCaseResults = detailedResult.map((result) => ({
+      submissionId: submision.id,
+      testCase: result.testcase,
+      passed: result.passed,
+      stdout: result.stdout,
+      expected: result.expected,
+      stderr: result.stderr || null,
+      compileOutput: result.compile_output || null,
+      status: result.status,
+      memory: result.memory,
+      time: result.time,
+    }));
 
-      // TODO: update problemSolved vid 1:33:43
+    await db.testCaseResult.createMany({
+      data: testCaseResults,
+    });
 
+    const submissonWithTestCases = await db.submission.findUnique({
+      where: {
+        id: submision.id,
+      },
+      include: {
+        testcaseresult: true,
+      },
+    });
 
-
-    return res.status(200).json(new ApiResponse(200, result, 'success'));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, submissonWithTestCases, 'success'));
   } catch (error) {
     console.log(error);
     throw new ApiError(500, 'something went wrong', error);

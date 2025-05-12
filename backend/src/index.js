@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"
 import problemRouter from "./routes/problems.routes.js";
 import executionRoute from "./routes/executeCode.route.js";
 import playlistRouter from "./routes/playlist.routes.js";
+import submissionRoute from "./routes/submission.routes.js";
 
 const app = express();
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use('/api/v1/users', authRouter)
 app.use('/api/v1/problems', problemRouter)
 app.use('/api/v1/execute-code', executionRoute )
+app.use('/api/v1/submission', submissionRoute)
 app.use('/api/playlists', playlistRouter)
 const port = process.env.PORT || 8080;
 

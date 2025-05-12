@@ -93,11 +93,11 @@ model Submission {
 model TestCaseResult {
   id            String  @id @default(uuid())
   submissionId  String
-  testCase      Int
+  testCase        Int
   passed        Boolean
   stdout        String?
   expected      String
-  stderr        String
+  stderr        String?
   compileOutput String?
   status        String
   memory        String

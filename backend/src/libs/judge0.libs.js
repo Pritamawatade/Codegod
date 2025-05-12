@@ -31,7 +31,6 @@ export const submitBatch = async (submissions) => {
   }
 };
 
-//Todo submit
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const poolBatchResult = async (tokens) => {
