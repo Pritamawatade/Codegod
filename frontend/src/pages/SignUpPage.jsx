@@ -8,7 +8,7 @@ import AuthImagePattern from '../components/AuthImagePattern';
 import { useAuthStore } from "../store/useAuthStore";
 
 const signUpSchema = z.object({
-  eamil: z.string().email(),
+  email: z.string().email(),
   password: z.string().min(6),
   name: z.string(),
 });
@@ -25,6 +25,7 @@ function SignUpPage() {
   });
 
   const onSubmit = async (data) => {
+    console.log("signup form data",data);
     try {
       await signup(data);
     } catch (error) {
@@ -45,7 +46,7 @@ function SignUpPage() {
               <h1 className="text-2xl font-bold mt-2">Welcome </h1>
               <p className="text-base-content/60">Sign Up to your account</p>
             </div>
-          </div>
+          </div>  
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

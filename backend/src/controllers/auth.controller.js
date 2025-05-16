@@ -157,12 +157,12 @@ const logout = async (req, res) => {
 };
 
 const check = async (req, res) => {
-
   try {
     return  res.status(200).json(
-      new ApiResponse(200,{}, "Checked system")
+      new ApiResponse(200,req.user, "User auhenticated successfully")
     )
   } catch (error) {
+    console.log(error);
     return res
     .status(500)
     .json(new ApiError(500, "Internal Server Error"))
