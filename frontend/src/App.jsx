@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 function App() {
   return (
     <div className="flex flex-col items-center justify-start">
+      <Toaster />
       <Routes>
         <Route path="/" element={<HomePage />} />
       </Routes>
