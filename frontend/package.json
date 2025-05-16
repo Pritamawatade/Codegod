@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.1.6",
     "axios": "^1.9.0",
     "daisyui": "^5.0.35",
-    "lucide-react": "^0.510.0",
+    "lucide-react": "^0.509.0",
+    "monaco-editor": "^0.52.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.3",

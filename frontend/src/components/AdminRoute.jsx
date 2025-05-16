@@ -13,7 +13,7 @@ const AdminRoute = () => {
     );
   }
 
-  if (!authUser || authUser.role !== "ADMIN") {
+  if (!authUser || authUser?.user?.role !== "ADMIN") {
     return <Navigate to="/" />;
   }
 
