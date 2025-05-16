@@ -6,13 +6,14 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
+import { Loader } from "lucide-react";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-  
+
   if (isCheckingAuth && !authUser) {
     return (
       <div className="flex items-center justify-center h-screen">
