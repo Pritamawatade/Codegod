@@ -24,6 +24,7 @@ const Navbar = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'light' : 'dark');
+    console.log("line 27 authuser",authUser?.user?.role)
   };
 
   // Toggle mobile menu
@@ -104,7 +105,7 @@ const Navbar = () => {
                 </Link>
               </li>
               
-              {authUser?.role === "ADMIN" && (
+              {authUser?.user?.role === "ADMIN" && (
                 <li>
                   <Link
                     to="/add-problem"

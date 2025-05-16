@@ -1,19 +1,24 @@
-import { Routes, Route, Navigate} from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { Loader } from "lucide-react";
 
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import { useAuthStore } from "./store/useAuthStore";
-import { useEffect } from "react";
-import {  Loader } from "lucide-react";
 import Layout from "./layout/Layout";
+import AdminRoute from "./components/AdminRoute";
+import AddProblem from "./components/AddProblem";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
+    console.log("authuser on line number 16", authUser);
   }, [checkAuth]);
+
+
 
   if (isCheckingAuth && !authUser) {
     return (
@@ -26,18 +31,36 @@ function App() {
   return (
     <div className="flex flex-col items-center justify-start">
       <Toaster />
-    
+
       <Routes>
-          <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout />}>
           <Route
             index
             element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
           />
         </Route>
-        <Route path="/signup" element={<SignUpPage />} />
-      </Routes>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
+
+        <Route
+          path="/login"
+          element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
+        />
+
+        <Route
+          path="/signup"
+          element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
+        />
+
+        {/* <Route
+          path="/problem/:id"
+          element={authUser ? <ProblemPage /> : <Navigate to={"/login"} />}
+        /> */}
+
+        <Route element={<AdminRoute />}>
+          <Route
+            path="/add-problem"
+            element={authUser ? <AddProblem /> : <Navigate to="/" />}
+          />
+        </Route>
       </Routes>
     </div>
   );
