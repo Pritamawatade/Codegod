@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { toast } from "react-hot-toast";
-const userProblemStore = create((set) => ({
+const useProblemStore = create((set) => ({
   problems: [],
   solvedProblems: [],
   problem: null,
@@ -24,8 +24,10 @@ const userProblemStore = create((set) => ({
   },
 
   getProblemById: async (id) => {
+    console.log("getProblemById id = ", id);
     set({ isProblemLoading: true });
     try {
+      console.log("getProblemById id = ", id);
       const res = await axiosInstance.get(`/problems/get-problem/${id}`);
       console.log("getProblemById res = ", res);
 
@@ -52,4 +54,4 @@ const userProblemStore = create((set) => ({
   }
 }));
 
-export default userProblemStore;
+export default useProblemStore;

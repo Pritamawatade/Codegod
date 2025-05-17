@@ -25,13 +25,13 @@ export const executeCode = async (req, res) => {
       throw new ApiError(400, 'Invalid test cases');
     }
 
-    const submission = stdin.map((input) => ({
+    const submission1 = stdin.map((input) => ({
       source_code,
       language_id,
       stdin: input,
     }));
 
-    const submitResponse = await submitBatch(submission);
+    const submitResponse = await submitBatch(submission1);
 
     const tokens = submitResponse.map((res) => res.token);
 
@@ -75,7 +75,7 @@ export const executeCode = async (req, res) => {
 
     console.log(`detailedResult---------------->`, detailedResult);
 
-    const submision = await db.submission.create({
+    const submission = await db.submission.create({
       data: {
         userId,
         problemId,
@@ -116,7 +116,7 @@ export const executeCode = async (req, res) => {
     }
 
     const testCaseResults = detailedResult.map((result) => ({
-      submissionId: submision.id,
+      submissionId: submission.id,
       testCase: result.testcase,
       passed: result.passed,
       stdout: result.stdout,
@@ -134,7 +134,7 @@ export const executeCode = async (req, res) => {
 
     const submissonWithTestCases = await db.submission.findUnique({
       where: {
-        id: submision.id,
+        id: submission.id,
       },
       include: {
         testcaseresult: true,
@@ -143,7 +143,9 @@ export const executeCode = async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, submissonWithTestCases, 'success'));
+      .json(new ApiResponse(200, {
+        submission: submissonWithTestCases,
+      }, 'success'));
   } catch (error) {
     console.log(error);
     throw new ApiError(500, 'something went wrong', error);
