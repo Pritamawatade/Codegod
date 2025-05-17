@@ -14,7 +14,7 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await axiosInstance.get("/users/check");
 
-      set({ authUser: res.data, isCheckingAuth: false });
+      set({ authUser: res?.data?.data, isCheckingAuth: false });
     } catch (error) {
       console.log("Error chekcing auth ", error);
       set({ authUser: null, isCheckingAuth: false });
@@ -45,9 +45,11 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await axiosInstance.post("/users/login", data);
 
-      console.log("res.data on login 48",res?.data?.data);
-      console.log("res.data on login 49",res?.data?.data?.user);
-      set({ authUser: res.data?.data, isLoggingIn: false });
+      console.log("line 48 res = ", res);
+      console.log("res.data on login 49",res?.data?.data);
+      console.log("res.data on login 45",res?.data?.data?.user);
+
+      set({ authUser: res?.data?.data?.user, isLoggingIn: false });
       toast.success("Logged in successfully");
     } catch (error) {
       console.log("Error logging in ", error);

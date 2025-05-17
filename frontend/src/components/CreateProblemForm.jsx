@@ -562,6 +562,7 @@ const CreateProblemForm = () => {
   const [isLoading , setIsLoading] = useState(false);
 
   const onSubmit = async (value)=>{
+    console.log("value",value);
    try {
     setIsLoading(true)
     const res = await axiosInstance.post("/problems/create-problem" , value)

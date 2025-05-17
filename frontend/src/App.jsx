@@ -15,7 +15,6 @@ function App() {
 
   useEffect(() => {
     checkAuth();
-    console.log("authuser on line number 16", authUser);
   }, [checkAuth]);
 
 

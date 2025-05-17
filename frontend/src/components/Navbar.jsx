@@ -24,7 +24,8 @@ const Navbar = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'light' : 'dark');
-    console.log("line 27 authuser",authUser?.user?.role)
+    console.log("line 27 authUser?.user",authUser?.role)
+    console.log("AuthUser  = ",authUser)
   };
 
   // Toggle mobile menu
@@ -77,7 +78,7 @@ const Navbar = () => {
                 />
               </div>
               <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                {authUser?.name?.split(' ')[0] || "User"}
+              {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
               </span>
             </label>
             
@@ -85,10 +86,10 @@ const Navbar = () => {
               tabIndex={0}
               className={`menu dropdown-content mt-3 z-[1] p-3 shadow-lg rounded-xl w-56 space-y-1 ${isDarkMode ? 'bg-gray-900 text-gray-200 border border-gray-700/50' : 'bg-white text-gray-700 border border-gray-200/50'}`}
             >
-              <li className="mb-2">
+              <li className="mb-2 mt-4">
                 <div className={`px-2 py-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   <p className="text-base font-semibold">
-                    {authUser?.name}
+                    {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
                   </p>
                   <p className="text-xs opacity-70">{authUser?.email}</p>
                 </div>
@@ -105,7 +106,7 @@ const Navbar = () => {
                 </Link>
               </li>
               
-              {authUser?.user?.role === "ADMIN" && (
+              {authUser?.role === "ADMIN" && (
                 <li>
                   <Link
                     to="/add-problem"
@@ -161,7 +162,7 @@ const Navbar = () => {
               <div className="flex items-center gap-3 mb-3 pb-2 border-b border-gray-200/20">
                 <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/70">
                   <img
-                    src={authUser?.image || "https://avatar.iran.liara.run/public/boy"}
+                    src={authUser.image || "https://avatar.iran.liara.run/public/boy"}
                     alt="User Avatar"
                     className="object-cover w-full h-full"
                   />
