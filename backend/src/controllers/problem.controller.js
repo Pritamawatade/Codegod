@@ -34,6 +34,7 @@ const createProblem = async (req, res) => {
       }
 
       if (!Array.isArray(testCases) || testCases.length === 0) {
+        console.log('Test cases are required and cannot be empty = ', testCases);
         throw new ApiError(400, 'Test cases are required and cannot be empty');
       }
 
