@@ -80,7 +80,7 @@ const createProblem = async (req, res) => {
       });
 
       return res
-        .status(200)
+        .status(201)
         .json(new ApiResponse(201, newProblem, 'Problem created'));
     }
   } catch (error) {
@@ -119,8 +119,9 @@ const getProblem = async (req, res) => {
       throw new ApiError(404, 'problem not found');
     }
 
-    res.status(200).json(new ApiResponse(200, problem, 'problem fetched'));
+    return res.status(200).json(new ApiResponse(200, problem, 'problem fetched'));
   } catch (error) {
+    console.log("error in getProblem",error);
     throw new ApiError(500, 'Something went wrong at getProblem controller');
   }
 };
@@ -199,7 +200,9 @@ const updateProblem = async (req, res) => {
 const getProblemsSolvedByUser = async (req, res) => {
 
   const id = req.user.id;
-
+  if(!id){
+    throw new ApiError(500, 'Something went wrong at getProblemsSolvedByUser');
+  }
   try {
     const solvedProblems = await db.problem.findMany({
       where: {
@@ -222,6 +225,8 @@ const getProblemsSolvedByUser = async (req, res) => {
     if (!solvedProblems) {
       throw new ApiError(404, 'No problems found');
     }
+
+    console.log("Solved problems = ",solvedProblems);
   
     return res
       .status(200)
