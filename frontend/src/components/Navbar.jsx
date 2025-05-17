@@ -42,7 +42,7 @@ const Navbar = () => {
           className="flex items-center gap-3 cursor-pointer group"
         >
           <div className={`p-2 rounded-full ${isDarkMode ? 'bg-primary/20' : 'bg-primary/10'} transition-all duration-300 group-hover:scale-105`}>
-            <img src="/leetlab.svg" className="h-6 w-6" alt="Leetlab" />
+            <img src="https://as1.ftcdn.net/v2/jpg/05/59/94/64/1000_F_559946464_4trpxDuJWn7XePNqLbAQDv2V8f4vwPne.jpg" className="h-6 w-6" alt="Leetlab" />
           </div>
           <span className={`text-lg md:text-xl font-bold tracking-tight hidden md:block ${isDarkMode ? 'text-white' : 'text-gray-800'} transition-colors duration-300`}>
             Leetlab
