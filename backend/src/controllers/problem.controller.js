@@ -34,7 +34,10 @@ const createProblem = async (req, res) => {
       }
 
       if (!Array.isArray(testCases) || testCases.length === 0) {
-        console.log('Test cases are required and cannot be empty = ', testCases);
+        console.log(
+          'Test cases are required and cannot be empty = ',
+          testCases
+        );
         throw new ApiError(400, 'Test cases are required and cannot be empty');
       }
 
@@ -91,14 +94,22 @@ const createProblem = async (req, res) => {
 
 const getAllProblems = async (req, res) => {
   try {
-    const problems = await db.Problem.findMany({});
+    const problems = await db.problem.findMany({
+      include: {
+        solvedBy: {
+          where: {
+            userId: req.user.id,
+          },
+        },
+      },
+    });
 
     if (!problems) {
       throw new ApiError(404, 'No problems found');
     }
 
     return res
-      .status(200) 
+      .status(200)
       .json(new ApiResponse(200, problems, 'Problems fetched'));
   } catch (error) {
     throw new ApiError(500, 'Something went wrong at getAllProblems', error);
@@ -119,9 +130,11 @@ const getProblem = async (req, res) => {
       throw new ApiError(404, 'problem not found');
     }
 
-    return res.status(200).json(new ApiResponse(200, problem, 'problem fetched'));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, problem, 'problem fetched'));
   } catch (error) {
-    console.log("error in getProblem",error);
+    console.log('error in getProblem', error);
     throw new ApiError(500, 'Something went wrong at getProblem controller');
   }
 };
@@ -198,36 +211,34 @@ const updateProblem = async (req, res) => {
 };
 
 const getProblemsSolvedByUser = async (req, res) => {
-
   const id = req.user.id;
-  if(!id){
+  if (!id) {
     throw new ApiError(500, 'Something went wrong at getProblemsSolvedByUser');
   }
   try {
     const solvedProblems = await db.problem.findMany({
       where: {
-        solvedBy:{
+        solvedBy: {
           some: {
-            userId: id
-          }
-        }
+            userId: id,
+          },
+        },
       },
       include: {
         solvedBy: {
-          where:{
-            userId: id
-          }
-        }
+          where: {
+            userId: id,
+          },
+        },
       },
+    });
 
-    })
-  
     if (!solvedProblems) {
       throw new ApiError(404, 'No problems found');
     }
 
-    console.log("Solved problems = ",solvedProblems);
-  
+    console.log('Solved problems = ', solvedProblems);
+
     return res
       .status(200)
       .json(new ApiResponse(200, solvedProblems, 'Problems fetched'));
@@ -235,7 +246,6 @@ const getProblemsSolvedByUser = async (req, res) => {
     console.log(error);
     throw new ApiError(500, 'Something went wrong at getAllProblems', error);
   }
-
 };
 
 export {

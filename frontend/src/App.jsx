@@ -10,6 +10,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import Layout from "./layout/Layout";
 import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./components/AddProblem";
+import ProblemPage from "./pages/ProblemPage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 

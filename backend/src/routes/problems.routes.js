@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { authMiddleware, checkAdmin } from "../middlewares/auth.middleware.js";
+import { Router } from 'express';
+import { authMiddleware, checkAdmin } from '../middlewares/auth.middleware.js';
 import {
   createProblem,
   deleteProblem,
@@ -7,15 +7,39 @@ import {
   getProblem,
   getProblemsSolvedByUser,
   updateProblem,
-} from "../controllers/problem.controller.js";
+} from '../controllers/problem.controller.js';
 
 const problemRouter = Router();
 
-problemRouter.post("/create-problem", authMiddleware, checkAdmin, createProblem);
-problemRouter.get("/get-all-problems", authMiddleware, getAllProblems);
-problemRouter.get("/get-problem/:id", authMiddleware, getProblem);
-problemRouter.delete("/delete-problem/:id", authMiddleware, checkAdmin, deleteProblem);
-problemRouter.put("/update-problem/:id", authMiddleware, checkAdmin, updateProblem);
-problemRouter.get('/get-solved-problems', authMiddleware, getProblemsSolvedByUser)
+problemRouter.post(
+  '/create-problem',
+  authMiddleware,
+  checkAdmin,
+  createProblem
+);
+problemRouter.get(
+  '/get-all-problems',
+  authMiddleware,
+  getAllProblems
+);
+problemRouter.get('/get-problem/:id', authMiddleware, getProblem);
+
+problemRouter.delete(
+  '/delete-problem/:id',
+  authMiddleware,
+  checkAdmin,
+  deleteProblem
+);
+problemRouter.put(
+  '/update-problem/:id',
+  authMiddleware,
+  checkAdmin,
+  updateProblem
+);
+problemRouter.get(
+  '/get-solved-problems',
+  authMiddleware,
+  getProblemsSolvedByUser
+);
 
 export default problemRouter;
