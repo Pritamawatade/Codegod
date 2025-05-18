@@ -28,12 +28,15 @@ enum Difficult {
 model User {
   id        String   @id @default(uuid())
   name      String?
+  username  String   @unique
   email     String   @unique
   image     String?
   role      UserRole @default(USER)
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  accessToken String?
+  refreshToken String?
 
   problems         Problem[]
   submission       Submission[]
