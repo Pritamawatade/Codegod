@@ -37,6 +37,8 @@ model User {
   updatedAt DateTime @default(now())
   accessToken String?
   refreshToken String?
+  emailVerified Boolean @default(false)
+  emailVerificationToken String?
 
   problems         Problem[]
   submission       Submission[]

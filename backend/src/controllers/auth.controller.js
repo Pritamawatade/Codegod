@@ -7,6 +7,8 @@ import { ApiResponse } from '../utils/api-response.js';
 import uploadOnCloudinary from '../utils/cloudinary.js';
 import generatedAccessToken from '../utils/generateAceesToken.js';
 import generateRefreshToken from '../utils/generateRefreshToken.js';
+import Mailgen from 'mailgen';
+import sendMail from '../utils/sendMail.js';
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
@@ -91,6 +93,53 @@ const register = async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
+    var mailGenerator = new Mailgen({
+      theme: 'default',
+      product: {
+        // Appears in header & footer of e-mails
+        name: 'Codegod',
+        link: 'https://codegod.in',
+        // Optional product logo
+        // logo: 'https://mailgen.js/img/logo.png'
+      },
+    });
+
+    const link = `${process.env.CLIENT_URL}/verify/${user.emailVerificationToken}`;
+
+    var emailSetup = {
+      body: {
+        name: name,
+        intro: "Welcome to Codegod! We're very excited to have you on board.",
+        action: {
+          instructions: 'To get started with Codegod, please click here:',
+          button: {
+            color: '#22BC66', // Optional action button color
+            text: 'Confirm your account',
+            link: link,
+          },
+        },
+        outro:
+          "Need help, or have questions? Just reply to this email, we'd love to help.",
+      },
+    };
+
+    // Generate an HTML email with the provided contents
+    var emailBody = mailGenerator.generate(emailSetup);
+
+    const options = {
+      from: process.env.MAILTRAP_SENDEREMAIL,
+      to: user.email, // list of receivers
+      subject: 'verfify your email', // Subject line
+      text: 'Hello world?', // plain text body
+      html: emailBody, // html body
+    };
+
+   const isSent = await sendMail(options);
+
+   if(!isSent){
+    console.log('email not sent');
+   }
+
     return res.status(200).json(
       new ApiResponse(
         200,
@@ -172,6 +221,7 @@ const login = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     };
     return res
       .status(200)
@@ -347,7 +397,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   );
 });
 
-
 const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
 
@@ -355,7 +404,6 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Avatar file is missing');
   }
 
-  
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   if (!avatar.url) {
@@ -373,9 +421,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, user, 'Avatar image updated successfully')
-    );
+    .json(new ApiResponse(200, user, 'Avatar image updated successfully'));
 });
 
 const check = async (req, res) => {
@@ -393,7 +439,6 @@ const check = async (req, res) => {
   }
 };
 
-
 export {
   register,
   login,
@@ -402,4 +447,5 @@ export {
   refresAceesToken,
   changeCurrentPassword,
   updateAccountDetails,
+  updateUserAvatar,
 };
