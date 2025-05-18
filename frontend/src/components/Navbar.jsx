@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="max-w-screen-2xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
@@ -25,20 +25,20 @@ const Navbar = () => {
             <div className="p-1">
               <img src="https://as1.ftcdn.net/v2/jpg/05/59/94/64/1000_F_559946464_4trpxDuJWn7XePNqLbAQDv2V8f4vwPne.jpg" className="h-8 w-8" alt="Leetlab" />
             </div>
-            <span className="text-xl font-bold text-gray-800 tracking-tight hidden md:block">
+            <span className="text-xl font-bold dark:text-white hover:text-gray-200 tracking-tight hidden md:block">
               Leetlab
             </span>
           </Link>
 
           {/* Navigation Links - Add these if needed */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/problems" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+            <Link to="/problems" className="text-gray-700 dark:text-gray-50 hover:text-gray-200 px-3 py-2 text-sm font-medium">
               Problems
             </Link>
-            <Link to="/contests" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+            <Link to="/contests" className="text-gray-700 dark:text-gray-50 hover:text-gray-200 px-3 py-2 text-sm font-medium">
               Contests
             </Link>
-            <Link to="/learn" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+            <Link to="/learn" className="text-gray-700 dark:text-gray-50 hover:text-gray-200 px-3 py-2 text-sm font-medium">
               Learn
             </Link>
           </div>
@@ -49,7 +49,7 @@ const Navbar = () => {
             <div className="dropdown dropdown-end">
               <label 
                 tabIndex={0} 
-                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer dark:hover:bg-gray-700 hover:bg-gray-100 transition-all duration-200"
               >
                 <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
                   <img
@@ -58,29 +58,29 @@ const Navbar = () => {
                     className="object-cover w-full h-full"
                   />
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-50 hover:text-gray-200 ">
                   {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
                 </span>
               </label>
               
               <ul
                 tabIndex={0}
-                className="menu dropdown-content mt-2 z-[1] p-2 shadow-lg rounded-md w-56 space-y-1 bg-white border border-gray-100"
+                className="menu dropdown-content mt-2 z-[1] p-2 shadow-lg rounded-md w-56 space-y-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
               >
                 <li className="mb-2 mt-1">
-                  <div className="px-2 py-1 text-gray-700">
+                  <div className="px-2 py-1 text-gray-700 dark:text-gray-50">
                     <p className="text-base font-semibold">
                       {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
                     </p>
                     <p className="text-xs opacity-70">{authUser?.email}</p>
                   </div>
-                  <hr className="border-gray-100 my-1" />
+                  <hr className="border-gray-100 my-1 dark:border-gray-700" />
                 </li>
                 
                 <li>
                   <Link
                     to="/profile"
-                    className="flex items-center px-3 py-2 rounded-md hover:bg-gray-50 transition-colors duration-200 text-gray-700"
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-50"
                   >
                     <User className="w-4 h-4 mr-2" />
                     <span>My Profile</span>
@@ -91,7 +91,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/add-problem"
-                      className="flex items-center px-3 py-2 rounded-md hover:bg-gray-50 transition-colors duration-200 text-gray-700"
+                      className="flex items-center px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-50"
                     >
                       <Code className="w-4 h-4 mr-2" />
                       <span>Add Problem</span>
@@ -100,7 +100,7 @@ const Navbar = () => {
                 )}
                 
                 <li>
-                  <LogoutButton className="flex items-center px-3 py-2 rounded-md hover:bg-red-50 text-red-600 transition-colors duration-200 w-full">
+                  <LogoutButton className="flex items-center px-3 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900 text-red-600 dark:text-red-500 transition-colors duration-200 w-full">
                     <LogOut className="w-4 h-4 mr-2" />
                     <span>Logout</span>
                   </LogoutButton>
