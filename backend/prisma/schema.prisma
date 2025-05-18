@@ -26,18 +26,18 @@ enum Difficult {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  username  String   @unique
-  email     String   @unique
-  image     String?
-  role      UserRole @default(USER)
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  accessToken String?
-  refreshToken String?
-  emailVerified Boolean @default(false)
+  id                     String   @id @default(uuid())
+  name                   String
+  username               String?   @unique
+  email                  String   @unique
+  image                  String?
+  role                   UserRole @default(USER)
+  password               String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @default(now())
+  accessToken            String?
+  refreshToken           String?
+  emailVerified          Boolean  @default(false)
   emailVerificationToken String?
 
   problems         Problem[]
@@ -98,7 +98,7 @@ model Submission {
 model TestCaseResult {
   id            String  @id @default(uuid())
   submissionId  String
-  testCase        Int
+  testCase      Int
   passed        Boolean
   stdout        String?
   expected      String

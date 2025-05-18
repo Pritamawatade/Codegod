@@ -12,7 +12,7 @@ import sendMail from '../utils/sendMail.js';
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
-    const user = await db.User.findUnique({ where: { id: userId } });
+    const user = await db.user.findUnique({ where: { id: userId } });
     const accessToken = generatedAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
@@ -23,6 +23,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
+    console.log(error);
     throw new ApiError(
       500,
       'Something went wrong while generating referesh and access token'
@@ -31,13 +32,13 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 const register = async (req, res) => {
-  const { name, password, email } = req.body;
+  const { name, password, email, username } = req.body;
   try {
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !username) {
       throw new ApiError(400, 'Invalid data');
     }
 
-    const existingUser = await db.User.findUnique({
+    const existingUser = await db.user.findUnique({
       where: {
         email,
       },
@@ -67,6 +68,7 @@ const register = async (req, res) => {
           email,
           role: UserRole.USER,
           image: avatar.url,
+          username,
         },
       });
     } catch (error) {
@@ -82,16 +84,22 @@ const register = async (req, res) => {
         .json(new ApiError(400, 'Error inserting user in DB').toJSON());
     }
 
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
-    });
+    // const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+    //   expiresIn: '7d',
+    // });
 
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV !== 'development',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+    // res.cookie('jwt', token, {
+    //   httpOnly: true,
+    //   sameSite: 'strict',
+    //   secure: process.env.NODE_ENV !== 'development',
+    //   maxAge: 1000 * 60 * 60 * 24 * 7,
+    // });
+
+     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+      newUser.id
+    );
+
+
 
     var mailGenerator = new Mailgen({
       theme: 'default',
@@ -104,7 +112,7 @@ const register = async (req, res) => {
       },
     });
 
-    const link = `${process.env.CLIENT_URL}/verify/${user.emailVerificationToken}`;
+    const link = `${process.env.CLIENT_URL}/verify/${newUser.emailVerificationToken}`;
 
     var emailSetup = {
       body: {
@@ -128,7 +136,7 @@ const register = async (req, res) => {
 
     const options = {
       from: process.env.MAILTRAP_SENDEREMAIL,
-      to: user.email, // list of receivers
+      to: newUser.email, // list of receivers
       subject: 'verfify your email', // Subject line
       text: 'Hello world?', // plain text body
       html: emailBody, // html body
@@ -140,7 +148,17 @@ const register = async (req, res) => {
     console.log('email not sent');
    }
 
-    return res.status(200).json(
+   const cookieOption = {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV !== 'development',
+    maxAge: 1000 * 60 * 60 * 24 * 7
+   }
+
+    return res.status(200)
+    .cookie('accessToken', accessToken, cookieOption)
+    .cookie('refreshToken', refreshToken, cookieOption)
+    .json(
       new ApiResponse(
         200,
         {
@@ -363,7 +381,7 @@ const changeCurrentPassword = async (req, res) => {
     .json(new ApiResponse(200, null, 'Password changed successfully'));
 };
 
-const updateAccountDetails = asyncHandler(async (req, res) => {
+const updateAccountDetails = async (req, res) => {
   const { name, username, email } = req.body;
 
   if (!fullName || !email || !username) {
@@ -395,9 +413,9 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       'Account details updated successfully'
     )
   );
-});
+};
 
-const updateUserAvatar = asyncHandler(async (req, res) => {
+const updateUserAvatar = async (req, res) => {
   const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath) {
@@ -422,7 +440,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, user, 'Avatar image updated successfully'));
-});
+};
 
 const check = async (req, res) => {
   try {

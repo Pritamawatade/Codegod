@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken';
+
+
 const generatedAccessToken = (user) => {
       return jwt.sign(
         {
