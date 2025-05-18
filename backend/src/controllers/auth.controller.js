@@ -338,6 +338,7 @@ const refresAceesToken = async (req, res) => {
       .cookie('refreshToken', newRefreshToken, options)
       .json(new ApiResponse(200, null, 'Access token refreshed successfully'));
   } catch (error) {
+    console.log("error in refresAceesToken", error);
     return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };

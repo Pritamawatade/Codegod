@@ -27,7 +27,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start">
+    <div>
       <Toaster />
 
       <Routes>

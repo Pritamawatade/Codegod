@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 const generatedAccessToken = (user) => {
       return jwt.sign(
         {
-            _id: user.id,
+            id: user.id,
             email: user.email,
             username: user.username,
             name: user.name
