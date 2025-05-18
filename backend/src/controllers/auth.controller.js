@@ -1,20 +1,18 @@
-import { ApiError } from "../utils/api-error.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { db } from "../libs/db.js";
-import { UserRole } from "../../generated/prisma/index.js";
-import { ApiResponse } from "../utils/api-response.js";
-
-
+import { ApiError } from '../utils/api-error.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { db } from '../libs/db.js';
+import { UserRole } from '../../generated/prisma/index.js';
+import { ApiResponse } from '../utils/api-response.js';
+import uploadOnCloudinary from '../utils/cloudinary.js';
 
 const register = async (req, res) => {
-  const { name, password, email  } = req.body;
+  const { name, password, email } = req.body;
   try {
     if (!name || !email || !password) {
-     throw new ApiError(400, "Invalid data")
+      throw new ApiError(400, 'Invalid data');
     }
 
-    
     const existingUser = await db.User.findUnique({
       where: {
         email,
@@ -24,8 +22,17 @@ const register = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json(new ApiError(400, "User already exists").toJSON());
+        .json(new ApiError(400, 'User already exists').toJSON());
     }
+
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+
+    if (!avatarLocalPath) {
+      throw new ApiError(400, 'Avatar file is required');
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
     let newUser;
@@ -36,23 +43,30 @@ const register = async (req, res) => {
           password: hashedPassword,
           email,
           role: UserRole.USER,
+          image: avatar.url,
         },
       });
     } catch (error) {
-      console.error("Error inserting user in DB:", error);
+      console.error('Error inserting user in DB:', error);
       return res
         .status(400)
-        .json(new ApiError(400, "Error inserting user in DB").toJSON());
+        .json(new ApiError(400, 'Error inserting user in DB').toJSON());
+    }
+
+    if (!newUser) {
+      return res
+        .status(400)
+        .json(new ApiError(400, 'Error inserting user in DB').toJSON());
     }
 
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: '7d',
     });
 
-    res.cookie("jwt", token, {
+    res.cookie('jwt', token, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV !== "development",
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV !== 'development',
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
@@ -65,59 +79,55 @@ const register = async (req, res) => {
             email: newUser.email,
             name: newUser.name,
             role: newUser.role,
+            image: newUser.image,
           },
         },
-        "User created successfully"
+        'User created successfully'
       )
     );
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error('Unexpected error:', error);
     return res
       .status(500)
-      .json(new ApiError(500, "Internal Server Error").toJSON());
+      .json(new ApiError(500, 'Internal Server Error').toJSON());
   }
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  
   try {
     if (!email || !password) {
-      return res.status(400).json(new ApiError(400, "Invalid credentials"));
+      return res.status(400).json(new ApiError(400, 'Invalid credentials'));
     }
-    
+
     const user = await db.User.findUnique({
       where: {
         email,
       },
     });
 
-    
-    
     if (!user) {
-      return res.status(400).json(new ApiError(400, "User not exist"));
+      return res.status(400).json(new ApiError(400, 'User not exist'));
     }
-    
+
     const isMatch = await bcrypt.compare(password, user.password);
 
-    
-    
     if (!isMatch) {
-      return res.status(401).json(new ApiError(401, "Wrong password"));
+      return res.status(401).json(new ApiError(401, 'Wrong password'));
     }
-  
+
     const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: '7d',
     });
-  
-    res.cookie("jwt", token, {
+
+    res.cookie('jwt', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
+      secure: process.env.NODE_ENV !== 'development',
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: "strict",
+      sameSite: 'strict',
     });
-  
+
     return res.status(200).json(
       new ApiResponse(
         200,
@@ -127,46 +137,41 @@ const login = async (req, res) => {
             email: user.email,
             name: user.name,
             role: user.role,
-            image: user.image
-          }
+            image: user.image,
+          },
         },
-        "user logged in successfully"
+        'user logged in successfully'
       )
     );
   } catch (error) {
-    return res
-    .status(500)
-    .json(new ApiError(500, "Internal Server Error"))
+    return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt",{
-      httpOnly:true,
+    res.clearCookie('jwt', {
+      httpOnly: true,
       sameSite: 'strict',
-      secure: process.env.NODE_ENV !== 'development'
-    })
+      secure: process.env.NODE_ENV !== 'development',
+    });
 
-    res.status(200).json( new ApiResponse(200, {}, "user logged out successfully"))
-    
+    res
+      .status(200)
+      .json(new ApiResponse(200, {}, 'user logged out successfully'));
   } catch (error) {
-    return res
-    .status(500)
-    .json(new ApiError(500, "Internal Server Error"))
+    return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };
 
 const check = async (req, res) => {
   try {
-    return  res.status(200).json(
-      new ApiResponse(200,req.user, "User auhenticated successfully")
-    )
+    return res
+      .status(200)
+      .json(new ApiResponse(200, req.user, 'User auhenticated successfully'));
   } catch (error) {
     console.log(error);
-    return res
-    .status(500)
-    .json(new ApiError(500, "Internal Server Error"))
+    return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };
 
