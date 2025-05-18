@@ -169,10 +169,10 @@ const login = async (req, res) => {
     //   )
     // );
 
-     const options = {
-        httpOnly: true,
-        secure: true
-    }
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
     return res
       .status(200)
       .cookie('accessToken', accessToken, options)
@@ -208,10 +208,10 @@ const logout = async (req, res) => {
       },
     });
 
-     const options = {
-        httpOnly: true,
-        secure: true
-    }
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
 
     return res
       .status(200)
@@ -249,10 +249,11 @@ const refresAceesToken = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true
-    }
+      secure: true,
+    };
 
-    const {accessToken, refreshToken: newRefreshToken} = await generateAccessAndRefereshTokens(user.id);
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccessAndRefereshTokens(user.id);
 
     await db.user.update({
       where: {
@@ -271,13 +272,12 @@ const refresAceesToken = async (req, res) => {
   } catch (error) {
     return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
-
 };
 
-const changeCurrentPassword = async(req,res)=>{
-  const {currentPassword,newPassword} = req.body;
+const changeCurrentPassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
 
-  if(!currentPassword || !newPassword){
+  if (!currentPassword || !newPassword) {
     return res.status(400).json(new ApiError(400, 'Invalid credentials'));
   }
 
@@ -287,13 +287,13 @@ const changeCurrentPassword = async(req,res)=>{
     },
   });
 
-  if(!user){
+  if (!user) {
     return res.status(404).json(new ApiError(404, 'User not found'));
   }
 
   const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
 
-  if(!isPasswordMatch){
+  if (!isPasswordMatch) {
     return res.status(401).json(new ApiError(401, 'Wrong password'));
   }
 
@@ -308,8 +308,75 @@ const changeCurrentPassword = async(req,res)=>{
     },
   });
 
-  return res.status(200).json(new ApiResponse(200, null, 'Password changed successfully'));
-}
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, 'Password changed successfully'));
+};
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { name, username, email } = req.body;
+
+  if (!fullName || !email || !username) {
+    throw new ApiError(400, 'All fields are required');
+  }
+  const user = await db.user.update({
+    where: {
+      id: req.user?.id,
+    },
+    data: {
+      name,
+      email,
+      username,
+    },
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          image: user.image,
+        },
+      },
+      'Account details updated successfully'
+    )
+  );
+});
+
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, 'Avatar file is missing');
+  }
+
+  
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(400, 'Error while uploading avatar');
+  }
+
+  const user = await db.user.update({
+    where: {
+      id: req.user?.id,
+    },
+    data: {
+      image: avatar.url,
+    },
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, user, 'Avatar image updated successfully')
+    );
+});
 
 const check = async (req, res) => {
   try {
@@ -327,5 +394,12 @@ const check = async (req, res) => {
 };
 
 
-
-export { register, login, logout, check, refresAceesToken };
+export {
+  register,
+  login,
+  logout,
+  check,
+  refresAceesToken,
+  changeCurrentPassword,
+  updateAccountDetails,
+};
