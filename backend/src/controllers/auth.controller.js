@@ -453,7 +453,6 @@ const check = async (req, res) => {
     if (!req.user) {
       return res.status(401).json(new ApiError(401, 'User not authenticated'));
     }
-
     return res
       .status(200)
       .json(new ApiResponse(200, req.user, 'User authenticated successfully'));

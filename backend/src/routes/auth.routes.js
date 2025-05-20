@@ -12,7 +12,6 @@ import {
 } from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
-import passport from 'passport';
 const authRouter = Router();
 
 authRouter.post(

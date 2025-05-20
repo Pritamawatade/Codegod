@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
-
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
 
 const ProblemTable = ({ problems }) => {
-  const { authUser } = useAuthStore();
+  // ... existing logic remains unchanged ...
+ const { authUser } = useAuthStore();
 
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
@@ -47,27 +47,34 @@ const ProblemTable = ({ problems }) => {
   const handleDelete = (id)=>{}
 
   const handleAddToPlaylist = (id)=>{}
-
   return (
-    <div className="w-full max-w-6xl mx-auto mt-10">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Problems</h2>
-        <button className="btn btn-primary gap-2" onClick={() => {}}>
-          <Plus className="w-4 h-4" />
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+          Coding Problems
+        </h2>
+        <button
+          className="btn dark:bg-gray-900 bg-gradient-to-br from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 gap-2 shadow-lg"
+          onClick={() => {}}
+        >
+          <Plus className="w-5 h-5" />
           Create Playlist
         </button>
       </div>
 
-      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+      {/* Filters Section */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <input
           type="text"
-          placeholder="Search by title"
-          className="input input-bordered w-full md:w-1/3 bg-base-200"
+          placeholder="Search problems..."
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="select select-bordered bg-base-200"
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none"
+          style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')", backgroundPosition: "right 1rem center", backgroundSize: "1em" }}
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
         >
@@ -79,7 +86,8 @@ const ProblemTable = ({ problems }) => {
           ))}
         </select>
         <select
-          className="select select-bordered bg-base-200"
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none"
+          style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')", backgroundPosition: "right 1rem center", backgroundSize: "1em" }}
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
         >
@@ -92,121 +100,120 @@ const ProblemTable = ({ problems }) => {
         </select>
       </div>
 
-      <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="table table-zebra table-lg bg-base-200 text-base-content">
-          <thead className="bg-base-200">
-            <tr>
-              <th>Solved</th>
-              <th>Title</th>
-              <th>Tags</th>
-              <th>Difficulty</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-{
-    paginatedProblems.length > 0 ? (
-          paginatedProblems.map((problem)=>{
-            const isSolved = problem.solvedBy.some((user)=>user.userId === authUser?.id);
+      {/* Problems List */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden">
+        {paginatedProblems.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            No problems found matching your criteria
+          </div>
+        ) : (
+          paginatedProblems.map((problem) => {
+            const isSolved = problem.solvedBy.some((user) => user.userId === authUser?.id);
 
-               return (
-                  <tr key={problem.id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={isSolved}
-                        readOnly
-                        className="checkbox checkbox-sm"
-                      />
-                    </td>
-                    <td>
-                      <Link to={`/problem/${problem.id}`} className="font-semibold hover:underline">
-                        {problem.title}
-                      </Link>
-                    </td>
-                    <td>
-                      <div className="flex flex-wrap gap-1">
-                        {(problem.tags || []).map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="badge badge-outline badge-warning text-xs font-bold"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td>
-                      <span
-                        className={`badge font-semibold text-xs text-white ${
-                          problem.difficulty === "EASY"
-                            ? "badge-success"
-                            : problem.difficulty === "MEDIUM"
-                            ? "badge-warning"
-                            : "badge-error"
-                        }`}
-                      >
-                        {problem.difficulty}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                        {authUser?.role === "ADMIN" && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleDelete(problem.id)}
-                              className="btn btn-sm btn-error"
-                            >
-                              <TrashIcon className="w-4 h-4 text-white" />
-                            </button>
-                            <button disabled className="btn btn-sm btn-warning">
-                              <PencilIcon className="w-4 h-4 text-white" />
-                            </button>
-                          </div>
-                        )}
-                        <button
-                          className="btn btn-sm btn-outline flex gap-2 items-center"
-                          onClick={() => handleAddToPlaylist(problem.id)}
+            return (
+              <div
+                key={problem.id}
+                className="py-4 rounded-2xl px-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors mt-2"
+              >
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  {/* Solved Checkbox */}
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={isSolved}
+                      readOnly
+                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {/* Problem Info */}
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/problem/${problem.id}`}
+                      className="text-lg font-semibold text-gray-900 dark:text-gray-50 hover:text-blue-600 truncate"
+                    >
+                      {problem.title}
+                    </Link>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {(problem.tags || []).map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium"
                         >
-                          <Bookmark className="w-4 h-4" />
-                          <span className="hidden sm:inline">Save to Playlist</span>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Difficulty */}
+                  <div className="md:w-32">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        problem.difficulty === "EASY"
+                          ? "bg-green-100 text-green-800"
+                          : problem.difficulty === "MEDIUM"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {problem.difficulty}
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {authUser?.role === "ADMIN" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleDelete(problem.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                        <button
+                          disabled
+                          className="p-2 text-gray-400 cursor-not-allowed rounded-lg"
+                        >
+                          <PencilIcon className="w-5 h-5" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                );
-
+                    )}
+                    <button
+                      onClick={() => handleAddToPlaylist(problem.id)}
+                      className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Bookmark className="w-5 h-5" />
+                      <span className="text-sm font-medium">Save</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
           })
-    ) : ( <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-500">
-                  No problems found.
-                </td>
-              </tr>)
-}
-          </tbody>
-        </table>
+        )}
       </div>
 
-  {/*  */}
-  <div className="flex justify-center mt-6 gap-2">
-<button
-className="btn btn-sm"
-disabled={currentPage === 1}
-onClick={()=>setCurrentPage((prev)=>prev-1)}
->
-Prev
-</button>
-    <span className="btn btn-ghost btn-sm">
-          {currentPage} / {totalPages}
+      {/* Pagination */}
+      <div className="mt-8 flex justify-center items-center gap-4">
+        <button
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Previous
+        </button>
+        <span className="text-sm text-gray-700">
+          Page {currentPage} of {totalPages}
         </span>
- <button
-className="btn btn-sm"
-disabled={currentPage === totalPages}
-onClick={()=>setCurrentPage((prev)=>prev+1)}
->
-Next
-</button>
-  </div>
+        <button
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
