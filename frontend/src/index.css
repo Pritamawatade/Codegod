@@ -8,6 +8,13 @@
   -moz-user-select: none;    /* Firefox */
   -ms-user-select: none;     /* IE/Edge */
 }
+.name{
+  color: rgb(121, 116, 116);
+}
+.icon{
+  color: rgb(244, 184, 184);
+  cursor: pointer;
+}
 @keyframes blink {
     0%,
     100% {

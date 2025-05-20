@@ -14,6 +14,7 @@ import ProblemPage from "./pages/ProblemPage";
 import LoginFailed from "./pages/LoginFailed";
 import { use } from "react";
 import GoogleLoginBtn from "./components/GoogleLoginBtn";
+import ProfilePage from "./pages/ProfilePage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -21,17 +22,18 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
-
   if (isCheckingAuth && !authUser) {
+    console.log("authUser 26 = ", authUser)
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
     );
+  }else{
+    console.log("authUser 32 = ", authUser)
   }
 
   return (
-    
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Toaster />
 
@@ -42,6 +44,11 @@ function App() {
             element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
           />
         </Route>
+
+        <Route
+          path="/profile"
+          element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />}
+        />
 
         <Route
           path="/login"

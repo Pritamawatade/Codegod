@@ -171,6 +171,7 @@ const register = async (req, res) => {
             name: newUser.name,
             role: newUser.role,
             image: newUser.image,
+            username: newUser.username
           },
         },
         'User created successfully'
@@ -258,6 +259,7 @@ const login = async (req, res) => {
               name: user.name,
               role: user.role,
               image: user.image,
+              username: user.username,
             },
           },
           'user logged in successfully'
