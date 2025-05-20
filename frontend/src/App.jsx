@@ -11,12 +11,16 @@ import Layout from "./layout/Layout";
 import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./components/AddProblem";
 import ProblemPage from "./pages/ProblemPage";
+import LoginFailed from "./pages/LoginFailed";
+import { use } from "react";
+import GoogleLoginBtn from "./components/GoogleLoginBtn";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
 
   if (isCheckingAuth && !authUser) {
     return (
@@ -27,6 +31,7 @@ function App() {
   }
 
   return (
+    
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Toaster />
 
@@ -48,11 +53,11 @@ function App() {
           element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
         />
 
-       
-        <Route
-          path="/problem/:id"
-          element={<ProblemPage />}
-        />
+        <Route path="/login-failed" element={<LoginFailed />} />
+
+        <Route path="/google" element={<GoogleLoginBtn />} />
+
+        <Route path="/problem/:id" element={<ProblemPage />} />
 
         <Route element={<AdminRoute />}>
           <Route

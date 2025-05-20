@@ -6,6 +6,7 @@ import { Code, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { z } from "zod";
 import AuthImagePattern from '../components/AuthImagePattern';
 import { useAuthStore } from "../store/useAuthStore";
+import GoogleLoginBtn from "../components/GoogleLoginBtn";
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -147,6 +148,8 @@ function SignUpPage() {
               )}
             </button>
           </form>
+
+          <GoogleLoginBtn />
 
           {/* Footer */}
           <div className="text-center">

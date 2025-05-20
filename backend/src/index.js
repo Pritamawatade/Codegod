@@ -7,6 +7,8 @@ import executionRoute from "./routes/executeCode.route.js";
 import playlistRouter from "./routes/playlist.routes.js";
 import submissionRoute from "./routes/submission.routes.js";
 import cors from "cors"
+
+
 const app = express();
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true
 }))
+
+
 
 app.use('/api/v1/users', authRouter)
 app.use('/api/v1/problems', problemRouter)

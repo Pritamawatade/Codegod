@@ -9,7 +9,10 @@ import generatedAccessToken from '../utils/generateAceesToken.js';
 import generateRefreshToken from '../utils/generateRefreshToken.js';
 import Mailgen from 'mailgen';
 import sendMail from '../utils/sendMail.js';
+import pkg from 'google-auth-library';
+const { OAuth2Client } = pkg;
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
     const user = await db.user.findUnique({ where: { id: userId } });
@@ -458,6 +461,76 @@ const check = async (req, res) => {
   }
 };
 
+const googleAuthController = async (req, res) => {
+   const { credential } = req.body; // coming from Google login on frontend
+
+    try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    let user = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // User doesn't exist, create them
+      user = await db.user.create({
+        data: {
+          name,
+          email,
+          image: picture,
+          password: `google_${googleId.slice(0, 8)} ${email}`,
+          role: 'USER',
+          provider: 'google',
+          googleId,
+          username: `google_${googleId.slice(0, 8)}`,
+        },
+      });
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.id);
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    };
+
+    return res
+      .status(200)
+      .cookie('accessToken', accessToken, cookieOptions)
+      .cookie('refreshToken', refreshToken, cookieOptions)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              image: user.image,
+            },
+          },
+          'Google login successful'
+        )
+      );
+  } catch (error) {
+    console.error('Google login error:', error);
+    return res
+      .status(500)
+      .json(new ApiError(500, 'Google login failed').toJSON());
+  }
+};
+
 export {
   register,
   login,
@@ -467,4 +540,5 @@ export {
   changeCurrentPassword,
   updateAccountDetails,
   updateUserAvatar,
+  googleAuthController,
 };

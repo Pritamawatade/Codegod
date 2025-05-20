@@ -25,10 +25,12 @@ enum Difficult {
   HARD
 }
 
+
+
 model User {
   id                     String   @id @default(uuid())
   name                   String
-  username               String?   @unique
+  username               String?  @unique
   email                  String   @unique
   image                  String?
   role                   UserRole @default(USER)
@@ -39,6 +41,8 @@ model User {
   refreshToken           String?
   emailVerified          Boolean  @default(false)
   emailVerificationToken String?
+  provider               String? // 'google' or 'local'
+  googleId               String?  @unique
 
   problems         Problem[]
   submission       Submission[]
