@@ -188,7 +188,7 @@ function SignUpPage() {
             )}
           </div>
 
-          <div className="relative">
+          <div className="relative mt-4 mb-4">
             <div className="flex justify-center items-center w-full">
               <label
                 htmlFor="avatar"

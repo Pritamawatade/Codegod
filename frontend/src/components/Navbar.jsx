@@ -65,22 +65,23 @@ const Navbar = () => {
               
               <ul
                 tabIndex={0}
-                className="menu dropdown-content mt-2 z-[1] p-2 shadow-lg rounded-md w-56 space-y-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+                className="menu dropdown-content mt-2 z-[1] p-4 shadow-lg rounded-md w-60  space-y-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col items-start gap-1" 
               >
-                <li className="mb-2 mt-1">
-                  <div className="px-2 py-1 text-gray-700 dark:text-gray-50">
-                    <p className="text-base font-semibold">
-                      {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
-                    </p>
-                    <p className="text-xs opacity-70">{authUser?.email}</p>
+                <li className="mb-1 overflow-hidden">
+                  <div className="px-2 py-1 text-gray-700 dark:text-gray-50 flex items-center justify-between">
+                    <div>
+                      <p className="text-base font-semibold">
+                        {authUser?.name?.charAt(0)?.toUpperCase() + authUser?.name?.slice(1) || "User"}    
+                      </p>
+                      <p className="text-xs opacity-70">{authUser?.email}</p>
+                    </div>
                   </div>
-                  <hr className="border-gray-100 my-1 dark:border-gray-700" />
                 </li>
                 
                 <li>
                   <Link
                     to="/profile"
-                    className="flex items-center px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-50"
+                    className="overflow-hidden flex items-center px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-50"
                   >
                     <User className="w-4 h-4 mr-2" />
                     <span>My Profile</span>
