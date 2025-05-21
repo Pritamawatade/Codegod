@@ -86,11 +86,11 @@ function SignUpPage() {
               <input
                 type="text"
                 {...register("name")}
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
-                  errors.name
-                    ? "border-red-300 focus:ring-red-500"
-                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                    errors.name
+                      ? "border-red-300 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  }`}
                 placeholder="John Doe"
               />
             </div>

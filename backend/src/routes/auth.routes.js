@@ -37,6 +37,7 @@ authRouter.post('/refreshAccessToken', authMiddleware, refresAceesToken);
 authRouter.post(
   '/update-account-details',
   authMiddleware,
+  upload.fields([{ name: 'avatar', maxCount: 1 }]),
   updateAccountDetails
 );
 

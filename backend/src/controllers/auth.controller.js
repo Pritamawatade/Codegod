@@ -98,11 +98,9 @@ const register = async (req, res) => {
     //   maxAge: 1000 * 60 * 60 * 24 * 7,
     // });
 
-     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
       newUser.id
     );
-
-
 
     var mailGenerator = new Mailgen({
       theme: 'default',
@@ -145,38 +143,39 @@ const register = async (req, res) => {
       html: emailBody, // html body
     };
 
-   const isSent = await sendMail(options);
+    const isSent = await sendMail(options);
 
-   if(!isSent){
-    console.log('email not sent');
-   }
+    if (!isSent) {
+      console.log('email not sent');
+    }
 
-   const cookieOption = {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV !== 'development',
-    maxAge: 1000 * 60 * 60 * 24 * 7
-   }
+    const cookieOption = {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV !== 'development',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    };
 
-    return res.status(200)
-    .cookie('accessToken', accessToken, cookieOption)
-    .cookie('refreshToken', refreshToken, cookieOption)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          user: {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-            role: newUser.role,
-            image: newUser.image,
-            username: newUser.username
+    return res
+      .status(200)
+      .cookie('accessToken', accessToken, cookieOption)
+      .cookie('refreshToken', refreshToken, cookieOption)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: {
+              id: newUser.id,
+              email: newUser.email,
+              name: newUser.name,
+              role: newUser.role,
+              image: newUser.image,
+              username: newUser.username,
+            },
           },
-        },
-        'User created successfully'
-      )
-    );
+          'User created successfully'
+        )
+      );
   } catch (error) {
     console.error('Unexpected error:', error);
     return res
@@ -343,7 +342,7 @@ const refresAceesToken = async (req, res) => {
       .cookie('refreshToken', newRefreshToken, options)
       .json(new ApiResponse(200, null, 'Access token refreshed successfully'));
   } catch (error) {
-    console.log("error in refresAceesToken", error);
+    console.log('error in refresAceesToken', error);
     return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };
@@ -388,21 +387,31 @@ const changeCurrentPassword = async (req, res) => {
 };
 
 const updateAccountDetails = async (req, res) => {
-  const { name, username, email } = req.body;
+  console.log('req.body', req.body);
+  const { name, username } = req.body;
 
-  if (!fullName || !email || !username) {
+  if (!name || !username) {
     throw new ApiError(400, 'All fields are required');
   }
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
   const user = await db.user.update({
     where: {
       id: req.user?.id,
     },
     data: {
       name,
-      email,
       username,
+      image: avatar.url
     },
   });
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
 
   return res.status(200).json(
     new ApiResponse(
@@ -414,6 +423,7 @@ const updateAccountDetails = async (req, res) => {
           name: user.name,
           role: user.role,
           image: user.image,
+          username: user.username,
         },
       },
       'Account details updated successfully'
@@ -463,9 +473,9 @@ const check = async (req, res) => {
 };
 
 const googleAuthController = async (req, res) => {
-   const { credential } = req.body; // coming from Google login on frontend
+  const { credential } = req.body; // coming from Google login on frontend
 
-    try {
+  try {
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -496,7 +506,9 @@ const googleAuthController = async (req, res) => {
     }
 
     // Generate tokens
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.id);
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+      user.id
+    );
 
     const cookieOptions = {
       httpOnly: true,

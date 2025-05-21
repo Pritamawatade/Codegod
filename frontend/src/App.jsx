@@ -12,8 +12,6 @@ import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./components/AddProblem";
 import ProblemPage from "./pages/ProblemPage";
 import LoginFailed from "./pages/LoginFailed";
-import { use } from "react";
-import GoogleLoginBtn from "./components/GoogleLoginBtn";
 import ProfilePage from "./pages/ProfilePage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -47,7 +45,7 @@ function App() {
 
         <Route
           path="/profile"
-          element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />}
+          element={authUser ? <ProfilePage /> : <Navigate to={"/login"}  />}
         />
 
         <Route
@@ -62,7 +60,6 @@ function App() {
 
         <Route path="/login-failed" element={<LoginFailed />} />
 
-        <Route path="/google" element={<GoogleLoginBtn />} />
 
         <Route path="/problem/:id" element={<ProblemPage />} />
 
