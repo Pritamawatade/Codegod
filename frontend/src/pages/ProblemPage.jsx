@@ -128,109 +128,114 @@ const ProblemPage = () => {
     setCode(problem.codeSnippets?.[lang] || "");
   };
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "description":
-        return (
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-base md:text-lg mb-6">{problem.description}</p>
+const renderTabContent = () => {
+  switch (activeTab) {
+    case "description":
+      return (
+        <div className="prose prose-lg dark:prose-invert max-w-none">
+          <p className="text-base md:text-lg mb-6 text-gray-700 dark:text-slate-300">
+            {problem.description}
+          </p>
 
-            {problem.examples && (
-              <>
-                <h3 className="text-xl font-bold mb-4">Examples:</h3>
-                {Object.entries(problem.examples).map(
-                  ([lang, example], idx) => (
-                    <div
-                      key={lang}
-                      className="bg-slate-100 dark:bg-slate-800 p-4 md:p-6 rounded-lg mb-6 font-mono shadow-sm"
-                    >
-                      <div className="mb-4">
-                        <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
-                          Input:
-                        </div>
-                        <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                          <code className="text-slate-900 dark:text-slate-100">
-                            {example.input}
-                          </code>
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
-                          Output:
-                        </div>
-                        <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                          <code className="text-slate-900 dark:text-slate-100">
-                            {example.output}
-                          </code>
-                        </div>
-                      </div>
-                      {example.explanation && (
-                        <div>
-                          <div className="text-emerald-600 dark:text-emerald-400 mb-2 text-sm font-semibold">
-                            Explanation:
-                          </div>
-                          <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base">
-                            {example.explanation}
-                          </p>
-                        </div>
-                      )}
+          {problem.examples && (
+            <>
+              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-slate-300">
+                Examples:
+              </h3>
+              {Object.entries(problem.examples).map(([lang, example], idx) => (
+                <div
+                  key={lang}
+                  className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg mb-6 font-mono shadow-sm"
+                >
+                  <div className="mb-4">
+                    <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
+                      Input:
                     </div>
-                  )
-                )}
-              </>
-            )}
-
-            {problem.constraints && (
-              <>
-                <h3 className="text-xl font-bold mb-4">Constraints:</h3>
-                <div className="bg-slate-100 dark:bg-slate-800 p-4 md:p-6 rounded-lg mb-6 shadow-sm">
-                  <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                    <code className="text-slate-900 dark:text-slate-100 text-sm md:text-base">
-                      {problem.constraints}
-                    </code>
+                    <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
+                      <code style={{background: `${localStorage.getItem("theme") === "dark" ? "" : "white"}`}} className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base ">
+                        {example.input}
+                      </code>
+                    </div>
                   </div>
+                  <div className="mb-4">
+                    <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
+                      Output:
+                    </div>
+                    <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
+                     <code style={{background: `${localStorage.getItem("theme") === "dark" ? "" : "white"}`}} className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base ">
+                        {example.output}
+                      </code>
+                    </div>
+                  </div>
+                  {example.explanation && (
+                    <div>
+                      <div className="text-emerald-600 dark:text-emerald-400 mb-2 text-sm font-semibold">
+                        Explanation:
+                      </div>
+                      <p className="text-gray-700 dark:text-slate-300 text-sm md:text-base">
+                        {example.explanation}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </>
-            )}
-          </div>
-        );
-      case "submissions":
-        return (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
-            <Code2 className="w-12 h-12 mb-4 opacity-30" />
-            <p className="text-lg">No submissions yet</p>
-          </div>
-        );
-      case "discussion":
-        return (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
-            <MessageSquare className="w-12 h-12 mb-4 opacity-30" />
-            <p className="text-lg">No discussions yet</p>
-          </div>
-        );
-      case "hints":
-        return (
-          <div className="p-4">
-            {problem?.hints ? (
-              <div className="bg-slate-100 dark:bg-slate-800 p-4 md:p-6 rounded-lg shadow-sm">
-                <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                  <code className="text-slate-900 dark:text-slate-100 text-sm md:text-base">
-                    {problem.hints}
+              ))}
+            </>
+          )}
+
+          {problem.constraints && (
+            <>
+              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-slate-300">
+                Constraints:
+              </h3>
+              <div className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg mb-6 shadow-sm">
+                <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto shadow-sm">
+                  <code style={{background: `${localStorage.getItem("theme") === "dark" ? "" : "white"}`}} className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base ">
+                    {problem.constraints}
                   </code>
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
-                <Lightbulb className="w-12 h-12 mb-4 opacity-30" />
-                <p className="text-lg">No hints available</p>
+            </>
+          )}
+        </div>
+      );
+    case "submissions":
+      return (
+        <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+          <Code2 className="w-12 h-12 mb-4 opacity-30 dark:text-slate-300" />
+          <p className="text-lg dark:text-slate-300">No submissions yet</p>
+        </div>
+      );
+    case "discussion":
+      return (
+        <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+          <MessageSquare className="w-12 h-12 mb-4 opacity-30 dark:text-slate-300" />
+          <p className="text-lg dark:text-slate-300">No discussions yet</p>
+        </div>
+      );
+    case "hints":
+      return (
+        <div className="p-4">
+          {problem?.hints ? (
+            <div className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg shadow-sm">
+              <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
+                <code className="not-prose text-gray-800 dark:text-slate-300 text-sm md:text-base">
+                  {problem.hints}
+                </code>
               </div>
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+              <Lightbulb className="w-12 h-12 mb-4 opacity-30 dark:text-slate-300" />
+              <p className="text-lg dark:text-slate-300">No hints available</p>
+            </div>
+          )}
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
 
   const handleRunCode = (e) => {
     e.preventDefault();
@@ -397,9 +402,7 @@ const ProblemPage = () => {
             <div className="overflow-hidden bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col">
               <div className="border-b border-slate-200 dark:border-slate-700">
                 <div className="flex overflow-x-auto scrollbar-hide">
-                  <button
-                    className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400"
-                  >
+                  <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
                     <Terminal className="w-4 h-4" />
                     Code Editor
                   </button>
@@ -425,7 +428,8 @@ const ProblemPage = () => {
                     scrollBeyondLastLine: false,
                     readOnly: false,
                     automaticLayout: true,
-                    fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                    fontFamily:
+                      "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
                     fontLigatures: true,
                   }}
                 />

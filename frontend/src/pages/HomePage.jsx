@@ -21,7 +21,7 @@ function HomePage() {
 
   return (
    <div className="min-h-screen flex flex-col items-center mt-14 px-4 bg-white dark:bg-gray-900">
-      <h1 className="text-4xl font-extrabold z-10 text-center">
+      <h1 className="text-4xl font-extrabold z-10 text-center text-black dark:text-white">
        Become CodeGod in 30 days
       </h1>
 

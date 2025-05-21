@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
 
 const ProblemTable = ({ problems }) => {
-  // ... existing logic remains unchanged ...
  const { authUser } = useAuthStore();
 
   const [search, setSearch] = useState("");
@@ -62,38 +61,37 @@ const ProblemTable = ({ problems }) => {
           Create Playlist
         </button>
       </div>
-
       {/* Filters Section */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <input
           type="text"
           placeholder="Search problems..."
-          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800"
+          className="w-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none"
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none text-gray-900 dark:text-gray-100"
           style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')", backgroundPosition: "right 1rem center", backgroundSize: "1em" }}
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
         >
-          <option value="ALL">All Difficulties</option>
+          <option value="ALL" className="text-gray-600 dark:text-gray-200">All Difficulties</option>
           {difficulties.map((diff) => (
-            <option key={diff} value={diff}>
+            <option key={diff} value={diff} className="text-gray-900 dark:text-gray-100">
               {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
             </option>
           ))}
         </select>
         <select
-          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none"
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 bg-no-repeat appearance-none text-gray-900 dark:text-gray-100"
           style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')", backgroundPosition: "right 1rem center", backgroundSize: "1em" }}
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
         >
-          <option value="ALL">All Tags</option>
+          <option value="ALL" className="text-gray-600 dark:text-gray-200">All Tags</option>
           {allTags.map((tag) => (
-            <option key={tag} value={tag}>
+            <option key={tag} value={tag} className="text-gray-900 dark:text-gray-100">
               {tag}
             </option>
           ))}
@@ -130,7 +128,7 @@ const ProblemTable = ({ problems }) => {
                   <div className="flex-1 min-w-0">
                     <Link
                       to={`/problem/${problem.id}`}
-                      className="text-lg font-semibold text-gray-900 dark:text-gray-50 hover:text-blue-600 truncate"
+                      className="text-lg font-semibold text-gray-900 dark:text-gray-50 dark:hover:text-cyan-500 hover:text-blue-600 truncate"
                     >
                       {problem.title}
                     </Link>

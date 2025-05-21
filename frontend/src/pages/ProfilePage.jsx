@@ -7,9 +7,7 @@ import { z } from "zod";
 import { toast } from "react-hot-toast";
 
 import {
-  Edit,
-  EqualApproximatelyIcon,
-  FolderPen,
+  ALargeSmall,
   Loader,
   Loader2,
   Mail,
@@ -23,14 +21,13 @@ const updateSchema = z.object({
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
-    .max(10, "Username must be at most 10 characters"),
+    .max(20, "Username must be at most 20 characters"),
 });
 
 function ProfilePage() {
   const { authUser, updateProfile, isUpdating } = useAuthStore();
   const navigate = useNavigate();
-  const [name, setName] = React.useState("");
-  const [username, setUsername] = React.useState("");
+
 
   if (!authUser) {
     console.log("authUser 26 = ", authUser);
@@ -44,7 +41,7 @@ function ProfilePage() {
   }
 
   const [file, setFile] = React.useState(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+
   const {
     register,
     handleSubmit,
@@ -57,12 +54,7 @@ function ProfilePage() {
     setFile(e.target.files[0]);
   };
 
-  const handleName = (e) => {
-    setName(e.target.value);
-  };
-  const handleUsername = (e) => {
-    setUsername(e.target.value);
-  };
+
 
   const onSubmit = async (data) => {
     try {
@@ -121,7 +113,7 @@ function ProfilePage() {
                   </div>
                   <div className=" flex gap-2 items-start">
                     <div className="icon">
-                      <FolderPen />
+                      <ALargeSmall  />
                     </div>
                     <div className="name">{authUser.name}</div>
                   </div>
@@ -158,7 +150,6 @@ function ProfilePage() {
                       <input
                         type="text"
                         id="name"
-                        onChange={handleName}
                         placeholder={authUser.name}
                         {...register("name")}
                         className={`input input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
@@ -184,7 +175,6 @@ function ProfilePage() {
                         type="text"
                         id="username"
                         placeholder={authUser.username}
-                        onChange={handleUsername}
                         {...register("username")}
                         className={`input input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
                           errors.username
