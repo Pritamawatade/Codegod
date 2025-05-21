@@ -6,28 +6,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-hot-toast";
 
-import {
-  ALargeSmall,
-  Loader,
-  Loader2,
-  Mail,
-  Pencil,
-  User,
-} from "lucide-react";
+import { ALargeSmall, Loader, Loader2, Mail, Pencil, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const updateSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters").max(20, "Name must be at most 20 characters"),
+  name: z
+    .string()
+    .min(3, "Name must be at least 3 characters")
+    .max(20, "Name must be at most 20 characters"),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be at most 20 characters"),
 });
 
-function ProfilePage() {
-  const { authUser, updateProfile, isUpdating } = useAuthStore();
-  const navigate = useNavigate();
+const updatePasswordSchema = z.object({
+  currentPassword: z
+    .string()
+    .nonempty()
+    .min(6, "Password must be at least 6 characters"),
+  newPassword: z
+    .string()
+    .nonempty()
+    .min(6, "Password must be at least 6 characters"),
+});
 
+function ProfilePage() {
+  const {
+    authUser,
+    updateProfile,
+    isUpdating,
+    isUpdatingPassword,
+    updatePassword,
+  } = useAuthStore();
+  const navigate = useNavigate();
 
   if (!authUser) {
     console.log("authUser 26 = ", authUser);
@@ -50,11 +62,22 @@ function ProfilePage() {
     resolver: zodResolver(updateSchema),
   });
 
-  const handleChange = (e) => {
-    setFile(e.target.files[0]);
+  const {
+    register: passwordRegister,
+    handleSubmit: passwordHandleSubmit,
+    formState: { errors: passwordErrors },
+  } = useForm({
+    resolver: zodResolver(updatePasswordSchema),
+  });
+
+  const passwordSubmit = async (data) => {
+    try {
+      await updatePassword(data);
+      document.getElementById("my_modal_2").close();
+    } catch (error) {
+      console.log("Error updating password", error);
+    }
   };
-
-
 
   const onSubmit = async (data) => {
     try {
@@ -113,7 +136,7 @@ function ProfilePage() {
                   </div>
                   <div className=" flex gap-2 items-start">
                     <div className="icon">
-                      <ALargeSmall  />
+                      <ALargeSmall />
                     </div>
                     <div className="name">{authUser.name}</div>
                   </div>
@@ -137,8 +160,8 @@ function ProfilePage() {
               </button>
 
               <dialog id="my_modal_1" className="modal">
-                <div className="modal-box">
-                  <h3 className="font-bold text-lg">Edit profile</h3>
+                <div className="modal-box  bg-gray-50 dark:bg-gray-900 rounded-4xl">
+                  <h3 className="font-bold text-lg text-slate-700 dark:text-gray-100">Edit profile</h3>
                   <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                       <label
@@ -152,7 +175,7 @@ function ProfilePage() {
                         id="name"
                         placeholder={authUser.name}
                         {...register("name")}
-                        className={`input input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
+                        className={`input input-bordered w-full bg-gray-50 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
                           errors.name
                             ? "border-red-300 focus:ring-red-500"
                             : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -176,7 +199,7 @@ function ProfilePage() {
                         id="username"
                         placeholder={authUser.username}
                         {...register("username")}
-                        className={`input input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
+                        className={`input input-bordered w-full bg-gray-50 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
                           errors.username
                             ? "border-red-300 focus:ring-red-500"
                             : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -201,11 +224,11 @@ function ProfilePage() {
                         {...register("avatar")}
                         accept="image/*"
                         onChange={(e) => setFile(e.target.files[0])}
-                        className="file-input file-input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        className="file-input bg-gray-50 text-black file-input-bordered w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                       />
                     </div>
                     <div className="modal-action">
-                      <button type="submit" className="btn btn-primary">
+                      <button type="submit" className="btn btn-success text-black">
                         {isUpdating ? (
                           <div className="flex items-center justify-center space-x-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -215,13 +238,111 @@ function ProfilePage() {
                           "Update"
                         )}
                       </button>
-                      <button type="button" className="btn">
+                      <button
+                        onClick={() =>
+                          document.getElementById("my_modal_1").close()
+                        }
+                        type="button"
+                        className="btn"
+                      >
                         Cancel
                       </button>
                     </div>
                   </form>
                 </div>
               </dialog>
+
+              <button
+                onClick={() =>
+                  document.getElementById("my_modal_2").showModal()
+                }
+                className="flex items-center justify-between w-full text-gray-800 dark:text-gray-200 mt-6 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out transform cursor-pointer "
+              >
+                <span>Update Password</span>
+                <Pencil />
+              </button>
+
+              <dialog id="my_modal_2" className="modal">
+               <div className="modal-box  bg-gray-50 dark:bg-gray-900 rounded-4xl">
+                  <h3 className="font-bold text-lg text-black dark:text-white mb-4">Update Password</h3>
+                  <form
+                    className="space-y-4"
+                    onSubmit={passwordHandleSubmit(passwordSubmit)}
+                  >
+                    <div>
+                      <label
+                        htmlFor="currentPassword"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Current Password
+                      </label>
+                      <input
+                        type="text"
+                        id="currentPassword"
+                        placeholder="Current Password"
+                        {...passwordRegister("currentPassword")}
+                        className={`input input-bordered w-full bg-gray-50 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
+                          passwordErrors.currentPassword
+                            ? "border-red-300 focus:ring-red-500"
+                            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        }`}
+                      />
+                    </div>
+                    {passwordErrors.currentPassword && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                        {passwordErrors.currentPassword.message}
+                      </p>
+                    )}
+                    <div>
+                      <label
+                        htmlFor="newPassword"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        New Password
+                      </label>
+                      <input
+                        type="text"
+                        id="newPassword"
+                        placeholder="New Password"
+                        {...passwordRegister("newPassword")}
+                        className={`input input-bordered w-full bg-gray-50 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 ${
+                          passwordErrors.newPassword
+                            ? "border-red-300 focus:ring-red-500"
+                            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        }`}
+                      />
+                    </div>
+                    {passwordErrors.newPassword && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                        {passwordErrors.newPassword.message}
+                      </p>
+                    )}
+
+                    <div className="modal-action">
+                      <button type="submit" className="btn btn-success text-black">
+                        {isUpdatingPassword ? (
+                          <div className="flex items-center justify-center space-x-2">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <span>updating password...</span>
+                          </div>
+                        ) : (
+                          "Update password"
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("my_modal_2").close()
+                        }
+                        className="btn"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </dialog>
+
             </div>
           </div>
           <div className="w-[70%]">Right</div>

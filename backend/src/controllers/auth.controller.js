@@ -383,7 +383,16 @@ const changeCurrentPassword = async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, null, 'Password changed successfully'));
+    .json(new ApiResponse(200, {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        image: user.image,
+        username: user.username
+      }
+    }, 'Password changed successfully'));
 };
 
 const updateAccountDetails = async (req, res) => {

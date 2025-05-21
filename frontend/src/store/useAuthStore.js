@@ -8,6 +8,7 @@ export const useAuthStore = create((set) => ({
   isLoggingIn: false,
   isUpdating: false,
   isCheckingAuth: false,
+  isUpdatingPassword: false,
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -77,6 +78,22 @@ export const useAuthStore = create((set) => ({
       toast.error("Error updating profile");
     } finally {
       set({ isUpdating: false });
+    }
+  },
+
+  updatePassword: async (data)=>{
+    set({ isUpdatingPassword: true });
+
+    try {
+      const res = await axiosInstance.post("/users/change-password", data);
+
+      set({ authUser: res?.data?.data?.user, isUpdatingPassword: false });
+      toast.success("Password updated successfully");
+    } catch (error) {
+      console.log("Error updating password", error);
+      toast.error("Error updating password");
+    } finally {
+      set({ isUpdatingPassword: false });
     }
   },
 
