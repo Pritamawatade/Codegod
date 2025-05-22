@@ -57,11 +57,11 @@ export const usePlaylistStore = create((set, get) => ({
     }
   },
 
-  addProblemToPlaylist: async (playlistId, problemIds) => {
+  addProblemToPlaylist: async (playlistId, problemId) => {
     try {
       set({ isLoading: true });
-      await axiosInstance.post(`/playlist/${playlistId}/add-problem`, {
-        problemIds,
+      await axiosInstance.post(`/playlists/add-problem/${playlistId}`, {
+        problemId,
       });
 
       toast.success("Problem added to playlist");
@@ -81,7 +81,7 @@ export const usePlaylistStore = create((set, get) => ({
   removeProblemFromPlaylist: async (playlistId, problemIds) => {
     try {
       set({ isLoading: true });
-      await axiosInstance.post(`/playlist/${playlistId}/remove-problems`, {
+      await axiosInstance.post(`/playlists/remove-problem/${playlistId}`, {
         problemIds,
       });
 
@@ -102,7 +102,7 @@ export const usePlaylistStore = create((set, get) => ({
   deletePlaylist: async (playlistId) => {
     try {
       set({ isLoading: true });
-      await axiosInstance.delete(`/playlist/${playlistId}`);
+      await axiosInstance.delete(`/playlists/delete-playlist/${playlistId}`);
 
       set((state) => ({
         playlists: state.playlists.filter((p) => p.id !== playlistId),
