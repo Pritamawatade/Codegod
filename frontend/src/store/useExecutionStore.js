@@ -25,14 +25,10 @@ export const useExecutionStore = create((set) => ({
         problemId,
       });
 
-      console.log("res", res);
-      console.log("res.data", res.data);
-      console.log("res.data.data = ", res.data?.data);
-      console.log("res.data.submission ======== = ", res.data?.submission);
+      
 
       set({ submission: res.data.data.submission });
 
-      console.log("submission ----------->>>", res.data.data.submission);
 
       toast.success(res.data.message);
     } catch (error) {

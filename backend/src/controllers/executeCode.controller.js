@@ -145,7 +145,7 @@ export const executeCode = async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {
         submission: submissonWithTestCases,
-      }, 'success'));
+      }, 'code executed successfully'));
   } catch (error) {
     console.log(error);
     throw new ApiError(500, 'something went wrong', error);

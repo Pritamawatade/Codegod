@@ -21,14 +21,11 @@ function App() {
   }, [checkAuth]);
 
   if (isCheckingAuth && !authUser) {
-    console.log("authUser 26 = ", authUser)
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
     );
-  }else{
-    console.log("authUser 32 = ", authUser)
   }
 
   return (

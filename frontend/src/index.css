@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html{
+  overflow-x: hidden;
+  
+}
 .nocopy {
   user-select: none;
   -webkit-user-select: none; /* Safari */
