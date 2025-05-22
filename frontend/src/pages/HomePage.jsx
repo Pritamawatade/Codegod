@@ -3,13 +3,15 @@ import React, { useEffect } from "react";
 import  useProblemStore  from "../store/useProblemStore";
 import { Loader } from "lucide-react";
 import ProblemTable from "../components/ProblemTable";
+import { useActionStore } from "../store/useActionStore";
 
 function HomePage() {
    const { getAllProblems, problems, isProblemsLoading } = useProblemStore();
+   const {isDeletingProblem} = useActionStore();
 
   useEffect(() => {
     getAllProblems();
-  }, [getAllProblems]);
+  }, [getAllProblems, isDeletingProblem]);
 
   if(isProblemsLoading){
     return (

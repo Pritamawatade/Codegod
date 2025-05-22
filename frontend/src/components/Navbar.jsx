@@ -7,7 +7,7 @@ import LogoutButton from "./LogoutButton";
 const Navbar = () => {
   const { authUser } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   const toggleTheme = () => {
     console.log("theme = ", theme);
