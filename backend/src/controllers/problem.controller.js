@@ -154,8 +154,9 @@ const deleteProblem = async (req, res) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, deletedProblem, 'problem deleted'));
+      .json(new ApiResponse(200, "", 'problem deleted'));
   } catch (error) {
+    console.log('error in deleteProblem', error);
     throw new ApiError(500, 'Something went wrong at deleteProblem');
   }
 };
