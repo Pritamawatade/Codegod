@@ -13,6 +13,7 @@ import AddProblem from "./components/AddProblem";
 import ProblemPage from "./pages/ProblemPage";
 import LoginFailed from "./pages/LoginFailed";
 import ProfilePage from "./pages/ProfilePage";
+import CodeGodLanding from "./pages/CodeGodLanding";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -59,6 +60,7 @@ function App() {
 
 
         <Route path="/problem/:id" element={<ProblemPage />} />
+        <Route path="/landing" element={<CodeGodLanding />} />
 
         <Route element={<AdminRoute />}>
           <Route

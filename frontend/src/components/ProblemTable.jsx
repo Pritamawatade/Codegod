@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { useActionStore } from "../store/useActionStore";
 import toast from "react-hot-toast";
+import { usePlaylistStore } from "../store/usePlaylistStore";
+import CreatePlaylistModal from "./CreatePlaylistPattern";
+import AddToPlaylistModal from "./AddToPlaylist";
 
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
@@ -19,7 +22,12 @@ const ProblemTable = ({ problems }) => {
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
+   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
   const { isDeletingProblem, onDeleteProblem } = useActionStore();
+  const {createPlaylist} = usePlaylistStore();
+  
   const allTags = useMemo(() => {
     if (!Array.isArray(problems)) return [];
 
@@ -46,6 +54,15 @@ const ProblemTable = ({ problems }) => {
       console.log("error in delete Problem ", error);
       toast.error("error in deleting problem");
     }
+  };
+
+   const handleCreatePlaylist = async (data) => {
+    await createPlaylist(data);
+  };
+
+  const handleAddToPlaylist = (problemId) => {
+    setSelectedProblemId(problemId);
+    setIsAddToPlaylistModalOpen(true);
   };
 
   const filteredProblems = useMemo(() => {
@@ -80,7 +97,7 @@ const ProblemTable = ({ problems }) => {
 
   const handleEdit = (id) => {};
 
-  const handleAddToPlaylist = (id) => {};
+  
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
       {/* Header Section */}
@@ -90,7 +107,7 @@ const ProblemTable = ({ problems }) => {
         </h2>
         <button
           className="btn dark:bg-gray-900 bg-gradient-to-br from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 gap-2 shadow-lg"
-          onClick={() => {}}
+          onClick={() => {setIsCreateModalOpen(true)}}
         >
           <Plus className="w-5 h-5" />
           Create Playlist
@@ -358,6 +375,19 @@ const ProblemTable = ({ problems }) => {
           </div>
         </div>
       </dialog>
+
+       {/* Modals */}
+      <CreatePlaylistModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreatePlaylist}
+      />
+      
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      />
     </div>
   );
 };

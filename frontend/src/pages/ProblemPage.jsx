@@ -35,7 +35,7 @@ const ProblemPage = () => {
   const { getProblemById, problem, isProblemLoading } = useProblemStore();
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [selectedLanguage, setSelectedLanguage] = useState("JAVASCRIPT");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const {
@@ -54,10 +54,12 @@ const ProblemPage = () => {
   }
   useEffect(() => {
     getProblemById(id);
+    setCode(problem?.codeSnippets?.[selectedLanguage] || "");
     getSubmissionCountForProblem(id);
   }, [id]);
   useEffect(() => {
     getProblemById(id);
+
   }, []);
 
   // ⛔ Disable all shortcuts
