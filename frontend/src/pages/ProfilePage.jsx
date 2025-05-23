@@ -5,9 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-hot-toast";
-
-import { ALargeSmall, Loader, Loader2, Mail, Pencil, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Shield,ALargeSmall, Loader, Loader2, Mail, Pencil, User, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ProfileSubmission from "../components/ProfileSubmission";
+import ProblemSolvedByUser from "../components/ProblemSolvedByUser";
+import PlaylistProfile from "../components/PlaylistProfile";
 
 const updateSchema = z.object({
   name: z
@@ -99,52 +102,64 @@ function ProfilePage() {
   return (
     <>
       <Navbar />
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans antialiased bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen ">
-        <div className="flex w-full space-x-4 ">
-          <div className="w-[30%] border-r border-amber-50 pr-4 h-full min-h-screen ">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans antialiased bg-gray-50 dark:bg-[#0b1018] text-gray-800 dark:text-gray-100 min-h-screen ">
+        <div className="flex w-full space-x-4 items-start justify-around relative">
+          <div className="w-[30%] border-r border-amber-50 pr-4 h-full min-h-screen sticky top-5">
             <div className="profileSection  px-2">
-              <h2 className="text-2xl text-start font-semibold">
-                Your Profile
-              </h2>
-              <div className="flex pb-4 sm:flex-col md:flex-row items-start justify-around border-b border-gray-400 ">
-                <div className="w-18 h-18  bg-gray-400 rounded-full mt-2">
-                  <img
-                    src={authUser.image}
-                    className="w-full h-full rounded-full overflow-hidden"
-                    alt=""
-                  />
+              <div className="dark:bg-[#1e2939] bg-white p-4 rounded-lg shadow-md">
+                
+                <h2 className="py-2 text-2xl font-semibold text-start">
+                  Your Profile
+                </h2>
+                <div className="flex items-center justify-start border-b border-gray-400 pb-4">
+                  <div className="w-20 h-20  rounded-full overflow-hidden">
+                    <img
+                      src={authUser.image}
+                      className="w-full h-full rounded-full"
+                      alt=""
+                    />
+                  </div>
+                  <div className="profileInfo ml-4">
+                    <h2 className="text-lg font-semibold text-start">
+                      {authUser.name}
+                    </h2>
+                    <h2 className="text-sm text-gray-600 dark:text-gray-400 text-start">
+                      {authUser.email}
+                    </h2>
+                  </div>
                 </div>
-                <div className="profileInfo mt-8 ">
-                  <h2 className="text-sm text-gray-100   text-start font-semibold">
-                    {authUser.name}
-                  </h2>
-                  <h2 className="text-sm text-gray-400   text-start font-semibold">
-                    {authUser.email}
-                  </h2>
-                </div>
+  
               </div>
-
-              <div className="text-white mt-8 p-2 border-b border-gray-400 pb-8">
-                <h3>Perosnal Information</h3>
-
-                <div className="mt-4 flex flex-col gap-4">
-                  <div className=" flex gap-2 items-start">
+              <div className="card dark:bg-gray-800 bg-white shadow-md rounded-lg p-4 mt-8">
+                <div className="card-title">
+                  <h3 className="text-lg font-semibold dark:text-gray-100">
+                    Personal Information
+                  </h3>
+                </div>
+                <div className="card-content mt-4 space-y-4">
+                  <div className="flex items-start gap-2">
                     <div className="icon">
-                      <Mail />
+                      <Mail className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     </div>
-                    <div className="name">{authUser.email}</div>
+                    <div className="name text-gray-700 dark:text-gray-300">
+                      {authUser.email}
+                    </div>
                   </div>
-                  <div className=" flex gap-2 items-start">
+                  <div className="flex items-start gap-2">
                     <div className="icon">
-                      <ALargeSmall />
+                      <ALargeSmall className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     </div>
-                    <div className="name">{authUser.name}</div>
+                    <div className="name text-gray-700 dark:text-gray-300">
+                      {authUser.name}
+                    </div>
                   </div>
-                  <div className=" flex gap-2 items-start">
+                  <div className="flex items-start gap-2">
                     <div className="icon">
-                      <User />
+                      <User className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     </div>
-                    <div className="name">{authUser.username}</div>
+                    <div className="name text-gray-700 dark:text-gray-300">
+                      {authUser.username}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -161,7 +176,9 @@ function ProfilePage() {
 
               <dialog id="my_modal_1" className="modal">
                 <div className="modal-box  bg-gray-50 dark:bg-gray-900 rounded-4xl">
-                  <h3 className="font-bold text-lg text-slate-700 dark:text-gray-100">Edit profile</h3>
+                  <h3 className="font-bold text-lg text-slate-700 dark:text-gray-100">
+                    Edit profile
+                  </h3>
                   <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                       <label
@@ -228,7 +245,10 @@ function ProfilePage() {
                       />
                     </div>
                     <div className="modal-action">
-                      <button type="submit" className="btn btn-success text-black">
+                      <button
+                        type="submit"
+                        className="btn btn-success text-black"
+                      >
                         {isUpdating ? (
                           <div className="flex items-center justify-center space-x-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -263,8 +283,10 @@ function ProfilePage() {
               </button>
 
               <dialog id="my_modal_2" className="modal">
-               <div className="modal-box  bg-gray-50 dark:bg-gray-900 rounded-4xl">
-                  <h3 className="font-bold text-lg text-black dark:text-white mb-4">Update Password</h3>
+                <div className="modal-box  bg-gray-50 dark:bg-gray-900 rounded-4xl">
+                  <h3 className="font-bold text-lg text-black dark:text-white mb-4">
+                    Update Password
+                  </h3>
                   <form
                     className="space-y-4"
                     onSubmit={passwordHandleSubmit(passwordSubmit)}
@@ -319,7 +341,10 @@ function ProfilePage() {
                     )}
 
                     <div className="modal-action">
-                      <button type="submit" className="btn btn-success text-black">
+                      <button
+                        type="submit"
+                        className="btn btn-success text-black"
+                      >
                         {isUpdatingPassword ? (
                           <div className="flex items-center justify-center space-x-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -342,10 +367,23 @@ function ProfilePage() {
                   </form>
                 </div>
               </dialog>
-
             </div>
           </div>
-          <div className="w-[70%]">Right</div>
+          <div className="w-[70%]">
+            <div className="min-h-screen bg-white dark:bg-[#0b1018] flex flex-col items-center justify-between py-10 px-4  w-full">
+              {/* Header with back button */}
+              <div className="flex flex-col gap-6 justify-between items-start w-full mb-6">
+            
+                <ProfileSubmission />
+
+                <ProblemSolvedByUser />
+
+                <PlaylistProfile />
+              </div>
+
+              {/* PLaylist created by the user and their actions */}
+            </div>
+          </div>
         </div>
       </div>
     </>

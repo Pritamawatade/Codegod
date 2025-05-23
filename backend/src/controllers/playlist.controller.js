@@ -178,6 +178,7 @@ const deletePlaylist = async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, "", 'Playlist deleted'));
   } catch (error) {
+    console.log("error in delete playlist ", error)
     throw new ApiError(500, 'Something went wrong at deletePlaylist', error);
   }
 };

@@ -15,6 +15,8 @@ import { usePlaylistStore } from "../store/usePlaylistStore";
 import CreatePlaylistModal from "./CreatePlaylistPattern";
 import AddToPlaylistModal from "./AddToPlaylist";
 
+
+ 
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
 
@@ -22,7 +24,7 @@ const ProblemTable = ({ problems }) => {
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
-   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
   const { isDeletingProblem, onDeleteProblem } = useActionStore();
@@ -38,7 +40,7 @@ const ProblemTable = ({ problems }) => {
     return Array.from(tagsSet);
   }, [problems]);
 
-  const handleDelete = (id) => {
+ const handleDelete = (id) => {
     document.getElementById("my_modal_5").showModal();
     const deleteButton = document.getElementById("delete-button");
     deleteButton.addEventListener("click", () => {
@@ -393,3 +395,4 @@ const ProblemTable = ({ problems }) => {
 };
 
 export default ProblemTable;
+
