@@ -86,7 +86,7 @@ function SignUpPage() {
               <input
                 type="text"
                 {...register("name")}
-                  className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                  className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
                     errors.name
                       ? "border-red-300 focus:ring-red-500"
                       : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -110,7 +110,7 @@ function SignUpPage() {
               <input
                 type="text"
                 {...register("username")}
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
                   errors.username
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -135,7 +135,7 @@ function SignUpPage() {
               <input
                 type="email"
                 {...register("email")}
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
                   errors.email
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -162,7 +162,7 @@ function SignUpPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className={`w-full pl-10 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
                   errors.password
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -198,7 +198,7 @@ function SignUpPage() {
                 <span className="text-sm font-medium text-gray-700 relative">
                   Select an avatar
                   <p
-                    className="absolute top-[-100%] right-[-50%] text-md text-gray-400"
+                    className="absolute top-[-20%] right-[-50%] text-md text-gray-500 dark:text-gray-50"
                     style={{ fontSize: "0.6rem" }}
                   >
                     *Optional

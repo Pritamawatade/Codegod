@@ -62,7 +62,7 @@ const LoginPage = () => {
               <input
                 type="email"
                 {...register("email")}
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
+                className={`w-full text-black dark:text-white placeholder:text-gray-400 pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
                   errors.email
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -95,7 +95,7 @@ const LoginPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className={`w-full pl-10 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
                   errors.password
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -125,7 +125,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={isLoggingIn}
-            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer"
           >
             {isLoggingIn ? (
               <div className="flex items-center justify-center space-x-2">

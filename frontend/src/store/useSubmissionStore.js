@@ -15,7 +15,6 @@ export const useSubmissionStore = create((set) => ({
 
       set({ submissions: res.data.data });
 
-      toast.success(res.data.message);
     } catch (error) {
       console.log("Error getting all submissions", error);
       toast.error("Error getting all submissions");

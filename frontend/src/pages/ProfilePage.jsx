@@ -102,8 +102,8 @@ function ProfilePage() {
   return (
     <>
       <Navbar />
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans antialiased bg-gray-50 dark:bg-[#0b1018] text-gray-800 dark:text-gray-100 min-h-screen ">
-        <div className="flex w-full space-x-4 items-start justify-around relative">
+      <div className="w-full  mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans antialiased bg-gray-50 dark:bg-[#0b1018] text-gray-800 dark:text-gray-100 min-h-screen ">
+        <div className="flex  w-full space-x-4 items-start justify-between relative">
           <div className="w-[30%] border-r border-amber-50 pr-4 h-full min-h-screen sticky top-5">
             <div className="profileSection  px-2">
               <div className="dark:bg-[#1e2939] bg-white p-4 rounded-lg shadow-md">
