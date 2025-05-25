@@ -47,6 +47,8 @@ model User {
   problemSolved    ProblemSolved[]
   Playlist         Playlist[]
   problemsPlaylist ProblemInPlaylist[]
+  problemFeedbacks ProblemFeedback[]
+  
 }
 
 model Problem {
@@ -73,6 +75,8 @@ model Problem {
   submission        Submission[] 
   solvedBy          ProblemSolved[]
   ProblemInPlaylist ProblemInPlaylist[]
+
+  ProblemFeedback ProblemFeedback[]
 }
 
 model Submission {
@@ -158,4 +162,19 @@ model ProblemInPlaylist {
   userId   String?
 
   @@unique([problemId, playlistId])
+}
+
+model ProblemFeedback {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String
+  liked     Boolean // true = like, false = dislike
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId]) // one feedback per user per problem
 }

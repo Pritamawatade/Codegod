@@ -116,7 +116,7 @@ const CodeGodLanding = () => {
     >
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950 dark:to-[#0e0e0e] text-slate-900 dark:dark:text-white">
         {/* Navigation */}
-        <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-slate-200/20 dark:border-gray-700/20 transition-all duration-300">
+        <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-[#0e0e0e]  border-b border-slate-200/20 dark:border-gray-700/20 transition-all duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-3">

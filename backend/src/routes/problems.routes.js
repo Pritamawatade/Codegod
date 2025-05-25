@@ -6,6 +6,8 @@ import {
   getAllProblems,
   getProblem,
   getProblemsSolvedByUser,
+  likeAndDislike,
+  likeAndDislikeCount,
   updateProblem,
 } from '../controllers/problem.controller.js';
 
@@ -41,5 +43,8 @@ problemRouter.get(
   authMiddleware,
   getProblemsSolvedByUser
 );
+
+problemRouter.post('/:id/feedback', authMiddleware, likeAndDislike);
+problemRouter.get('/:id/feedback-count', authMiddleware, likeAndDislikeCount);
 
 export default problemRouter;
