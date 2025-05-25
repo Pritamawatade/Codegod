@@ -4,10 +4,11 @@ import {
   createProblem,
   deleteProblem,
   getAllProblems,
+  getLikeAndDislikeCount,
   getProblem,
   getProblemsSolvedByUser,
-  likeAndDislike,
-  likeAndDislikeCount,
+  
+  postLikeAndDislike,
   updateProblem,
 } from '../controllers/problem.controller.js';
 
@@ -19,11 +20,7 @@ problemRouter.post(
   checkAdmin,
   createProblem
 );
-problemRouter.get(
-  '/get-all-problems',
-  authMiddleware,
-  getAllProblems
-);
+problemRouter.get('/get-all-problems', authMiddleware, getAllProblems);
 problemRouter.get('/get-problem/:id', authMiddleware, getProblem);
 
 problemRouter.delete(
@@ -44,7 +41,11 @@ problemRouter.get(
   getProblemsSolvedByUser
 );
 
-problemRouter.post('/:id/feedback', authMiddleware, likeAndDislike);
-problemRouter.get('/:id/feedback-count', authMiddleware, likeAndDislikeCount);
+problemRouter.post('/:id/feedback', authMiddleware, postLikeAndDislike);
+problemRouter.get(
+  '/:id/feedback-count',
+  authMiddleware,
+  getLikeAndDislikeCount
+);
 
 export default problemRouter;

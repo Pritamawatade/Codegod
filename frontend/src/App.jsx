@@ -14,8 +14,15 @@ import ProblemPage from "./pages/ProblemPage";
 import LoginFailed from "./pages/LoginFailed";
 import ProfilePage from "./pages/ProfilePage";
 import CodeGodLanding from "./pages/CodeGodLanding";
+import useThemeStore from "./store/useThemeStore";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { theme } = useThemeStore();
+
+  useEffect(() => {
+    // On mount, sync theme from Zustand to DOM
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   useEffect(() => {
     checkAuth();
@@ -43,7 +50,7 @@ function App() {
 
         <Route
           path="/profile"
-          element={authUser ? <ProfilePage /> : <Navigate to={"/login"}  />}
+          element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />}
         />
 
         <Route
@@ -57,7 +64,6 @@ function App() {
         />
 
         <Route path="/login-failed" element={<LoginFailed />} />
-
 
         <Route path="/problem/:id" element={<ProblemPage />} />
         <Route path="/landing" element={<CodeGodLanding />} />

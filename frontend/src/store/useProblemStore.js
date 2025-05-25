@@ -7,6 +7,9 @@ const useProblemStore = create((set) => ({
   problem: null,
   isProblemLoading: false,
   isProblemsLoading: false,
+  liked: null,
+  likes: null,
+  dislikes: null,
 
   getAllProblems: async () => {
     set({ isProblemsLoading: true });
@@ -46,7 +49,35 @@ const useProblemStore = create((set) => ({
       console.log("Error getting problem", error);
       toast.error("Error in getting problem");
     }
-  }
+  },
+
+  getLikesAndDislikes: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/problems/${id}/feedback-count`);
+
+      set({
+        likes: res.data.data.likes,
+        dislikes: res.data.data.dislikes,
+        liked: res.data.data.liked,
+      });
+    } catch (error) {
+      console.log("Error getting problem like count", error);
+    }
+  },
+
+  postLikeAndDislike: async (id, data) => {
+    try {
+      const res = await axiosInstance.post(`/problems/${id}/feedback`, data);
+      set({
+        likes: res.data.data.likes,
+        dislikes: res.data.data.dislikes,
+        liked: res.data.data.liked,
+      });
+    } catch (error) {
+      console.log("Error getting problem", error);
+      toast.error("Error in getting problem");
+    }
+  },
 }));
 
 export default useProblemStore;

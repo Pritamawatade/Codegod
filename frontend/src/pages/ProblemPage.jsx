@@ -18,6 +18,8 @@ import {
   Home,
   CheckCircle2,
   XCircle,
+  ThumbsDown,
+  Info,
 } from "lucide-react";
 
 import useProblemStore from "../store/useProblemStore";
@@ -29,10 +31,21 @@ import { useSubmissionStore } from "../store/useSubmissionStore";
 import toast from "react-hot-toast";
 import SubmissionList from "../components/SubmissionsList";
 import { get } from "react-hook-form";
+import useThemeStore from "../store/useThemeStore";
+import Tooltip from "../components/Tooltip";
 
 const ProblemPage = () => {
   const { id } = useParams();
-  const { getProblemById, problem, isProblemLoading } = useProblemStore();
+  const {
+    getProblemById,
+    problem,
+    isProblemLoading,
+    getLikesAndDislikes,
+    postLikeAndDislike,
+    liked,
+    likes,
+    dislikes,
+  } = useProblemStore();
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
   const [selectedLanguage, setSelectedLanguage] = useState("JAVASCRIPT");
@@ -46,6 +59,7 @@ const ProblemPage = () => {
     submissionCount,
   } = useSubmissionStore();
 
+  const { theme } = useThemeStore();
   const { authUser } = useAuthStore();
   const { executeCode, submission, isExecuting } = useExecutionStore();
 
@@ -56,10 +70,10 @@ const ProblemPage = () => {
     getProblemById(id);
     setCode(problem?.codeSnippets?.[selectedLanguage] || "");
     getSubmissionCountForProblem(id);
+    getLikesAndDislikes(id);
   }, [id]);
   useEffect(() => {
     getProblemById(id);
-
   }, []);
 
   // ⛔ Disable all shortcuts
@@ -130,13 +144,17 @@ const ProblemPage = () => {
     setCode(problem.codeSnippets?.[lang] || "");
   };
 
-  useEffect(() =>{
-    if(activeTab == "submissions"){
-      getSubmissionForProblem(id);
-      console.log("submissions  ==> ", submissions)
-    }
+  const submitFeedback = (likeValue) => {
+    postLikeAndDislike(id, { liked: likeValue, userId: authUser?.id });
+    getLikesAndDislikes(id);
+  };
 
-  },[activeTab])
+  useEffect(() => {
+    if (activeTab == "submissions") {
+      getSubmissionForProblem(id);
+      console.log("submissions  ==> ", submissions);
+    }
+  }, [activeTab]);
 
   // React.useMemo(getSubmissionForProblem(id), [activeTab]);
 
@@ -144,7 +162,7 @@ const ProblemPage = () => {
     switch (activeTab) {
       case "description":
         return (
-          <div className="prose prose-lg dark:prose-invert max-w-none">
+          <div className="prose prose-lg dark:prose-invert max-w-none overflow-x-hidden">
             <p className="text-base md:text-lg mb-6 text-gray-700 dark:text-slate-300">
               {problem.description}
             </p>
@@ -167,11 +185,8 @@ const ProblemPage = () => {
                         <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
                           <code
                             style={{
-                              background: `${
-                                localStorage.getItem("theme") === "dark"
-                                  ? ""
-                                  : "white"
-                              }`,
+                              backgroundColor:
+                                theme === "dark" ? "#1e1e1e" : "white",
                             }}
                             className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
                           >
@@ -186,11 +201,8 @@ const ProblemPage = () => {
                         <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
                           <code
                             style={{
-                              background: `${
-                                localStorage.getItem("theme") === "dark"
-                                  ? ""
-                                  : "white"
-                              }`,
+                              backgroundColor:
+                                theme === "dark" ? "#1e1e1e" : "white",
                             }}
                             className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
                           >
@@ -223,13 +235,9 @@ const ProblemPage = () => {
                   <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto shadow-sm">
                     <code
                       style={{
-                        background: `${
-                          localStorage.getItem("theme") === "dark"
-                            ? ""
-                            : "white"
-                        }`,
+                        backgroundColor: theme === "dark" ? "#1e1e1e" : "white",
                       }}
-                      className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
+                      className="not-prose text-gray-900 border-none  dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
                     >
                       {problem.constraints}
                     </code>
@@ -237,11 +245,43 @@ const ProblemPage = () => {
                 </div>
               </>
             )}
+            <div className="bg-white dark:bg-gray-800 px-4  rounded-md overflow-x-auto shadow-sm flex items-end justify-end gap-2">
+              <button
+                className="flex items-center gap-1 group cursor-pointer "
+                onClick={() => submitFeedback(true)}
+              >
+                <ThumbsUp
+                  className="w-5 h-5 transition-colors duration-200"
+                  strokeWidth={liked ? 0 : 2}
+                  fill={liked ? "#10b981" : "none"} // Emerald for liked
+                  stroke={liked ? "#10b981" : "#9ca3af"} // Gray-400 fallback
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {likes}
+                </span>
+              </button>
+
+              <button
+                className="flex items-center gap-1 group cursor-pointer"
+                onClick={() => submitFeedback(false)}
+              >
+                <ThumbsDown
+                  className="w-5 h-5 transition-colors duration-200"
+                  strokeWidth={liked === false ? 0 : 2}
+                  fill={liked === false ? "#ef4444" : "none"} // Red for disliked
+                  stroke={liked === false ? "#ef4444" : "#9ca3af"}
+                />
+
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {dislikes}
+                </span>
+              </button>
+            </div>
           </div>
         );
       case "submissions":
         return (
-            <SubmissionList 
+          <SubmissionList
             submissions={submissions}
             isLoading={isSubmissionsLoading}
           />

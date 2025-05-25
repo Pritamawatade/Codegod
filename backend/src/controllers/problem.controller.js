@@ -247,7 +247,7 @@ const getProblemsSolvedByUser = async (req, res) => {
   }
 };
 
-const likeAndDislike = async (req, res) => {
+const postLikeAndDislike = async (req, res) => {
   try {
     const { id: problemId } = req.params;
     const { userId, liked } = req.body;
@@ -268,16 +268,26 @@ const likeAndDislike = async (req, res) => {
       throw new ApiError(500, 'Something went wrong at likeAndDislike');
     }
 
+    const allFeedback = await prisma.problemFeedback.findMany({
+      where: { problemId },
+    });
+
+    const likes = allFeedback.filter((f) => f.liked).length;
+    const dislikes = allFeedback.length - likes;
     return res
       .status(200)
-      .json(new ApiResponse(200, feedback, 'Feedback updated successfully'));
+      .json(new ApiResponse(200, {
+        feedback: feedback.liked,
+        likes,
+        dislikes
+      }, 'Feedback updated successfully'));
   } catch (error) {
     console.log('error in likeAndDislike', error);
     throw new ApiError(500, 'Something went wrong at likeAndDislike');
   }
 };
 
-const likeAndDislikeCount = async (req, res) => {
+const getLikeAndDislikeCount = async (req, res) => {
   try {
     const { id: problemId } = req.params;
 
@@ -288,6 +298,10 @@ const likeAndDislikeCount = async (req, res) => {
       where: { problemId },
     });
 
+    const isLiked = await prisma.problemFeedback.findFirst({
+      where: { problemId, liked: true, userId: req.user.id },
+    });
+
     const likes = allFeedback.filter((f) => f.liked).length;
     const dislikes = allFeedback.length - likes;
 
@@ -295,12 +309,17 @@ const likeAndDislikeCount = async (req, res) => {
       throw new ApiError(500, 'Something went wrong at likeAndDislikeCount');
     }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {
-        likes,
-        dislikes
-      }, 'Feedback updated successfully'));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          likes,
+          dislikes,
+          liked: isLiked !== null,
+        },
+        'Feedback updated successfully'
+      )
+    );
   } catch (error) {
     console.log('error in likeAndDislikeCount', error);
     throw new ApiError(500, 'Something went wrong at likeAndDislikeCount');
@@ -313,6 +332,6 @@ export {
   deleteProblem,
   updateProblem,
   getProblemsSolvedByUser,
-  likeAndDislike,
-  likeAndDislikeCount,
+  postLikeAndDislike,
+  getLikeAndDislikeCount,
 };

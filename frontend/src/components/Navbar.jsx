@@ -3,26 +3,12 @@ import { User, Code, LogOut, Menu, X, Moon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
+import useThemeStore from "../store/useThemeStore";
 
 const Navbar = () => {
   const { authUser } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
-
-  const toggleTheme = () => {
-    console.log("theme = ", theme);
-    if (theme === "dark") {
-      localStorage.setItem("theme", "light");
-      document.documentElement.classList.remove("dark");
-    } else {
-      localStorage.setItem("theme", "dark");
-      document.documentElement.classList.add("dark");
-    }
-  };
-
-  useEffect(() => {
-    toggleTheme();
-  }, [theme]);
+  const {theme, toggleTheme} = useThemeStore();
 
   // Toggle mobile menu
   const toggleMenu = () => {
@@ -43,7 +29,7 @@ const Navbar = () => {
               />
             </div>
             <span className="text-xl font-bold dark:text-white text-blue-600 hover:text-gray-200 tracking-tight hidden md:block">
-              Leetlab 
+              Leetlab
             </span>
           </Link>
 
@@ -118,15 +104,14 @@ const Navbar = () => {
                     <span>My Profile</span>
                   </Link>
                 </li>
-
                 <li>
                   <button
-                    onClick={()=>setTheme(theme == "dark" ? "light" : "dark")}
+                    onClick={toggleTheme}
                     className="overflow-hidden flex items-center px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-50"
                   >
                     <Moon className="w-4 h-8 mr-2" />
                     <span className="gap-2 capitalize text-md">
-                      chnage theme
+                      {theme === "dark" ? "Switch to light" : "Switch to dark"}
                     </span>
                   </button>
                 </li>
