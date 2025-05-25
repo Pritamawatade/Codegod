@@ -31,8 +31,11 @@ export const executeCode = async (req, res) => {
       stdin: input,
     }));
 
+    console.log('submission1', submission1);
+
     const submitResponse = await submitBatch(submission1);
 
+    console.log(`submitResponse---------------->`, submitResponse);
     const tokens = submitResponse.map((res) => res.token);
 
     const result = await poolBatchResult(tokens);
@@ -99,6 +102,8 @@ export const executeCode = async (req, res) => {
       },
     });
 
+    console.log(`submission---------------->`, submission);
+
     if (allPassed) {
       await db.problemSolved.upsert({
         where: {
@@ -111,6 +116,26 @@ export const executeCode = async (req, res) => {
         create: {
           userId,
           problemId,
+        },
+      });
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // normalize date to remove time
+
+      await db.dailyStreak.upsert({
+        where: {
+          userId_date: {
+            userId,
+            date: today,
+          },
+        },
+        update: {
+          count: { increment: 1 },
+        },
+        create: {
+          userId,
+          date: today,
+          
         },
       });
     }
@@ -128,6 +153,8 @@ export const executeCode = async (req, res) => {
       time: result.time,
     }));
 
+    console.log('testcaseResult ---------------->', testCaseResults);
+
     await db.testCaseResult.createMany({
       data: testCaseResults,
     });
@@ -141,11 +168,20 @@ export const executeCode = async (req, res) => {
       },
     });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {
-        submission: submissonWithTestCases,
-      }, 'code executed successfully'));
+    console.log(
+      'submission with testcases------------->',
+      submissonWithTestCases
+    );
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          submission: submissonWithTestCases,
+        },
+        'code executed successfully'
+      )
+    );
   } catch (error) {
     console.log(error);
     throw new ApiError(500, 'something went wrong', error);

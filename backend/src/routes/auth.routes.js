@@ -17,9 +17,9 @@ const authRouter = Router();
 authRouter.post(
   '/register',
   upload.fields([{ name: 'avatar', maxCount: 1 }]),
-  register  
+  register
 );
-authRouter.post('/google-login', googleAuthController)
+authRouter.post('/google-login', googleAuthController);
 
 authRouter.post('/login', login);
 authRouter.get('/logout', authMiddleware, logout);
@@ -40,5 +40,6 @@ authRouter.post(
   upload.fields([{ name: 'avatar', maxCount: 1 }]),
   updateAccountDetails
 );
+
 
 export default authRouter;

@@ -48,7 +48,7 @@ model User {
   Playlist         Playlist[]
   problemsPlaylist ProblemInPlaylist[]
   problemFeedbacks ProblemFeedback[]
-  
+  dailyStreak      DailyStreak[]
 }
 
 model Problem {
@@ -72,7 +72,7 @@ model Problem {
 
   // relation :- it's foreign key
   user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submission        Submission[] 
+  submission        Submission[]
   solvedBy          ProblemSolved[]
   ProblemInPlaylist ProblemInPlaylist[]
 
@@ -98,7 +98,7 @@ model Submission {
   Problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  testcaseresult TestCaseResult[] 
+  testcaseresult TestCaseResult[]
 }
 
 model TestCaseResult {
@@ -165,7 +165,7 @@ model ProblemInPlaylist {
 }
 
 model ProblemFeedback {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   userId    String
   problemId String
   liked     Boolean // true = like, false = dislike
@@ -177,4 +177,17 @@ model ProblemFeedback {
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId]) // one feedback per user per problem
+}
+
+model DailyStreak {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  count     Int      @default(1)
+  createdAt DateTime @default(now())
+  
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
 }

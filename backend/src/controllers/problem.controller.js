@@ -274,13 +274,17 @@ const postLikeAndDislike = async (req, res) => {
 
     const likes = allFeedback.filter((f) => f.liked).length;
     const dislikes = allFeedback.length - likes;
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {
-        feedback: feedback.liked,
-        likes,
-        dislikes
-      }, 'Feedback updated successfully'));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          feedback: feedback.liked,
+          likes,
+          dislikes,
+        },
+        'Feedback updated successfully'
+      )
+    );
   } catch (error) {
     console.log('error in likeAndDislike', error);
     throw new ApiError(500, 'Something went wrong at likeAndDislike');
