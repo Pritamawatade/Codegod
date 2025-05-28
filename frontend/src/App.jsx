@@ -50,12 +50,12 @@ function App() {
 
         <Route
           path="/profile"
-          element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />}
+          element={ <ProfilePage />}
         />
 
         <Route
           path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
+          element={authUser ? <Navigate to={"/"} /> : <LoginPage />}
         />
 
         <Route

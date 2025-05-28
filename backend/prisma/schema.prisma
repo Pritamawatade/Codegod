@@ -168,7 +168,7 @@ model ProblemFeedback {
   id        String  @id @default(cuid())
   userId    String
   problemId String
-  liked     Boolean // true = like, false = dislike
+  liked     Boolean? // true = like, false = dislike
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

@@ -251,7 +251,7 @@ const ProblemPage = () => {
                 onClick={() => submitFeedback(true)}
               >
                 <ThumbsUp
-                  className="w-5 h-5 transition-colors duration-200"
+                  className="w-6 h-6 transition-colors duration-200"
                   strokeWidth={liked ? 0 : 2}
                   fill={liked ? "#10b981" : "none"} // Emerald for liked
                   stroke={liked ? "#10b981" : "#9ca3af"} // Gray-400 fallback
@@ -266,7 +266,7 @@ const ProblemPage = () => {
                 onClick={() => submitFeedback(false)}
               >
                 <ThumbsDown
-                  className="w-5 h-5 transition-colors duration-200"
+                  className="w-6 h-6 transition-colors duration-200"
                   strokeWidth={liked === false ? 0 : 2}
                   fill={liked === false ? "#ef4444" : "none"} // Red for disliked
                   stroke={liked === false ? "#ef4444" : "#9ca3af"}

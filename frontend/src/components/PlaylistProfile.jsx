@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, ChevronDown, ChevronUp, Clock, List, Tag, ExternalLink, Plus, Trash2, Play, Library, Code2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatePlaylistModal from './CreatePlaylistPattern';
+import Button from './Button';
 
 const PlaylistProfile = () => {
 const { getAllPlaylists, playlists, deletePlaylist, createPlaylist } = usePlaylistStore();
@@ -132,10 +133,17 @@ const togglePlaylist = (id) => {
             <p className="text-slate-600 dark:text-slate-400 text-center mb-8 max-w-md">
               Create your first playlist to organize problems and track your progress on your coding journey!
             </p>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
+            {/* <button
+            onClick={() => {setIsCreateModalOpen(true)}}
+            className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-2">
               <Plus className="w-4 h-4" />
               Create Your First Playlist
-            </button>
+            </button> */}
+            <Button
+              onClick={() => {setIsCreateModalOpen(true)}}
+              buttonText="Create Your First Playlist"
+              Icon={Plus}
+            />
           </div>
         ) : (
           /* Playlists Grid */
@@ -271,7 +279,7 @@ const togglePlaylist = (id) => {
                       <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200 dark:border-gray-700">
                         <button
                           onClick={() => handleDelete(playlist.id)}
-                          className="group/delete bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 border border-red-200 dark:border-red-800"
+                          className="group/delete bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 border border-red-200 dark:border-red-800 cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4 group-hover/delete:scale-110 transition-transform" />
                           Delete Playlist

@@ -6,11 +6,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Shield,ALargeSmall, Loader, Loader2, Mail, Pencil, User, Image } from "lucide-react";
+import {
+  ArrowLeft,
+  Shield,
+  ALargeSmall,
+  Loader,
+  Loader2,
+  Mail,
+  Pencil,
+  User,
+  Image,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileSubmission from "../components/ProfileSubmission";
 import ProblemSolvedByUser from "../components/ProblemSolvedByUser";
 import PlaylistProfile from "../components/PlaylistProfile";
+import StreakCalendar from "../components/StreakCalender";
 
 const updateSchema = z.object({
   name: z
@@ -42,8 +53,12 @@ function ProfilePage() {
     isUpdatingPassword,
     updatePassword,
   } = useAuthStore();
-  const navigate = useNavigate();
+  console.log("line number 56 = ", authUser);
 
+  const navigate = useNavigate();
+  if (!authUser) {
+    return navigate("/login");
+  }
   if (!authUser) {
     console.log("authUser 26 = ", authUser);
     return (
@@ -51,11 +66,12 @@ function ProfilePage() {
         <Loader className="size-10 animate-spin" />
       </div>
     );
-  } else {
-    console.log("authUser 20 = ", authUser);
   }
-
+  console.log("line number 65 = ", authUser);
   const [file, setFile] = React.useState(null);
+  console.log("line number 67 = ", authUser);
+
+
 
   const {
     register,
@@ -107,7 +123,6 @@ function ProfilePage() {
           <div className="w-[30%] border-r border-amber-50 pr-4 h-full min-h-screen sticky top-5">
             <div className="profileSection  px-2">
               <div className="dark:bg-[#1e2939] bg-white p-4 rounded-lg shadow-md">
-                
                 <h2 className="py-2 text-2xl font-semibold text-start">
                   Your Profile
                 </h2>
@@ -128,7 +143,6 @@ function ProfilePage() {
                     </h2>
                   </div>
                 </div>
-  
               </div>
               <div className="card dark:bg-gray-800 bg-white shadow-md rounded-lg p-4 mt-8">
                 <div className="card-title">
@@ -368,12 +382,12 @@ function ProfilePage() {
                 </div>
               </dialog>
             </div>
+            <StreakCalendar />
           </div>
           <div className="w-[70%]">
             <div className="min-h-screen bg-white dark:bg-[#0b1018] flex flex-col items-center justify-between py-10 px-4  w-full">
               {/* Header with back button */}
               <div className="flex flex-col gap-6 justify-between items-start w-full mb-6">
-            
                 <ProfileSubmission />
 
                 <ProblemSolvedByUser />

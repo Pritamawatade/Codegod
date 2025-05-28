@@ -23,7 +23,7 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Create New Playlist</h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-[#3a3a40] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-[#0b1018]"
+            className="p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-[#3a3a40] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-[#0b1018] cursor-pointer  "
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -65,13 +65,13 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
             <button
               type="button"
               onClick={onClose}
-              className="py-2 cursor-pointer px-4 rounded-md border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-blue-500 dark:bg-[#3a3a40] dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:ring-offset-[#0b1018]"
+              className="py-2 cursor-pointer px-6 rounded-md border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 bg-red-600 text-white border-gray-300 hover:bg-red-700 focus:ring-blue-500   dark:border-gray-600  dark:focus:ring-blue-500 dark:focus:ring-offset-[#0b1018]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="py-2 cursor-pointer px-4 rounded-md border border-transparent text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-500 dark:focus:ring-offset-[#0b1018]"
+              className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md font-medium transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-2 "
             >
               Create Playlist
             </button>

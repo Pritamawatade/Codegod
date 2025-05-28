@@ -278,7 +278,7 @@ const postLikeAndDislike = async (req, res) => {
       new ApiResponse(
         200,
         {
-          feedback: feedback.liked,
+          feedback: feedback.liked ? true : null,
           likes,
           dislikes,
         },
@@ -321,7 +321,7 @@ const getLikeAndDislikeCount = async (req, res) => {
           dislikes,
           liked: isLiked !== null,
         },
-        'Feedback updated successfully'
+        'fetched liked count'
       )
     );
   } catch (error) {

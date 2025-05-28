@@ -108,7 +108,6 @@ export const usePlaylistStore = create((set, get) => ({
         playlists: state.playlists.filter((p) => p.id !== playlistId),
       }));
 
-      toast.success("Playlist deleted successfully");
     } catch (error) {
       console.error("Error deleting playlist:", error);
       toast.error("Failed to delete playlist");
