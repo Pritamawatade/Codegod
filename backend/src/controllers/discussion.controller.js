@@ -57,8 +57,8 @@ const getAllDiscussions = async (req, res) => {
             id: true,
           },
         },
-        comment: true,
-        like: true,
+        comments: true,
+        likes: true,
       },
     });
 

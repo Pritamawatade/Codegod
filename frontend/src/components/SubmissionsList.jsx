@@ -58,7 +58,7 @@ const SubmissionsList = ({ submissions, isLoading }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-sm">
       {submissions.map((submission) => {
         const avgMemory = calculateAverageMemory(submission.memory);
         const avgTime = calculateAverageTime(submission.time);

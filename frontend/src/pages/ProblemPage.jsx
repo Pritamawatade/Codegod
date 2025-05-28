@@ -33,6 +33,7 @@ import SubmissionList from "../components/SubmissionsList";
 import { get } from "react-hook-form";
 import useThemeStore from "../store/useThemeStore";
 import Tooltip from "../components/Tooltip";
+import DiscussionList from "../components/DiscussionList";
 
 const ProblemPage = () => {
   const { id } = useParams();
@@ -157,13 +158,13 @@ const ProblemPage = () => {
   }, [activeTab]);
 
   // React.useMemo(getSubmissionForProblem(id), [activeTab]);
-  
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "description":
         return (
-          <div className="max-w-none">
-            <div className="prose prose-gray dark:prose-invert max-w-none">
+          <div className="min-h-full text-sm">
+            <div className="prose prose-gray min-h-full dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
                 {problem.description}
               </p>
@@ -241,41 +242,6 @@ const ProblemPage = () => {
                 </div>
               </div>
             )}
-
-            {/* Feedback Section */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-              <div className="flex items-center justify-end gap-4">
-                <button
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                  onClick={() => submitFeedback(true)}
-                >
-                  <ThumbsUp
-                    className="w-5 h-5 transition-colors duration-200"
-                    strokeWidth={liked ? 0 : 1.5}
-                    fill={liked ? "#10b981" : "none"}
-                    stroke={liked ? "#10b981" : "#6b7280"}
-                  />
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                    {likes}
-                  </span>
-                </button>
-
-                <button
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                  onClick={() => submitFeedback(false)}
-                >
-                  <ThumbsDown
-                    className="w-5 h-5 transition-colors duration-200"
-                    strokeWidth={liked === false ? 0 : 1.5}
-                    fill={liked === false ? "#ef4444" : "none"}
-                    stroke={liked === false ? "#ef4444" : "#6b7280"}
-                  />
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                    {dislikes}
-                  </span>
-                </button>
-              </div>
-            </div>
           </div>
         );
 
@@ -288,21 +254,7 @@ const ProblemPage = () => {
         );
 
       case "discussion":
-        return (
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                <MessageSquare className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                No discussions yet
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Be the first to start a discussion about this problem
-              </p>
-            </div>
-          </div>
-        );
+        return <DiscussionList problemId={id} />;
 
       case "hints":
         return (
@@ -373,8 +325,8 @@ const ProblemPage = () => {
   }
 
   return (
-    <div className=" min-h-screen min-w-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-      <nav className="bg-white dark:bg-slate-800 shadow-md px-4 py-2 sticky top-0 z-10">
+    <div className=" min-w-screen bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
+      <nav className="bg-white dark:bg-gray-950 shadow-md px-4 py-2 sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Link
@@ -413,6 +365,35 @@ const ProblemPage = () => {
                   <ThumbsUp className="w-3 h-3" />
                   <span>95% Success Rate</span>
                 </div>
+                <div className="  dark:bg-slate-900 bg-slate-50 ">
+                  <div className="flex justify-center items-center gap-4 mr-32">
+                    <button
+                      className={`px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
+                        isExecuting
+                          ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
+                      } transition-colors`}
+                      onClick={handleRunCode}
+                      disabled={isExecuting}
+                    >
+                      {isExecuting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-slate-400 dark:border-slate-300 border-t-transparent rounded-full animate-spin"></div>
+                          Running...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4" />
+                          Run Code
+                        </>
+                      )}
+                    </button>
+                    <button className="px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white transition-colors">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Submit Solution
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -450,11 +431,11 @@ const ProblemPage = () => {
       </nav>
 
       {problem && (
-        <div className="container mx-auto p-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="overflow-hidden bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+        <div className="container min-h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[80vh]">
+            <div className=" bg-white dark:bg-gray-900 rounded-xl shadow-lg text-sm">
               <div className="border-b border-slate-200 dark:border-slate-700">
-                <div className="flex overflow-x-auto scrollbar-hide">
+                <div className="flex ">
                   <button
                     className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                       activeTab === "description"
@@ -502,140 +483,147 @@ const ProblemPage = () => {
                 </div>
               </div>
 
-              <div className="p-4 md:p-6 overflow-auto max-h-[calc(100vh-16rem)]">
+              <div className="p-4 md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
                 {renderTabContent()}
-              </div>
-            </div>
+                {/* Feedback Section */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <div className="flex items-center justify-end gap-4">
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                      onClick={() => submitFeedback(true)}
+                    >
+                      <ThumbsUp
+                        className="w-5 h-5 transition-colors duration-200"
+                        strokeWidth={liked ? 0 : 1.5}
+                        fill={liked ? "#10b981" : "none"}
+                        stroke={liked ? "#10b981" : "#6b7280"}
+                      />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        {likes}
+                      </span>
+                    </button>
 
-            <div className="overflow-hidden bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col">
-              <div className="border-b border-slate-200 dark:border-slate-700">
-                <div className="flex overflow-x-auto scrollbar-hide">
-                  <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
-                    <Terminal className="w-4 h-4" />
-                    Code Editor
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex-grow relative">
-                <Editor
-                  height="100%"
-                  language={selectedLanguage.toLowerCase()}
-                  theme={
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                      ? "vs-dark"
-                      : "light"
-                  }
-                  value={code}
-                  onChange={(value) => setCode(value || "")}
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 16,
-                    lineNumbers: "on",
-                    roundedSelection: false,
-                    scrollBeyondLastLine: false,
-                    readOnly: false,
-                    automaticLayout: true,
-                    fontFamily:
-                      "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
-                    fontLigatures: true,
-                  }}
-                />
-              </div>
-
-              <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                <div className="flex justify-between items-center">
-                  <button
-                    className={`px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
-                      isExecuting
-                        ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
-                    } transition-colors`}
-                    onClick={handleRunCode}
-                    disabled={isExecuting}
-                  >
-                    {isExecuting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-slate-400 dark:border-slate-300 border-t-transparent rounded-full animate-spin"></div>
-                        Running...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4" />
-                        Run Code
-                      </>
-                    )}
-                  </button>
-                  <button className="px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white transition-colors">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Submit Solution
-                  </button>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                      onClick={() => submitFeedback(false)}
+                    >
+                      <ThumbsDown
+                        className="w-5 h-5 transition-colors duration-200"
+                        strokeWidth={liked === false ? 0 : 1.5}
+                        fill={liked === false ? "#ef4444" : "none"}
+                        stroke={liked === false ? "#ef4444" : "#6b7280"}
+                      />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        {dislikes}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg mt-6 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h3 className="text-lg font-bold">
-                {submission ? "Execution Results" : "Test Cases"}
-              </h3>
-            </div>
-            <div className="p-4 md:p-6">
-              {submission ? (
-                <SubmissionResults submission={submission} />
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-700/50">
-                        <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                          Test Case
-                        </th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                          Input
-                        </th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                          Expected Output
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {testCases.length > 0 ? (
-                        testCases.map((testCase, index) => (
-                          <tr
-                            key={index}
-                            className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
-                          >
-                            <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                              {index + 1}
-                            </td>
-                            <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                              <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                {testCase.input}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                              <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                {testCase.output}
-                              </div>
-                            </td>
+            <div className="flex flex-col h-full">
+              <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
+                <div className="border-b border-slate-200 dark:border-slate-700">
+                  <div className="flex overflow-x-auto scrollbar-hide">
+                    <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
+                      <Terminal className="w-4 h-4" />
+                      Code Editor
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex-grow relative h-full w-full">
+                  <Editor
+                    className="w-full h-full"
+                    height="100%"
+                    language={selectedLanguage.toLowerCase()}
+                    theme={
+                      window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "vs-dark"
+                        : "light"
+                    }
+                    value={code}
+                    onChange={(value) => setCode(value || "")}
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      lineNumbers: "on",
+                      roundedSelection: false,
+                      scrollBeyondLastLine: false,
+                      readOnly: false,
+                      automaticLayout: true,
+                      fontFamily:
+                        "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                      fontLigatures: true,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-1 bg-white  dark:bg-[#101828] rounded-xl shadow-lg mt-1 overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                  <h3 className="text-lg font-bold">
+                    {submission ? "Execution Results" : "Test Cases"}
+                  </h3>
+                </div>
+                <div className="p-4 md:p-6">
+                  {submission ? (
+                    <SubmissionResults submission={submission} />
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 dark:bg-slate-700/50">
+                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                              Test Case
+                            </th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                              Input
+                            </th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                              Expected Output
+                            </th>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td
-                            colSpan="3"
-                            className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
-                          >
-                            No test cases available
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody>
+                          {testCases.length > 0 ? (
+                            testCases.map((testCase, index) => (
+                              <tr
+                                key={index}
+                                className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
+                              >
+                                <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                  {index + 1}
+                                </td>
+                                <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
+                                  <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
+                                    {testCase.input}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
+                                  <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
+                                    {testCase.output}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td
+                                colSpan="3"
+                                className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
+                              >
+                                No test cases available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
