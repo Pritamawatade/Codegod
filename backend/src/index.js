@@ -8,6 +8,7 @@ import playlistRouter from './routes/playlist.routes.js';
 import submissionRoute from './routes/submission.routes.js';
 import cors from 'cors';
 import streakRouter from './routes/streak.routes.js';
+import discussionRouter from './routes/discussion.routes.js';
 
 const app = express();
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/api/v1/execute-code', executionRoute);
 app.use('/api/v1/submission', submissionRoute);
 app.use('/api/v1/playlists', playlistRouter);
 app.use('/api/v1/streak', streakRouter);
+app.use('/api/v1/discussion', discussionRouter);
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

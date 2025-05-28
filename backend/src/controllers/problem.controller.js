@@ -268,7 +268,7 @@ const postLikeAndDislike = async (req, res) => {
       throw new ApiError(500, 'Something went wrong at likeAndDislike');
     }
 
-    const allFeedback = await prisma.problemFeedback.findMany({
+    const allFeedback = await db.problemFeedback.findMany({
       where: { problemId },
     });
 
@@ -298,11 +298,11 @@ const getLikeAndDislikeCount = async (req, res) => {
     if (!problemId) {
       throw new ApiError(400, 'problemId is required');
     }
-    const allFeedback = await prisma.problemFeedback.findMany({
+    const allFeedback = await db.problemFeedback.findMany({
       where: { problemId },
     });
 
-    const isLiked = await prisma.problemFeedback.findFirst({
+    const isLiked = await db.problemFeedback.findFirst({
       where: { problemId, liked: true, userId: req.user.id },
     });
 
@@ -329,6 +329,7 @@ const getLikeAndDislikeCount = async (req, res) => {
     throw new ApiError(500, 'Something went wrong at likeAndDislikeCount');
   }
 };
+
 export {
   createProblem,
   getAllProblems,
@@ -338,4 +339,5 @@ export {
   getProblemsSolvedByUser,
   postLikeAndDislike,
   getLikeAndDislikeCount,
+  
 };

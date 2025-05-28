@@ -109,9 +109,7 @@ const CodeGodLanding = () => {
   };
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-500 `}
-    >
+    <div className={`min-h-screen transition-colors duration-500 `}>
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950 dark:to-[#0e0e0e] text-slate-900 dark:dark:text-white">
         {/* Navigation */}
 
@@ -201,13 +199,14 @@ const CodeGodLanding = () => {
         {/* Features Section */}
         <section
           id="features"
-          className="py-20 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm"
+          className="py-16 md:py-20 lg:py-24 bg-gray-50 dark:bg-[#0e0e0e] transition-colors duration-300"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Header Section */}
             <div
               data-animate
               id="features-header"
-              className={`text-center mb-16 transition-all duration-1000 ${
+              className={`text-center mb-12 md:mb-16 lg:mb-20 transition-all duration-1000 ${
                 isVisible["features-header"]
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
@@ -218,7 +217,7 @@ const CodeGodLanding = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="text-4xl md:text-5xl font-bold mb4 text-black dark:text-white -bg-clip-text"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white"
               >
                 Godlike Features
               </motion.h2>
@@ -227,47 +226,73 @@ const CodeGodLanding = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto"
+                className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
               >
                 Unleash your coding potential with features designed by the
                 gods, for the gods
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {features.map((feature, index) => (
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 1 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
                   key={index}
                   data-animate
                   id={`feature-${index}`}
-                  className={`group relative bg-blue-700 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 hover:bg-blue-800 dark:hover:bg-gray-800/80 transition-all  ease-in-out duration-500 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-2 border border-slate-200/20 dark:border-gray-700/20 ${
-                    isVisible[`feature-${index}`]
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-10"
-                  }`}
+                  className={`group relative bg-white dark:bg-gray-900 rounded-xl md:rounded-2xl p-6 md:p-8 
+            hover:bg-gray-50 dark:hover:bg-gray-800 
+            transition-all duration-300 ease-out
+            hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50
+            cursor-pointer 
+            border border-gray-200 dark:border-gray-700
+            hover:border-gray-300 dark:hover:border-gray-600
+            ${
+              isVisible[`feature-${index}`]
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
+            }`}
                   style={{ transitionDelay: `${index * 200}ms` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-200/5 to-green-200/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                  <div className="relative">
-                    <div className="text-blue-600 dark:text-blue-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300 mb-4">
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon */}
+                    <div className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 mb-4 md:mb-6">
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl font-bold mb-4 dark:text-white dark:dark:text-white group-hover:text-gray-50 dark:group-hover:text-blue-400 transition-colors">
+
+                    {/* Title */}
+                    <h3
+                      className="text-lg md:text-xl font-semibold mb-3 md:mb-4 
+              text-gray-900 dark:text-white 
+              group-hover:text-gray-900 dark:group-hover:text-white 
+              transition-colors duration-300"
+                    >
                       {feature.title}
                     </h3>
-                    <p className="dark:text-white font-medium  leading-relaxed">
+
+                    {/* Description */}
+                    <p
+                      className="text-sm md:text-base text-gray-600 dark:text-gray-400 
+              group-hover:text-gray-700 dark:group-hover:text-gray-300
+              leading-relaxed transition-colors duration-300"
+                    >
                       {feature.description}
                     </p>
                   </div>
 
-                  {/* Hover Effect Gradient Border */}
-                  {/* <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-sm"></div> */}
+                  {/* Subtle hover background */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-br from-gray-100/50 to-gray-200/30 
+            dark:from-gray-800/30 dark:to-gray-700/20 
+            rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 
+            transition-opacity duration-300 pointer-events-none"
+                  ></div>
                 </motion.div>
               ))}
             </div>
