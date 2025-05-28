@@ -157,128 +157,128 @@ const ProblemPage = () => {
   }, [activeTab]);
 
   // React.useMemo(getSubmissionForProblem(id), [activeTab]);
-
+  
   const renderTabContent = () => {
     switch (activeTab) {
       case "description":
         return (
-          <div className="prose prose-lg dark:prose-invert max-w-none overflow-x-hidden">
-            <p className="text-base md:text-lg mb-6 text-gray-700 dark:text-slate-300">
-              {problem.description}
-            </p>
+          <div className="max-w-none">
+            <div className="prose prose-gray dark:prose-invert max-w-none">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+                {problem.description}
+              </p>
+            </div>
 
             {problem.examples && (
-              <>
-                <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-slate-300">
-                  Examples:
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                  Examples
                 </h3>
-                {Object.entries(problem.examples).map(
-                  ([lang, example], idx) => (
-                    <div
-                      key={lang}
-                      className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg mb-6 font-mono shadow-sm"
-                    >
-                      <div className="mb-4">
-                        <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
-                          Input:
-                        </div>
-                        <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                          <code
-                            style={{
-                              backgroundColor:
-                                theme === "dark" ? "#1e1e1e" : "white",
-                            }}
-                            className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
-                          >
-                            {example.input}
-                          </code>
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <div className="text-blue-600 dark:text-blue-400 mb-2 text-sm font-semibold">
-                          Output:
-                        </div>
-                        <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                          <code
-                            style={{
-                              backgroundColor:
-                                theme === "dark" ? "#1e1e1e" : "white",
-                            }}
-                            className="not-prose text-gray-900 border-none dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
-                          >
-                            {example.output}
-                          </code>
-                        </div>
-                      </div>
-                      {example.explanation && (
-                        <div>
-                          <div className="text-emerald-600 dark:text-emerald-400 mb-2 text-sm font-semibold">
-                            Explanation:
+                <div className="space-y-6">
+                  {Object.entries(problem.examples).map(
+                    ([lang, example], idx) => (
+                      <div
+                        key={lang}
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+                      >
+                        <div className="p-4 space-y-4">
+                          {/* Input Section */}
+                          <div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                              Input:
+                            </div>
+                            <div className="bg-gray-50 dark:bg-[#0e0e0e] border border-gray-200 dark:border-gray-800 rounded-md p-3">
+                              <code className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
+                                {example.input}
+                              </code>
+                            </div>
                           </div>
-                          <p className="text-gray-700 dark:text-slate-300 text-sm md:text-base">
-                            {example.explanation}
-                          </p>
+
+                          {/* Output Section */}
+                          <div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                              Output:
+                            </div>
+                            <div className="bg-gray-50 dark:bg-[#0e0e0e] border border-gray-200 dark:border-gray-800 rounded-md p-3">
+                              <code className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
+                                {example.output}
+                              </code>
+                            </div>
+                          </div>
+
+                          {/* Explanation Section */}
+                          {example.explanation && (
+                            <div>
+                              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                Explanation:
+                              </div>
+                              <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                                {example.explanation}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  )
-                )}
-              </>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
             )}
 
             {problem.constraints && (
-              <>
-                <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-slate-300">
-                  Constraints:
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                  Constraints
                 </h3>
-                <div className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg mb-6 shadow-sm">
-                  <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto shadow-sm">
-                    <code
-                      style={{
-                        backgroundColor: theme === "dark" ? "#1e1e1e" : "white",
-                      }}
-                      className="not-prose text-gray-900 border-none  dark:bg-gray-900  dark:text-slate-300 text-sm md:text-base "
-                    >
-                      {problem.constraints}
-                    </code>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <div className="p-4">
+                    <div className="bg-gray-50 dark:bg-[#0e0e0e] border border-gray-200 dark:border-gray-800 rounded-md p-3">
+                      <code className="text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                        {problem.constraints}
+                      </code>
+                    </div>
                   </div>
                 </div>
-              </>
+              </div>
             )}
-            <div className="bg-white dark:bg-gray-800 px-4  rounded-md overflow-x-auto shadow-sm flex items-end justify-end gap-2">
-              <button
-                className="flex items-center gap-1 group cursor-pointer "
-                onClick={() => submitFeedback(true)}
-              >
-                <ThumbsUp
-                  className="w-6 h-6 transition-colors duration-200"
-                  strokeWidth={liked ? 0 : 2}
-                  fill={liked ? "#10b981" : "none"} // Emerald for liked
-                  stroke={liked ? "#10b981" : "#9ca3af"} // Gray-400 fallback
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {likes}
-                </span>
-              </button>
 
-              <button
-                className="flex items-center gap-1 group cursor-pointer"
-                onClick={() => submitFeedback(false)}
-              >
-                <ThumbsDown
-                  className="w-6 h-6 transition-colors duration-200"
-                  strokeWidth={liked === false ? 0 : 2}
-                  fill={liked === false ? "#ef4444" : "none"} // Red for disliked
-                  stroke={liked === false ? "#ef4444" : "#9ca3af"}
-                />
+            {/* Feedback Section */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <div className="flex items-center justify-end gap-4">
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                  onClick={() => submitFeedback(true)}
+                >
+                  <ThumbsUp
+                    className="w-5 h-5 transition-colors duration-200"
+                    strokeWidth={liked ? 0 : 1.5}
+                    fill={liked ? "#10b981" : "none"}
+                    stroke={liked ? "#10b981" : "#6b7280"}
+                  />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {likes}
+                  </span>
+                </button>
 
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {dislikes}
-                </span>
-              </button>
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                  onClick={() => submitFeedback(false)}
+                >
+                  <ThumbsDown
+                    className="w-5 h-5 transition-colors duration-200"
+                    strokeWidth={liked === false ? 0 : 1.5}
+                    fill={liked === false ? "#ef4444" : "none"}
+                    stroke={liked === false ? "#ef4444" : "#6b7280"}
+                  />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {dislikes}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         );
+
       case "submissions":
         return (
           <SubmissionList
@@ -286,39 +286,65 @@ const ProblemPage = () => {
             isLoading={isSubmissionsLoading}
           />
         );
+
       case "discussion":
         return (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
-            <MessageSquare className="w-12 h-12 mb-4 opacity-30 dark:text-slate-300" />
-            <p className="text-lg dark:text-slate-300">No discussions yet</p>
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                <MessageSquare className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No discussions yet
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                Be the first to start a discussion about this problem
+              </p>
+            </div>
           </div>
         );
+
       case "hints":
         return (
-          <div className="p-4">
+          <div>
             {problem?.hints ? (
-              <div className="bg-slate-100 dark:bg-slate-700 p-4 md:p-6 rounded-lg shadow-sm">
-                <div className="bg-slate-200 dark:bg-slate-900 px-4 py-2 rounded-md overflow-x-auto">
-                  <code className="not-prose text-gray-800 dark:text-slate-300 text-sm md:text-base">
-                    {problem.hints}
-                  </code>
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Lightbulb className="w-5 h-5 text-yellow-500" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Hint
+                    </h3>
+                  </div>
+                  <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800/30 rounded-md p-4">
+                    <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                      {problem.hints}
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-500 dark:text-slate-400">
-                <Lightbulb className="w-12 h-12 mb-4 opacity-30 dark:text-slate-300" />
-                <p className="text-lg dark:text-slate-300">
-                  No hints available
-                </p>
+              <div className="flex flex-col items-center justify-center py-16">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                    <Lightbulb className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No hints available
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Try solving this problem without hints first
+                  </p>
+                </div>
               </div>
             )}
           </div>
         );
+
       default:
         return null;
     }
   };
-
   const handleRunCode = (e) => {
     e.preventDefault();
     console.log("submission -------->>>>>>>>", submission);

@@ -14,9 +14,8 @@ import toast from "react-hot-toast";
 import { usePlaylistStore } from "../store/usePlaylistStore";
 import CreatePlaylistModal from "./CreatePlaylistPattern";
 import AddToPlaylistModal from "./AddToPlaylist";
+import Button from "./Button";
 
-
- 
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
 
@@ -25,11 +24,12 @@ const ProblemTable = ({ problems }) => {
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
+    useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
   const { isDeletingProblem, onDeleteProblem } = useActionStore();
-  const {createPlaylist} = usePlaylistStore();
-  
+  const { createPlaylist } = usePlaylistStore();
+
   const allTags = useMemo(() => {
     if (!Array.isArray(problems)) return [];
 
@@ -40,7 +40,7 @@ const ProblemTable = ({ problems }) => {
     return Array.from(tagsSet);
   }, [problems]);
 
- const handleDelete = (id) => {
+  const handleDelete = (id) => {
     document.getElementById("my_modal_5").showModal();
     const deleteButton = document.getElementById("delete-button");
     deleteButton.addEventListener("click", () => {
@@ -58,7 +58,7 @@ const ProblemTable = ({ problems }) => {
     }
   };
 
-   const handleCreatePlaylist = async (data) => {
+  const handleCreatePlaylist = async (data) => {
     await createPlaylist(data);
   };
 
@@ -78,7 +78,14 @@ const ProblemTable = ({ problems }) => {
       .filter((problem) =>
         selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
       );
-  }, [problems, search, difficulty, selectedTag, isDeletingProblem, onDeleteProblem]);
+  }, [
+    problems,
+    search,
+    difficulty,
+    selectedTag,
+    isDeletingProblem,
+    onDeleteProblem,
+  ]);
 
   const itemsPerPage = 5;
   const totalPages = Math.ceil(filteredProblems.length / itemsPerPage);
@@ -99,9 +106,8 @@ const ProblemTable = ({ problems }) => {
 
   const handleEdit = (id) => {};
 
-  
   return (
-   <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
@@ -112,13 +118,20 @@ const ProblemTable = ({ problems }) => {
             Practice coding problems and track your progress
           </p>
         </div>
-        <button
+        {/* <button
           className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 gap-2"
           onClick={() => {setIsCreateModalOpen(true)}}
         >
           <Plus className="w-4 h-4" />
           Create Playlist
-        </button>
+        </button> */}
+        <Button
+          onClick={() => {
+            setIsCreateModalOpen(true);
+          }}
+          buttonText="Create Playlist"
+          Icon={Plus}
+        />
       </div>
 
       {/* Filters Section */}
@@ -132,11 +145,12 @@ const ProblemTable = ({ problems }) => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        
+
         <select
           className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer transition-all duration-200"
           style={{
-            backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
             backgroundPosition: "right 12px center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "16px",
@@ -155,7 +169,8 @@ const ProblemTable = ({ problems }) => {
         <select
           className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer transition-all duration-200"
           style={{
-            backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
             backgroundPosition: "right 12px center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "16px",
@@ -191,7 +206,7 @@ const ProblemTable = ({ problems }) => {
                 <div
                   key={problem.id}
                   className={`group hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150 ${
-                    index === 0 ? '' : ''
+                    index === 0 ? "" : ""
                   }`}
                 >
                   <div className="px-6 py-4">
@@ -218,14 +233,16 @@ const ProblemTable = ({ problems }) => {
                           </Link>
                           {(problem.tags || []).length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
-                              {(problem.tags || []).slice(0, 3).map((tag, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
+                              {(problem.tags || [])
+                                .slice(0, 3)
+                                .map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
                               {(problem.tags || []).length > 3 && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                                   +{(problem.tags || []).length - 3}
@@ -425,7 +442,7 @@ const ProblemTable = ({ problems }) => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreatePlaylist}
       />
-      
+
       <AddToPlaylistModal
         isOpen={isAddToPlaylistModalOpen}
         onClose={() => setIsAddToPlaylistModalOpen(false)}
@@ -436,4 +453,3 @@ const ProblemTable = ({ problems }) => {
 };
 
 export default ProblemTable;
-

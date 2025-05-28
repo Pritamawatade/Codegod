@@ -24,10 +24,10 @@ import {
 import BannerText from "../components/BannerText";
 import { motion } from "framer-motion";
 import WhyChooseCodeGod from "../components/WhyChooseCodeGod";
+import Navbar from "../components/Navbar";
 
 const CodeGodLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const [isVisible, setIsVisible] = useState({});
   const observerRef = useRef();
 
@@ -110,107 +110,10 @@ const CodeGodLanding = () => {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${
-        isDark ? "dark" : ""
-      }`}
+      className={`min-h-screen transition-colors duration-500 `}
     >
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950 dark:to-[#0e0e0e] text-slate-900 dark:dark:text-white">
         {/* Navigation */}
-        <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-[#0e0e0e]  border-b border-slate-200/20 dark:border-gray-700/20 transition-all duration-300">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-300">
-                    <Code className="w-6 h-6 dark:text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
-                  CodeGod
-                </span>
-              </div>
-
-              <div className="hidden md:flex items-center space-x-8">
-                <a
-                  href="#features"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  Features
-                </a>
-                <a
-                  href="#why-us"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  Why Us
-                </a>
-                <a
-                  href="#stats"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  Stats
-                </a>
-                <button
-                  onClick={toggleTheme}
-                  className="p-2 rounded-lg bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {isDark ? "🌞" : "🌙"}
-                </button>
-                <button className="bg-gradient-to-r from-blue-600 to-purple-700 dark:text-white px-6 py-2 rounded-full hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  Start Coding
-                </button>
-              </div>
-
-              <button
-                className="md:hidden p-2"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          <div
-            className={`md:hidden transition-all duration-300 ${
-              isMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700`}
-          >
-            <div className="px-4 py-4 space-y-3">
-              <a
-                href="#features"
-                className="block py-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#why-us"
-                className="block py-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                Why Us
-              </a>
-              <a
-                href="#stats"
-                className="block py-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                Stats
-              </a>
-              <button
-                onClick={toggleTheme}
-                className="block py-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                {isDark ? "Light Mode" : "Dark Mode"}
-              </button>
-              <button className="w-full bg-gradient-to-r from-blue-600 to-purple-700 dark:text-white py-2 rounded-full">
-                Start Coding
-              </button>
-            </div>
-          </div>
-        </nav>
 
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 overflow-hidden dark:bg-[#0e0e0e]">

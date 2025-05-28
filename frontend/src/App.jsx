@@ -44,14 +44,13 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route
             index
-            element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
+            element={authUser ? <CodeGodLanding /> : <Navigate to={"/login"} />}
           />
+
+          <Route path="/problems" element={<HomePage />} />
         </Route>
 
-        <Route
-          path="/profile"
-          element={ <ProfilePage />}
-        />
+        <Route path="/profile" element={<ProfilePage />} />
 
         <Route
           path="/login"
@@ -66,7 +65,6 @@ function App() {
         <Route path="/login-failed" element={<LoginFailed />} />
 
         <Route path="/problem/:id" element={<ProblemPage />} />
-        <Route path="/landing" element={<CodeGodLanding />} />
 
         <Route element={<AdminRoute />}>
           <Route
