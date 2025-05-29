@@ -34,12 +34,16 @@ html{
     display: flex;
     flex-direction: column;
 }
-
+.runcode{
+  z-index: 100 !important;
+}
 .gutter{
   background-color: #484848;
   background-repeat: no-repeat;
   background-position: 50%;
-  z-index: 600;
+  cursor: col-resize;
+  overflow: hidden;
+  z-index: 20;
 }
 .gutter:hover {
     background-color: #3c83ff;

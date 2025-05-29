@@ -326,7 +326,7 @@ const ProblemPage = () => {
   }
 
   return (
-    <div className=" min-w-screen min-h-screen max-h-screen overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
+    <div className=" min-w-screen min-h-screen max-h-screen overflow-y-scoll overflow-x-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
       <nav className="bg-white dark:bg-gray-950 shadow-md px-4 py-1 sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -370,7 +370,8 @@ const ProblemPage = () => {
                 <div className="  dark:bg-slate-900 bg-slate-50 ">
                   <div className="flex justify-center items-center gap-4 mr-32">
                     <button
-                      className={`px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
+                    style={{zIndex:"600"}}
+                      className={`px-4 runcode py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
                         isExecuting
                           ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
                           : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
@@ -433,8 +434,8 @@ const ProblemPage = () => {
       </nav>
 
       {problem && (
-        <div className="container min-h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[80vh]">
+        <div className="container dark:bg-gray-950 min-h-full min-w-screen max-h-screen overflow-y-scroll overflow-x-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[100vh]">
             <Split
               className="min-w-screen split"
               minSize={100}
@@ -442,7 +443,7 @@ const ProblemPage = () => {
               snapOffset={0}
               dragInterval={2}
             >
-              <div className=" bg-white dark:bg-gray-900 rounded-xl shadow-lg text-sm">
+              <div className=" bg-white   dark:bg-black rounded-xl shadow-lg text-sm ">
                 <div className="border-b border-slate-200 dark:border-slate-700">
                   <div className="flex ">
                     <button
@@ -492,10 +493,12 @@ const ProblemPage = () => {
                   </div>
                 </div>
 
-                <div className="p-4 md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
+                <div className="p-4 dark:bg-black min-h-screen md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
                   {renderTabContent()}
                   {/* Feedback Section */}
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  
+                </div>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div className="flex items-center justify-end gap-4">
                       <button
                         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
@@ -528,7 +531,6 @@ const ProblemPage = () => {
                       </button>
                     </div>
                   </div>
-                </div>
               </div>
 
               <div className="flex flex-col min-h-screen">
@@ -540,17 +542,17 @@ const ProblemPage = () => {
                   dragInterval={2}
                     direction="vertical"
                 >
-                  <div className=" p-4 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
+                  <div className=" pt-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
                     <div className="border-b border-slate-200 dark:border-slate-700">
-                      <div className="flex overflow-x-auto scrollbar-hide">
-                        <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
+                      <div className="flex overflow-x-auto items-start scrollbar-hide">
+                        <button className="flex items-start gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
                           <Terminal className="w-4 h-4" />
                           Code Editor
                         </button>
                       </div>
                     </div>
 
-                    <div className="flex-grow  w-full">
+                    <div className="flex-grow w-full pt-2">
                       <Editor
                         className="w-full h-full"
                         height="100%"
@@ -579,7 +581,7 @@ const ProblemPage = () => {
                     </div>
                   </div>
 
-                  <div className=" bg-white z-100 dark:bg-[#101828] shadow-lg mt-1 overflow-hidden">
+                  <div className="z-40 bg-white max-h-[80vh]   dark:bg-[#000000] shadow-lg mt-1 overflow-y-scroll">
                     <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
                       <h3 className="text-lg font-bold">
                         {submission ? "Execution Results" : "Test Cases"}

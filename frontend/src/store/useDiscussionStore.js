@@ -4,9 +4,11 @@ import { axiosInstance } from '../lib/axios';
 export const useDiscussionStore = create((set, get) => ({
   discussions: [],
   discussion: [],
+
   fetchDiscussions: async (problemId) => {
     try {
       const res = await axiosInstance.get(`/discussion/get-all-discussions/${problemId}`);
+      console.log(res.data.data);
       set({ discussions: res.data.data });
     } catch (err) {
       console.error('Failed to fetch discussions:', err);
@@ -22,9 +24,6 @@ export const useDiscussionStore = create((set, get) => ({
       console.error('Failed to fetch comments:', err);
     }
   },
-
-
-
   toggleLike: async (discussionId, userId) => {
     try {
       await axiosInstance.get(`/discussion/toggle-like/${discussionId}`);
@@ -45,4 +44,23 @@ export const useDiscussionStore = create((set, get) => ({
       console.error('Failed to toggle like:', err);
     }
   },
+
+  addCommentToDiscussion: async(discussionId, content)=>{
+    try {
+      axiosInstance.post(`/discussion/add-comment-to-discussion/${discussionId}`, content);
+
+    } catch (error) {
+      console.log("error in adding comment", error)
+    }
+  },
+
+  addDiscussion: async(problemId, data) => {
+    try {
+      axiosInstance.post(`/discussion/post/${problemId}`, data);
+    } catch (error) {
+      console.log("error in adding discussion", error)
+    }
+  }
+
+
 }));
