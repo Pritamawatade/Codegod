@@ -3,7 +3,7 @@ import { axiosInstance } from '../lib/axios';
 
 export const useDiscussionStore = create((set, get) => ({
   discussions: [],
-
+  discussion: [],
   fetchDiscussions: async (problemId) => {
     try {
       const res = await axiosInstance.get(`/discussion/get-all-discussions/${problemId}`);
@@ -13,7 +13,15 @@ export const useDiscussionStore = create((set, get) => ({
     }
   },
 
-
+  fetchDiscussion: async (discussionId) => {
+    try {
+      const res = await axiosInstance.get(`/discussion/get-discussion/${discussionId}`);
+      console.log(res.data.data);
+      set({ discussion: res.data.data });
+    } catch (err) {
+      console.error('Failed to fetch comments:', err);
+    }
+  },
 
 
 

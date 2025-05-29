@@ -25,6 +25,38 @@ html{
   border-radius: 6px;
   box-shadow: 0 0 4px rgba(0,0,0,0.1);
 } */
+
+.split {
+    display: flex;
+    flex-direction: row;
+}
+.split1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.gutter{
+  background-color: #484848;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  z-index: 600;
+}
+.gutter:hover {
+    background-color: #3c83ff;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    cursor: col-resize;
+}
+.gutter.gutter-horizontal:hover {
+    background-color: #3c83ff;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+    cursor: col-resize;
+}
 @keyframes modalshow {
   from {
     opacity: 0;

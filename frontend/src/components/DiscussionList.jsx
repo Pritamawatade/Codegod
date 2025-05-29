@@ -1,11 +1,22 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { useDiscussionStore } from "../store/useDiscussionStore";
-import { MessageCircle, MessageSquare, ThumbsUp } from "lucide-react";
+import {
+  ArrowDown,
+  MessageCircle,
+  MessageSquare,
+  ThumbsUp,
+} from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 
 export default function DiscussionList({ problemId }) {
-    const {authUser} = useAuthStore();
-  const { discussions, fetchDiscussions, toggleLike } = useDiscussionStore();
+  const { authUser } = useAuthStore();
+  const {
+    discussions,
+    discussion:disc,
+    fetchDiscussion,
+    fetchDiscussions,
+    toggleLike,
+  } = useDiscussionStore();
 
   useEffect(() => {
     fetchDiscussions(problemId);
@@ -52,12 +63,33 @@ export default function DiscussionList({ problemId }) {
               onClick={() => toggleLike(discussion.id, authUser.id)}
               className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <ThumbsUp size={16}  /> {discussion.likes.length}
+              <ThumbsUp size={16} /> {discussion.likes.length}
             </button>
             <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
               <MessageCircle size={16} /> {discussion.comments.length} comments
             </div>
+
+            <button
+              onClick={() => fetchDiscussion(discussion.id)}
+              className="flex items-end justify-end p-2 text-gray-500 dark:text-gray-400 
+            "
+            >
+              <ArrowDown />
+            </button>
           </div>
+
+          {disc.comments?.length > 0
+            ? disc.comments.map((comment) => (
+                <div className="mt-4  flex items-center justify-start p" key={comment.id}>
+                  <div className="imgCover w-12 h-12 p-2 rounded-full">
+                    {console.log(comment)}
+                    <img src={comment.user?.image || "https://cdn-icons-png.flaticon.com/128/10412/10412528.png"} alt="" />
+                  </div>
+
+                  <div className="text-sm">{comment.content}</div>
+                </div>
+              ))
+            : ""}
         </div>
       ))}
     </div>

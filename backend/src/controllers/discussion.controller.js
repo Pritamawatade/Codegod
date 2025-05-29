@@ -57,7 +57,18 @@ const getAllDiscussions = async (req, res) => {
             id: true,
           },
         },
-        comments: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+                id: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
         likes: true,
       },
     });

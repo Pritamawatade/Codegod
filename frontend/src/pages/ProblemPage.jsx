@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
+import Split from "react-split";
 import {
   Play,
   FileText,
@@ -325,8 +326,8 @@ const ProblemPage = () => {
   }
 
   return (
-    <div className=" min-w-screen bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
-      <nav className="bg-white dark:bg-gray-950 shadow-md px-4 py-2 sticky top-0 z-10">
+    <div className=" min-w-screen min-h-screen max-h-screen overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
+      <nav className="bg-white dark:bg-gray-950 shadow-md px-4 py-1 sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Link
@@ -337,10 +338,11 @@ const ProblemPage = () => {
               <ChevronRight className="w-4 h-4" />
             </Link>
             <div className="nocopy">
-              <h1 className="text-lg md:text-xl font-bold line-clamp-1">
+             
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                 <h1 className="text-lg md:text-xl font-bold line-clamp-1">
                 {problem?.title || "Loading..."}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
                 <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full text-xs font-medium">
                   Easy
                 </span>
@@ -433,198 +435,216 @@ const ProblemPage = () => {
       {problem && (
         <div className="container min-h-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[80vh]">
-            <div className=" bg-white dark:bg-gray-900 rounded-xl shadow-lg text-sm">
-              <div className="border-b border-slate-200 dark:border-slate-700">
-                <div className="flex ">
-                  <button
-                    className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      activeTab === "description"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
-                    }`}
-                    onClick={() => setActiveTab("description")}
-                  >
-                    <FileText className="w-4 h-4" />
-                    Description
-                  </button>
-                  <button
-                    className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      activeTab === "submissions"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
-                    }`}
-                    onClick={() => setActiveTab("submissions")}
-                  >
-                    <Code2 className="w-4 h-4" />
-                    Submissions
-                  </button>
-                  <button
-                    className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      activeTab === "discussion"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
-                    }`}
-                    onClick={() => setActiveTab("discussion")}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Discussion
-                  </button>
-                  <button
-                    className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      activeTab === "hints"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
-                    }`}
-                    onClick={() => setActiveTab("hints")}
-                  >
-                    <Lightbulb className="w-4 h-4" />
-                    Hints
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-4 md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
-                {renderTabContent()}
-                {/* Feedback Section */}
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <div className="flex items-center justify-end gap-4">
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                      onClick={() => submitFeedback(true)}
-                    >
-                      <ThumbsUp
-                        className="w-5 h-5 transition-colors duration-200"
-                        strokeWidth={liked ? 0 : 1.5}
-                        fill={liked ? "#10b981" : "none"}
-                        stroke={liked ? "#10b981" : "#6b7280"}
-                      />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                        {likes}
-                      </span>
-                    </button>
-
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                      onClick={() => submitFeedback(false)}
-                    >
-                      <ThumbsDown
-                        className="w-5 h-5 transition-colors duration-200"
-                        strokeWidth={liked === false ? 0 : 1.5}
-                        fill={liked === false ? "#ef4444" : "none"}
-                        stroke={liked === false ? "#ef4444" : "#6b7280"}
-                      />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                        {dislikes}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col h-full">
-              <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
+            <Split
+              className="min-w-screen split"
+              minSize={100}
+              gutterSize={4}
+              snapOffset={0}
+              dragInterval={2}
+            >
+              <div className=" bg-white dark:bg-gray-900 rounded-xl shadow-lg text-sm">
                 <div className="border-b border-slate-200 dark:border-slate-700">
-                  <div className="flex overflow-x-auto scrollbar-hide">
-                    <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
-                      <Terminal className="w-4 h-4" />
-                      Code Editor
+                  <div className="flex ">
+                    <button
+                      className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === "description"
+                          ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                          : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                      }`}
+                      onClick={() => setActiveTab("description")}
+                    >
+                      <FileText className="w-4 h-4" />
+                      Description
+                    </button>
+                    <button
+                      className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === "submissions"
+                          ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                          : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                      }`}
+                      onClick={() => setActiveTab("submissions")}
+                    >
+                      <Code2 className="w-4 h-4" />
+                      Submissions
+                    </button>
+                    <button
+                      className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === "discussion"
+                          ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                          : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                      }`}
+                      onClick={() => setActiveTab("discussion")}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      Discussion
+                    </button>
+                    <button
+                      className={`px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === "hints"
+                          ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                          : "border-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                      }`}
+                      onClick={() => setActiveTab("hints")}
+                    >
+                      <Lightbulb className="w-4 h-4" />
+                      Hints
                     </button>
                   </div>
                 </div>
 
-                <div className="flex-grow relative h-full w-full">
-                  <Editor
-                    className="w-full h-full"
-                    height="100%"
-                    language={selectedLanguage.toLowerCase()}
-                    theme={
-                      window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "vs-dark"
-                        : "light"
-                    }
-                    value={code}
-                    onChange={(value) => setCode(value || "")}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      lineNumbers: "on",
-                      roundedSelection: false,
-                      scrollBeyondLastLine: false,
-                      readOnly: false,
-                      automaticLayout: true,
-                      fontFamily:
-                        "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
-                      fontLigatures: true,
-                    }}
-                  />
+                <div className="p-4 md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
+                  {renderTabContent()}
+                  {/* Feedback Section */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <div className="flex items-center justify-end gap-4">
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                        onClick={() => submitFeedback(true)}
+                      >
+                        <ThumbsUp
+                          className="w-5 h-5 transition-colors duration-200"
+                          strokeWidth={liked ? 0 : 1.5}
+                          fill={liked ? "#10b981" : "none"}
+                          stroke={liked ? "#10b981" : "#6b7280"}
+                        />
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                          {likes}
+                        </span>
+                      </button>
+
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                        onClick={() => submitFeedback(false)}
+                      >
+                        <ThumbsDown
+                          className="w-5 h-5 transition-colors duration-200"
+                          strokeWidth={liked === false ? 0 : 1.5}
+                          fill={liked === false ? "#ef4444" : "none"}
+                          stroke={liked === false ? "#ef4444" : "#6b7280"}
+                        />
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                          {dislikes}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex-1 bg-white  dark:bg-[#101828] rounded-xl shadow-lg mt-1 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-                  <h3 className="text-lg font-bold">
-                    {submission ? "Execution Results" : "Test Cases"}
-                  </h3>
-                </div>
-                <div className="p-4 md:p-6">
-                  {submission ? (
-                    <SubmissionResults submission={submission} />
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-slate-50 dark:bg-slate-700/50">
-                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                              Test Case
-                            </th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                              Input
-                            </th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                              Expected Output
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {testCases.length > 0 ? (
-                            testCases.map((testCase, index) => (
-                              <tr
-                                key={index}
-                                className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
-                              >
-                                <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                  {index + 1}
-                                </td>
-                                <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                  <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                    {testCase.input}
-                                  </div>
-                                </td>
-                                <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                  <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                    {testCase.output}
-                                  </div>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td
-                                colSpan="3"
-                                className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
-                              >
-                                No test cases available
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+              <div className="flex flex-col min-h-screen">
+                <Split
+                  className="min-w-full flex flex-col min-h-screen split1"
+                  minSize={200}
+                  gutterSize={5}
+                  snapOffset={0}
+                  dragInterval={2}
+                    direction="vertical"
+                >
+                  <div className=" p-4 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
+                    <div className="border-b border-slate-200 dark:border-slate-700">
+                      <div className="flex overflow-x-auto scrollbar-hide">
+                        <button className="px-4 py-3 flex items-center gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
+                          <Terminal className="w-4 h-4" />
+                          Code Editor
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="flex-grow  w-full">
+                      <Editor
+                        className="w-full h-full"
+                        height="100%"
+                        language={selectedLanguage.toLowerCase()}
+                        theme={
+                          window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches
+                            ? "vs-dark"
+                            : "light"
+                        }
+                        value={code}
+                        onChange={(value) => setCode(value || "")}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: "on",
+                          roundedSelection: false,
+                          scrollBeyondLastLine: false,
+                          readOnly: false,
+                          automaticLayout: true,
+                          fontFamily:
+                            "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                          fontLigatures: true,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className=" bg-white z-100 dark:bg-[#101828] shadow-lg mt-1 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                      <h3 className="text-lg font-bold">
+                        {submission ? "Execution Results" : "Test Cases"}
+                      </h3>
+                    </div>
+                    <div className="p-4 md:p-6">
+                      {submission ? (
+                        <SubmissionResults submission={submission} />
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr className="bg-slate-50 dark:bg-slate-700/50">
+                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                  Test Case
+                                </th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                  Input
+                                </th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                  Expected Output
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {testCases.length > 0 ? (
+                                testCases.map((testCase, index) => (
+                                  <tr
+                                    key={index}
+                                    className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
+                                  >
+                                    <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                      {index + 1}
+                                    </td>
+                                    <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
+                                      <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
+                                        {testCase.input}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
+                                      <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
+                                        {testCase.output}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td
+                                    colSpan="3"
+                                    className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
+                                  >
+                                    No test cases available
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Split>
               </div>
-            </div>
+            </Split>
           </div>
         </div>
       )}
