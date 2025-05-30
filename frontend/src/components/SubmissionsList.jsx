@@ -7,6 +7,14 @@ import {
 } from "lucide-react";
 
 const SubmissionsList = ({ submissions, isLoading }) => {
+  // const now = new Date(); // Current time
+  // const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
+
+  // const filteredSubmissions = submissions.filter((item) => {
+  //   const createdAt = new Date(item.createdAt);
+  //   return createdAt >= twentyFourHoursAgo;
+  // });
+
   // Helper function to safely parse JSON strings
   const safeParse = (data) => {
     try {

@@ -20,7 +20,7 @@ const getAllSubmissions = async (req, res) => {
   }
 };
 const getSubmissionForProblem = async (req, res) => {
-  const { id } = req.params;
+  const { problemId: id } = req.params;
   const userID = req.user.id;
 
   try {

@@ -54,7 +54,7 @@ const ProblemPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const {
-    submission: submissions,
+    submissionForProblem,
     isLoading: isSubmissionsLoading,
     getSubmissionForProblem,
     getSubmissionCountForProblem,
@@ -154,7 +154,7 @@ const ProblemPage = () => {
   useEffect(() => {
     if (activeTab == "submissions") {
       getSubmissionForProblem(id);
-      console.log("submissions  ==> ", submissions);
+      console.log("submissions  ==> ", submissionForProblem);
     }
   }, [activeTab]);
 
@@ -249,7 +249,7 @@ const ProblemPage = () => {
       case "submissions":
         return (
           <SubmissionList
-            submissions={submissions}
+            submissions={submissionForProblem}
             isLoading={isSubmissionsLoading}
           />
         );

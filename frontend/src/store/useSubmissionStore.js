@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 export const useSubmissionStore = create((set) => ({
   isLoading: false,
   submissions: [],
-  submission: null,
+  submissionForProblem: null,
   submissionCount: null,
 
   getAllSubmissions: async () => {
@@ -29,7 +29,7 @@ export const useSubmissionStore = create((set) => ({
         `/submission/get-sumbmission-for-problem/${problemId}`
       );
 
-      set({ submission: res.data.data });
+      set({ submissionForProblem: res.data.data });
     } catch (error) {
       console.log("Error getting submissions for problem", error);
 
