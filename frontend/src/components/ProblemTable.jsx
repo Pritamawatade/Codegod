@@ -8,6 +8,11 @@ import {
   TrashIcon,
   Plus,
   Loader2,
+  Search,
+  Filter,
+  Tag,
+  ChevronDown,
+  Building2,
 } from "lucide-react";
 import { useActionStore } from "../store/useActionStore";
 import toast from "react-hot-toast";
@@ -16,12 +21,31 @@ import CreatePlaylistModal from "./CreatePlaylistPattern";
 import AddToPlaylistModal from "./AddToPlaylist";
 import Button from "./Button";
 
+
+  const selectStyles = `
+    w-full pl-12 pr-10 py-3 
+    border border-gray-200 dark:border-gray-700 
+    rounded-xl 
+    bg-white dark:bg-gray-900 
+    text-gray-900 dark:text-gray-100 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+    appearance-none cursor-pointer 
+    transition-all duration-200 
+    hover:border-gray-300 dark:hover:border-gray-600
+    shadow-sm hover:shadow-md
+    text-sm font-medium
+  `;
+
+ const iconStyles = "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 z-10";
+  const chevronStyles = "absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none";
+
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
 
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
+  const [company, setCompany] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
@@ -36,6 +60,16 @@ const ProblemTable = ({ problems }) => {
     const tagsSet = new Set();
 
     problems.forEach((p) => p.tags?.forEach((t) => tagsSet.add(t)));
+
+    return Array.from(tagsSet);
+  }, [problems]);
+
+  const companyTags = useMemo(() => {
+    if (!Array.isArray(problems)) return [];
+
+    const tagsSet = new Set();
+
+    problems.forEach((p) => p.companyTags?.forEach((t) => tagsSet.add(t)));
 
     return Array.from(tagsSet);
   }, [problems]);
@@ -77,6 +111,9 @@ const ProblemTable = ({ problems }) => {
       )
       .filter((problem) =>
         selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
+      )
+      .filter((problem) =>
+        company === "ALL" ? true : problem.companyTags?.includes(company)
       );
   }, [
     problems,
@@ -85,6 +122,7 @@ const ProblemTable = ({ problems }) => {
     selectedTag,
     isDeletingProblem,
     onDeleteProblem,
+    company,
   ]);
 
   const itemsPerPage = 5;
@@ -135,56 +173,84 @@ const ProblemTable = ({ problems }) => {
       </div>
 
       {/* Filters Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Search Input */}
         <div className="relative">
+          <Search className={iconStyles} />
           <input
             type="text"
             placeholder="Search problems..."
-            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <select
-          className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer transition-all duration-200"
-          style={{
-            backgroundImage:
-              "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
-            backgroundPosition: "right 12px center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "16px",
-          }}
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
-        >
-          <option value="ALL">All Difficulties</option>
-          {difficulties.map((diff) => (
-            <option key={diff} value={diff}>
-              {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
-            </option>
-          ))}
-        </select>
+        {/* Difficulty Select */}
+        <div className="relative">
+          <Filter className={iconStyles} />
+          <select
+            className={selectStyles}
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            <option value="ALL">All Difficulties</option>
+            {difficulties.map((diff) => (
+              <option key={diff} value={diff} className="py-2">
+                {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className={chevronStyles} />
+        </div>
 
-        <select
-          className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer transition-all duration-200"
-          style={{
-            backgroundImage:
-              "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmI3MjgwIiBkPSJNNyAxMGw1IDUgNS01eiIvPjwvc3ZnPg==')",
-            backgroundPosition: "right 12px center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "16px",
-          }}
-          value={selectedTag}
-          onChange={(e) => setSelectedTag(e.target.value)}
-        >
-          <option value="ALL">All Tags</option>
-          {allTags.map((tag) => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
-          ))}
-        </select>
+        {/* Tags Select */}
+        <div className="relative">
+          <Tag className={iconStyles  } />
+          <select
+            className={selectStyles}
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
+            style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            <option value="ALL">All Tags</option>
+            {allTags.map((tag) => (
+              <option key={tag} value={tag} className="py-2">
+                {tag}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className={chevronStyles} />
+        </div>
+
+        {/* Company Select */}
+        <div className="relative">
+          <Building2 className={iconStyles} />
+          <select
+            className={selectStyles}
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            <option value="ALL">All Companies</option>
+            {companyTags.map((tag) => (
+              <option key={tag} value={tag} className="py-2">
+                {tag}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className={chevronStyles} />
+        </div>
       </div>
 
       {/* Problems Table */}

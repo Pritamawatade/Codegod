@@ -83,7 +83,7 @@ function HomePage() {
                 </div>
                 <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    10K+
+                    10+
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     Solved Daily

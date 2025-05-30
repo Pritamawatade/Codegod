@@ -29,7 +29,7 @@ const Navbar = () => {
               />
             </div>
             <span className="text-xl font-bold dark:text-white text-blue-600 hover:text-gray-200 tracking-tight hidden md:block">
-              Leetlab
+              CodeGod
             </span>
           </Link>
 

@@ -43,7 +43,6 @@ html{
   background-position: 50%;
   cursor: col-resize;
   overflow: hidden;
-  z-index: 20;
 }
 .gutter:hover {
     background-color: #3c83ff;
@@ -56,7 +55,12 @@ html{
     background-repeat: no-repeat;
     background-position: 50%;
 }
-
+.gutter-vertical{
+z-index: 100;
+}
+button{
+  cursor: pointer !important;
+}
 .gutter.gutter-horizontal {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
     cursor: col-resize;

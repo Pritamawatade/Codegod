@@ -85,12 +85,12 @@ const CodeGodLanding = () => {
 
   const stats = [
     {
-      number: "10K+",
+      number: "10+",
       label: "Active Users",
       icon: <Users className="w-6 h-6" />,
     },
     {
-      number: "500+",
+      number: "50+",
       label: "Unique Problems",
       icon: <BookOpen className="w-6 h-6" />,
     },

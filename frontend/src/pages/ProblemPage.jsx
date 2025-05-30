@@ -339,8 +339,9 @@ const ProblemPage = () => {
             </Link>
             <div className="nocopy">
              
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
-                 <h1 className="text-lg md:text-xl font-bold line-clamp-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
+               <div className="flex flex-wrap items-center gap-1 text-xs text-slate-400 dark:text-slate-400">
+                  <h1 className="text-lg md:text-xl font-bold line-clamp-1">
                 {problem?.title || "Loading..."}
               </h1>
                 <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full text-xs font-medium">
@@ -359,15 +360,19 @@ const ProblemPage = () => {
                       : ""}
                   </span>
                 </div>
+                
                 <div className="flex items-center gap-1">
                   <Users className="w-3 h-3" />
                   <span>{submissionCount} Submissions</span>
                 </div>
+
                 <div className="flex items-center gap-1">
                   <ThumbsUp className="w-3 h-3" />
                   <span>95% Success Rate</span>
                 </div>
-                <div className="  dark:bg-slate-900 bg-slate-50 ">
+
+               </div>
+                <div className=" ml-18  dark:bg-slate-950 bg-slate-50 ">
                   <div className="flex justify-center items-center gap-4 mr-32">
                     <button
                     style={{zIndex:"600"}}
@@ -397,6 +402,7 @@ const ProblemPage = () => {
                     </button>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -535,12 +541,12 @@ const ProblemPage = () => {
 
               <div className="flex flex-col min-h-screen">
                 <Split
-                  className="min-w-full flex flex-col min-h-screen split1"
+                  className="min-w-full flex flex-col min-h-screen split1 "
                   minSize={200}
-                  gutterSize={5}
+                  gutterSize={4}
                   snapOffset={0}
                   dragInterval={2}
-                    direction="vertical"
+                  direction="vertical"
                 >
                   <div className=" pt-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
                     <div className="border-b border-slate-200 dark:border-slate-700">

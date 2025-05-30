@@ -19,6 +19,7 @@ const createProblem = async (req, res) => {
     testCases,
     codeSnippets,
     referenceSolutions,
+    companyTags
   } = req.body;
 
   if (req.user.role !== 'ADMIN') {
@@ -78,6 +79,7 @@ const createProblem = async (req, res) => {
           testCases,
           codeSnippets,
           referenceSolutions,
+          companyTags,
           userId: req.user.id,
         },
       });
@@ -173,6 +175,7 @@ const updateProblem = async (req, res) => {
     testCases,
     codeSnippets,
     referenceSolutions,
+    companyTags
   } = req.body;
 
   try {
@@ -195,6 +198,7 @@ const updateProblem = async (req, res) => {
         editorial,
         testCases,
         codeSnippets,
+        companyTags,
         referenceSolutions,
       },
     });

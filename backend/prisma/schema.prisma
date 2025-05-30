@@ -64,6 +64,7 @@ model Problem {
   userId      String
   examples    Json
   hints       String?
+  companyTags String[]
   editorial   String?
 
   testCases          Json
