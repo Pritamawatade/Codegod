@@ -3,18 +3,24 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Loader } from "lucide-react";
 
-import HomePage from "./pages/HomePage";
-import SignUpPage from "./pages/SignUpPage";
-import LoginPage from "./pages/LoginPage";
-import { useAuthStore } from "./store/useAuthStore";
-import Layout from "./layout/Layout";
-import AdminRoute from "./components/AdminRoute";
-import AddProblem from "./components/AddProblem";
-import ProblemPage from "./pages/ProblemPage";
-import LoginFailed from "./pages/LoginFailed";
-import ProfilePage from "./pages/ProfilePage";
-import CodeGodLanding from "./pages/CodeGodLanding";
-import useThemeStore from "./store/useThemeStore";
+import HomePage from "./pages/HomePage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import { useAuthStore } from "./store/useAuthStore.js";
+import Layout from "./layout/Layout.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
+import AddProblem from "./components/AddProblem.jsx";
+import ProblemPage from "./pages/ProblemPage.jsx";
+import LoginFailed from "./pages/LoginFailed.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import CodeGodLanding from "./pages/CodeGodLanding.jsx";
+import useThemeStore from "./store/useThemeStore.js";
+import PrivacyPolicy from "./pages/LegalPrivacy.jsx";
+import TermsAndConditions from "./pages/TermsAndConditions.jsx";
+import NotFound from "./pages/NotFound.jsx";
+
+
+
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { theme } = useThemeStore();
@@ -51,6 +57,8 @@ function App() {
         </Route>
 
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
 
         <Route
           path="/login"
@@ -72,6 +80,7 @@ function App() {
             element={authUser ? <AddProblem /> : <Navigate to="/" />}
           />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

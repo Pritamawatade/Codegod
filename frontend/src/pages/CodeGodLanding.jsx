@@ -1,30 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   ChevronDown,
-  Code,
   Zap,
   Target,
   Users,
-  Trophy,
   Star,
-  Menu,
-  X,
   ArrowRight,
-  CheckCircle,
   Flame,
-  Calendar,
   Globe,
   BookOpen,
   TrendingUp,
-  Github,
-  Twitter,
-  Linkedin,
-  Mail,
+
 } from "lucide-react";
 import BannerText from "../components/BannerText";
 import { motion } from "framer-motion";
 import WhyChooseCodeGod from "../components/WhyChooseCodeGod";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const CodeGodLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -356,128 +348,7 @@ const CodeGodLanding = () => {
         </section>
 
         {/* Footer */}
-        <footer className="bg-slate-900 dark:bg-black dark:text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="col-span-1 md:col-span-2">
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl flex items-center justify-center transform rotate-12">
-                    <Code className="w-6 h-6 dark:text-white" />
-                  </div>
-                  <span className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    CodeGod
-                  </span>
-                </div>
-                <p className="text-slate-300 mb-6 max-w-md">
-                  Elevate your coding skills to divine levels. Master Data
-                  Structures & Algorithms with the platform trusted by coding
-                  legends worldwide.
-                </p>
-                <div className="flex space-x-4">
-                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
-                    <Twitter className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors cursor-pointer">
-                    <Github className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center hover:bg-blue-800 transition-colors cursor-pointer">
-                    <Linkedin className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors cursor-pointer">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-blue-400">
-                  Platform
-                </h3>
-                <ul className="space-y-2 text-slate-300">
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Problems
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Contests
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Learning Paths
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Discussion
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-purple-400">
-                  Company
-                </h3>
-                <ul className="space-y-2 text-slate-300">
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      About Us
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Careers
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Privacy Policy
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="hover:dark:text-white transition-colors"
-                    >
-                      Terms of Service
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-700 mt-12 pt-8 text-center text-slate-400">
-              <p>
-                &copy; 2025 CodeGod. All rights reserved. Ascend to coding
-                divinity.
-              </p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
 
       <style jsx global>{`
