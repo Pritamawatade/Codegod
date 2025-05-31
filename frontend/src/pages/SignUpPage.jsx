@@ -1,376 +1,253 @@
-import { useEffect, useState } from "react";
-import { useDiscussionStore } from "../store/useDiscussionStore";
-import {
-  ArrowDown,
-  ArrowUp,
-  MessageCircle,
-  MessageSquare,
-  Plus,
-  ThumbsUp,
-  X,
-} from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
-import Button from "../components/Button";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router-dom";
+import { Code, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { z } from "zod";
+import { useAuthStore } from "../store/useAuthStore";
+import GoogleLoginBtn from "../components/GoogleLoginBtn";
+import toast from "react-hot-toast";
 
-export default function DiscussionList({ problemId }) {
-  const { authUser } = useAuthStore();
-  const [expandedComments, setExpandedComments] = useState(new Set());
-  const [showCommentTextbox, setShowCommentTextbox] = useState({});
-  const [commentText, setCommentText] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const signUpSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string(),
+  username: z.string(),
+});
+
+function SignUpPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const { signup, isSigninUp } = useAuthStore();
+  const [file, setFile] = useState(null);
 
   const {
-    discussions,
-    discussion: disc,
-    fetchDiscussion,
-    fetchDiscussions,
-    toggleLike,
-    addCommentToDiscussion,
-    addDiscussion,
-  } = useDiscussionStore();
-
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    resolver: zodResolver(
-      z.object({
-        title: z.string().min(3, "Title must be at least 3 characters"),
-        content: z.string().min(10, "Content must be at least 10 characters"),
-      })
-    ),
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data) => {
-    if (isSubmitting) return;
-    
-    setIsSubmitting(true);
-    try {
-      await addDiscussion(problemId, data);
-      setShowModal(false);
-      reset();
-      await fetchDiscussions(problemId);
-    } catch (error) {
-      console.error("Error adding discussion:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   useEffect(() => {
-    fetchDiscussions(problemId);
-  }, [problemId, fetchDiscussions]);
-
-  const addComment = async (discussionId) => {
-    const content = commentText[discussionId]?.trim();
-    if (!content) return;
-
-    try {
-      // Send as JSON object instead of FormData
-      await addCommentToDiscussion(discussionId, { content });
-      
-      // Clear the comment text
-      setCommentText(prev => ({ ...prev, [discussionId]: "" }));
-      setShowCommentTextbox(prev => ({ ...prev, [discussionId]: false }));
-      
-      // Refresh discussions
-      await fetchDiscussions(problemId);
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
-  };
-
-  const toggleComments = (discussionId) => {
-    setExpandedComments(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(discussionId)) {
-        newSet.delete(discussionId);
-      } else {
-        newSet.add(discussionId);
-        fetchDiscussion(discussionId);
+    if (file) {
+      const isValid =
+        file.type.startsWith("image/") && file.size < 5 * 1024 * 1024;
+      if (!isValid) {
+        toast.error("Only images under 5MB are allowed");
+        setFile(null);
       }
-      return newSet;
-    });
-  };
+    }
+  }, [file]);
+  const onSubmit = async (data) => {
+    try {
+      if (!file) {
+        toast.error("Please select an image");
+      }
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("username", data.username); // if you're collecting this too
+      formData.append("avatar", file); // file from state
 
-  const toggleCommentTextbox = (discussionId) => {
-    setShowCommentTextbox(prev => ({
-      ...prev,
-      [discussionId]: !prev[discussionId]
-    }));
-  };
-
-  const handleCommentChange = (discussionId, value) => {
-    setCommentText(prev => ({
-      ...prev,
-      [discussionId]: value
-    }));
+      await signup(formData);
+    } catch (error) {
+      console.error("Signup failed", error);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {discussions.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-              <MessageSquare className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800 flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white border border-amber-100 dark:bg-gray-900 rounded-md shadow-xl p-8 sm:p-10 transition-all duration-300 h-full overflow-hidden">
+        {/* Logo Section */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg">
+              <Code className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-              No discussions yet
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-base max-w-sm">
-              Be the first to start a discussion about this problem
-            </p>
           </div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50  bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text  ">
+            Create Account
+          </h1>
+          <p className="text-gray-500">Get started with our platform</p>
         </div>
-      )}
 
-      {discussions.map((discussion) => (
-        <div
-          key={discussion.id}
-          className="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#0e0e0e] shadow-sm hover:shadow-md transition-shadow duration-200"
-        >
-          <div className="p-6">
-            {/* Discussion Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 overflow-hidden rounded-full mr-3 ring-2 ring-gray-100 dark:ring-gray-700">
-                  <img
-                    src={discussion.user.image}
-                    alt={discussion.user.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
-                    {discussion.user.name}
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(discussion.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
+        {/* Form Section */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+          {/* Name Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 ">
+              Full Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Code className="h-5 w-5 text-gray-400" />
               </div>
+              <input
+                type="text"
+                {...register("name")}
+                  className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                    errors.name
+                      ? "border-red-300 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  }`}
+                placeholder="John Doe"
+              />
             </div>
-
-            {/* Discussion Content */}
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {discussion.title}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {discussion.content}
-              </p>
-            </div>
-
-            {/* Discussion Actions */}
-            <div className="flex items-center gap-6 py-3 border-t border-gray-100 dark:border-gray-800">
-              <button
-                onClick={() => toggleLike(discussion.id, authUser.id)}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-              >
-                <ThumbsUp size={18} />
-                <span className="font-medium">{discussion.likes.length}</span>
-              </button>
-              
-              <button
-                onClick={() => toggleComments(discussion.id)}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
-              >
-                <MessageCircle size={18} />
-                <span className="font-medium">{discussion.comments.length} comments</span>
-                {expandedComments.has(discussion.id) ? (
-                  <ArrowUp size={16} />
-                ) : (
-                  <ArrowDown size={16} />
-                )}
-              </button>
-            </div>
-
-            {/* Comments Section */}
-            {expandedComments.has(discussion.id) && (
-              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                {discussion.comments?.length > 0 ? (
-                  <div className="space-y-4 mb-6">
-                    {discussion.comments.map((comment) => (
-                      <div key={comment.id} className="flex items-start gap-3">
-                        <div className="w-8 h-8 overflow-hidden rounded-full ring-1 ring-gray-200 dark:ring-gray-700">
-                          <img
-                            src={comment.user.image}
-                            alt={comment.user.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                          <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                            {comment.user.name}
-                          </div>
-                          <div className="text-gray-700 dark:text-gray-300">
-                            {comment.content}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      No comments yet. Be the first to comment!
-                    </p>
-                  </div>
-                )}
-
-                {/* Add Comment */}
-                <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
-                  {!showCommentTextbox[discussion.id] ? (
-                    <button
-                      onClick={() => toggleCommentTextbox(discussion.id)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors duration-200"
-                    >
-                      <Plus size={18} />
-                      <span>Add a comment</span>
-                    </button>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 overflow-hidden rounded-full ring-1 ring-gray-200 dark:ring-gray-700">
-                          <img
-                            src={authUser.image}
-                            alt={authUser.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <textarea
-                            value={commentText[discussion.id] || ""}
-                            onChange={(e) => handleCommentChange(discussion.id, e.target.value)}
-                            placeholder="Write a comment..."
-                            className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                            rows="3"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-end gap-3">
-                        <button
-                          onClick={() => toggleCommentTextbox(discussion.id)}
-                          className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => addComment(discussion.id)}
-                          disabled={!commentText[discussion.id]?.trim()}
-                          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white rounded-lg transition-colors duration-200 disabled:cursor-not-allowed"
-                        >
-                          Post Comment
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+            {errors.name && (
+              <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
-        </div>
-      ))}
 
-      {/* Start Discussion Button */}
-      <div className="flex justify-center pt-6">
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
-        >
-          <Plus size={20} />
-          Start Discussion
-        </button>
-      </div>
-
-      {/* Discussion Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#0e0e0e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Start a Discussion
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
-                >
-                  <X size={20} />
-                </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Code className="h-5 w-5 text-gray-400" />
               </div>
+              <input
+                type="text"
+                {...register("username")}
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                  errors.username
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                }`}
+                placeholder="pirateCoder"
+              />
+            </div>
+            {errors.username && (
+              <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
+            )}
+          </div>
 
-              {/* Modal Form */}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    {...register("title")}
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Enter discussion title"
-                  />
-                  {errors.title && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                      {errors.title.message}
-                    </p>
-                  )}
-                </div>
+          {/* Email Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email address
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="email"
+                {...register("email")}
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 placeholder:opacity-20 ${
+                  errors.email
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                }`}
+                placeholder="you@example.com"
+              />
+            </div>
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-                <div>
-                  <label
-                    htmlFor="content"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Content
-                  </label>
-                  <textarea
-                    {...register("content")}
-                    rows="5"
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Share your thoughts about this problem..."
-                  />
-                  {errors.content && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                      {errors.content.message}
-                    </p>
-                  )}
-                </div>
+          {/* Password Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
+                  errors.password
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                }`}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-500"
+              >
+                {!showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-                {/* Modal Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-6 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+          <div className="relative mt-4 mb-4">
+            <div className="flex justify-center items-center w-full">
+              <label
+                htmlFor="avatar"
+                className="flex items-center px-4 py-2 bg-white rounded-lg shadow-lg cursor-pointer hover:bg-gray-100"
+              >
+                <User className="h-5 w-5 text-gray-400 mr-2" />
+                <span className="text-sm font-medium text-gray-700 relative">
+                  Select an avatar
+                  <p
+                    className="absolute top-[-20%] right-[-50%] text-md text-gray-500 dark:text-gray-50"
+                    style={{ fontSize: "0.6rem" }}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Posting..." : "Post Discussion"}
-                  </button>
-                </div>
-              </form>
+                    *Optional
+                  </p>
+                </span>
+              </label>
+              <input
+                type="file"
+                id="avatar"
+                accept="image/*"
+                className="hidden"
+                {...register("avatar")}
+                onChange={(e) => setFile(e.target.files[0])}
+              />
             </div>
           </div>
-        </div>
-      )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSigninUp}
+            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+          >
+            {isSigninUp ? (
+              <div className="flex items-center justify-center space-x-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Creating account...</span>
+              </div>
+            ) : (
+              "Sign Up"
+            )}
+          </button>
+
+          <GoogleLoginBtn className="mt-4" />
+
+          {/* Sign In Link */}
+          <div className="text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Sign in
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
+
+export default SignUpPage;

@@ -46,7 +46,7 @@ const ProblemSolvedByUser = () => {
   };
 
   return (
-    <div className="p-4 bg-white w-full  dark:bg-[#0c0d0e] border border-[#cabfbf] dark:border-[#3a3a40] ">
+    <div className="p-4 bg-white w-full rounded-xl dark:bg-[#1e2939] border border-[#cabfbf] dark:border-[#3a3a40] ">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-black dark:text-white mb-6">
           Problems Solved
@@ -69,19 +69,19 @@ const ProblemSolvedByUser = () => {
         ) : (
           <div className="card bg-base-100 shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="table table-zebra w-full bg-gray-100 dark:bg-[#0b1018]">
+              <table className="table table-zebra w-full bg-gray-100 dark:bg-[#1e2939]">
                 <thead>
                   <tr>
-                    <th className="bg-gray-100 border-gray-300 dark:bg-[#0b1018] dark:text-white text-black border dark:border[#3a3a40]">
+                    <th className="bg-gray-100 border-gray-300 dark:bg-[#1e2939] dark:text-white text-black border dark:border[#3a3a40]">
                       Problem
                     </th>
-                    <th className="bg-gray-100 border-gray-300 dark:bg-[#0b1018] dark:text-white text-black border dark:border[#3a3a40]">
+                    <th className="bg-gray-100 border-gray-300 dark:bg-[#1e2939] dark:text-white text-black border dark:border[#3a3a40]">
                       Difficulty
                     </th>
-                    <th className="bg-gray-100 border-gray-300 dark:bg-[#0b1018] dark:text-white text-black border dark:border[#3a3a40]">
+                    <th className="bg-gray-100 border-gray-300 dark:bg-[#1e2939] dark:text-white text-black border dark:border[#3a3a40]">
                       Tags
                     </th>
-                    <th className="bg-gray-100 border-gray-300 dark:bg-[#0b1018] dark:text-white text-black border dark:border[#3a3a40] text-center">
+                    <th className="bg-gray-100 border-gray-300 dark:bg-[#1e2939] dark:text-white text-black border dark:border[#3a3a40] text-center">
                       Actions
                     </th>
                   </tr>
@@ -122,7 +122,7 @@ const ProblemSolvedByUser = () => {
               </table>
             </div>
 
-            <div className="card-footer bg-gray-100 dark:bg-[#0b1018] p-4">
+            <div className="card-footer bg-gray-100 dark:bg-[#1e2939] p-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-900 dark:text-gray-100">
                   Total problems solved:{" "}
@@ -130,7 +130,7 @@ const ProblemSolvedByUser = () => {
                 </span>
                 <Link
                   to="/problems"
-                  className="group bg-gradient-to-r text-sm border bg-gray-100 dark:bg-[#0b1018] dark:border-gray-100 dark:hover:to-gray-900 text-black dark:text-white px-2 py-1 mt-4 rounded-xl  transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-1 dark:hover:text-gray-300 hover:text-gray-900"
+                  className="group bg-gradient-to-r text-sm border bg-gray-100 dark:bg-[#1e2939] dark:border-gray-100 dark:hover:to-gray-900 text-black dark:text-white px-2 py-1 mt-4 rounded-xl  transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-1 dark:hover:text-gray-300 hover:text-gray-900"
                 >
                   <ExternalLink size={14} className="mr-1" />
                   Solve more problems
@@ -143,7 +143,7 @@ const ProblemSolvedByUser = () => {
         {/* Stats Cards */}
         {solvedProblems.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="stat bg-gray-100 dark:bg-[#0b1018] shadow rounded-box border dark:border-[#3a3a40]">
+            <div className="stat bg-gray-100 dark:bg-[#1e2939] shadow rounded-box border dark:border-[#3a3a40]">
               <div className="stat-title text-gray-900 dark:text-white">
                 Easy
               </div>
@@ -151,7 +151,7 @@ const ProblemSolvedByUser = () => {
                 {solvedProblems.filter((p) => p.difficulty === "EASY").length}
               </div>
             </div>
-            <div className="stat bg-gray-100 dark:bg-[#0b1018] shadow rounded-box border dark:border-[#3a3a40]">
+            <div className="stat bg-gray-100 dark:bg-[#1e2939] shadow rounded-box border dark:border-[#3a3a40]">
               <div className="stat-title text-gray-900 dark:text-white">
                 Medium
               </div>
@@ -159,7 +159,7 @@ const ProblemSolvedByUser = () => {
                 {solvedProblems.filter((p) => p.difficulty === "MEDIUM").length}
               </div>
             </div>
-            <div className="stat bg-gray-100 dark:bg-[#0b1018] shadow rounded-box border dark:border-[#3a3a40]">
+            <div className="stat bg-gray-100 dark:bg-[#1e2939] shadow rounded-box border dark:border-[#3a3a40]">
               <div className="stat-title text-gray-900 dark:text-white">
                 Hard
               </div>
