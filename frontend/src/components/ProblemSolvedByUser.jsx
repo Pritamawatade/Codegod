@@ -108,7 +108,7 @@ const ProblemSolvedByUser = () => {
                       <td className="text-center">
                         <div className="flex justify-center">
                           <Link
-                            to={`/problems/${problem.id}`}
+                            to={`/problem/${problem.id}`}
                             className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-2"
                           >
                             <ExternalLink size={14} className="mr-1" />

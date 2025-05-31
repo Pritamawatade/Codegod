@@ -17,12 +17,19 @@ import { motion } from "framer-motion";
 import WhyChooseCodeGod from "../components/WhyChooseCodeGod";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const CodeGodLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState({});
   const observerRef = useRef();
+  const {authUser} = useAuthStore();
+  const navigate = useNavigate();
 
+  if(authUser){
+    navigate('/problems');
+  }
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -351,48 +358,6 @@ const CodeGodLanding = () => {
         <Footer />
       </div>
 
-      <style jsx global>{`
-        @keyframes gradient {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-
-        .animate-fade-in-up {
-          animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        html.dark {
-          color-scheme: dark;
-        }
-
-        * {
-          transition-property: background-color, border-color, color, fill,
-            stroke;
-          transition-duration: 200ms;
-          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-      `}</style>
     </div>
   );
 };

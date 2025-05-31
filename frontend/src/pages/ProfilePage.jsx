@@ -22,6 +22,9 @@ import ProfileSubmission from "../components/ProfileSubmission";
 import ProblemSolvedByUser from "../components/ProblemSolvedByUser";
 import PlaylistProfile from "../components/PlaylistProfile";
 import StreakCalendar from "../components/StreakCalender";
+import { useEffect } from "react";
+import ContributionHeatmap from "../components/ContributionHeatmap";
+import { useStreakStore } from "../store/useStreakStore";
 
 const updateSchema = z.object({
   name: z
@@ -53,25 +56,34 @@ function ProfilePage() {
     isUpdatingPassword,
     updatePassword,
   } = useAuthStore();
-  console.log("line number 56 = ", authUser);
-
   const navigate = useNavigate();
+  const {streakData, getStreakData} = useStreakStore();
+
   if (!authUser) {
-    return navigate("/login");
+    navigate("/login");
   }
   if (!authUser) {
-    console.log("authUser 26 = ", authUser);
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
     );
   }
-  console.log("line number 65 = ", authUser);
+
+  useEffect(() => {
+    getStreakData();
+  }, []);
+  useEffect(() => {
+    if (!authUser) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <Loader className="size-10 animate-spin" />
+        </div>
+      );
+    }
+  });
+
   const [file, setFile] = React.useState(null);
-  console.log("line number 67 = ", authUser);
-
-
 
   const {
     register,
@@ -389,7 +401,7 @@ function ProfilePage() {
               {/* Header with back button */}
               <div className="flex flex-col gap-6 justify-between items-start w-full mb-6">
                 <ProfileSubmission />
-
+                <ContributionHeatmap data={streakData} />
                 <ProblemSolvedByUser />
 
                 <PlaylistProfile />
