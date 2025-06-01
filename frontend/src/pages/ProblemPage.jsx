@@ -35,6 +35,7 @@ import { get } from "react-hook-form";
 import useThemeStore from "../store/useThemeStore";
 import Tooltip from "../components/Tooltip";
 import DiscussionList from "../components/DiscussionList";
+import SubmissionResultCard from "../components/SubmissionResultCard";
 
 const ProblemPage = () => {
   const { id } = useParams();
@@ -63,7 +64,7 @@ const ProblemPage = () => {
 
   const { theme } = useThemeStore();
   const { authUser } = useAuthStore();
-  const { executeCode, submission, isExecuting } = useExecutionStore();
+  const { executeCode, submission, isExecuting, isSubmitting, submitResult, submitCode } = useExecutionStore();
 
   if (!authUser) {
     Navigate("/login");
@@ -247,12 +248,11 @@ const ProblemPage = () => {
         );
 
       case "submissions":
+        
         return (
-          <SubmissionList
-            submissions={submissionForProblem}
-            isLoading={isSubmissionsLoading}
-          />
-        );
+          submitResult ?
+         <SubmissionResultCard submission={submitResult} /> : "No submissions yet"
+        ); 
 
       case "discussion":
         return <DiscussionList problemId={id} />;
@@ -312,6 +312,23 @@ const ProblemPage = () => {
       console.log("Error executing code", error);
     }
   };
+  const handleSubmitCode = (e) => {
+    e.preventDefault();
+    console.log("submission -------->>>>>>>>", submitResult);
+
+    try {
+      const language_id = getLanguageId(selectedLanguage);
+      const stdin = problem.testCases.map((tc) => tc.input);
+      const expected_outputs = problem.testCases.map((tc) => tc.output);
+      submitCode(code, language_id, stdin, expected_outputs, id);
+      setActiveTab("submissions")
+      console.log("submission --------", submitResult);
+    } catch (error) {
+      console.log("Error executing code", error);
+    }
+  };
+
+
 
   if (isProblemLoading) {
     return (
@@ -396,10 +413,30 @@ const ProblemPage = () => {
                         </>
                       )}
                     </button>
-                    <button className="px-4 py-2 rounded-lg flex items-center gap-2 font-medium text-sm bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white transition-colors">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Submit Solution
+
+                    <button
+                    style={{zIndex:"600"}}
+                      className={`px-4 runcode py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
+                        isExecuting
+                          ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
+                      } transition-colors`}
+                      onClick={handleSubmitCode}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-slate-400 dark:border-slate-300 border-t-transparent rounded-full animate-spin"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4" />
+                          Submit
+                        </>
+                      )}
                     </button>
+                   
                   </div>
                 </div>
 
@@ -595,6 +632,7 @@ const ProblemPage = () => {
                     </div>
                     <div className="p-4 md:p-6">
                       {submission ? (
+                        console.log("submission--?", submission),
                         <SubmissionResults submission={submission} />
                       ) : (
                         <div className="overflow-x-auto">

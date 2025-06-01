@@ -7,36 +7,20 @@ import {
 } from "lucide-react";
 
 const SubmissionResults = ({ submission }) => {
-  // Parse stringified arrays
-  const memoryArr = JSON.parse(submission.memory || "[]");
-  const timeArr = JSON.parse(submission.time || "[]");
 
-  console.log("submision----====>", submission.testcaseresult);
-  console.log("submision----====>", submission);
-  useEffect(() => {
-    console.log("submision----====>", submission);
-  });
-  // Calculate averages
-  const avgMemory =
-    memoryArr
-      .map((m) => parseFloat(m)) // remove ' KB' using parseFloat
-      .reduce((a, b) => a + b, 0) / memoryArr.length;
 
-  const avgTime =
-    timeArr
-      .map((t) => parseFloat(t)) // remove ' s' using parseFloat
-      .reduce((a, b) => a + b, 0) / timeArr.length;
 
-  const passedTests = submission?.testcaseresult?.filter(
+
+
+  const passedTests = submission?.filter(
     (tc) => tc.passed
   ).length;
-  const totalTests = submission.testcaseresult?.length || 3;
-  const successRate = (passedTests / totalTests) * 100;
+  const totalTests = submission?.length || 3;
 
   return (
     <div className="space-y-6">
       {/* Overall Status */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="card bg-gray-50 dark:bg-gray-900    shadow-xl dark:shadow-lg dark:shadow-gray-900 ">
           <div className="card-body p-4">
             <h3 className="card-title text-sm text-gray-700 dark:text-gray-300">
@@ -47,7 +31,7 @@ const SubmissionResults = ({ submission }) => {
                 submission.status === "Accepted" ? "text-success" : "text-error"
               }`}
             >
-              {submission.status}
+              {submission.map((tc) => tc.status)}
             </div>
           </div>
         </div>
@@ -67,7 +51,7 @@ const SubmissionResults = ({ submission }) => {
               <Clock className="w-4 h-4" />
               Avg. Runtime
             </h3>
-            <div className="text-lg font-bold">{avgTime.toFixed(3)} s</div>
+            <div className="text-lg font-bold">{submission[0].time}</div>
           </div>
         </div>
 
@@ -80,7 +64,7 @@ const SubmissionResults = ({ submission }) => {
             <div className="text-lg font-bold">{avgMemory.toFixed(0)} KB</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Test Cases Results */}
       <div className="card bg-gray-100 dark:bg-gray-900 shadow-xl dark:shadow-lg dark:shadow-gray-900 shadow-gray-500 ">
@@ -104,7 +88,7 @@ const SubmissionResults = ({ submission }) => {
                 </tr>
               </thead>
               <tbody className="text-gray-700 dark:text-gray-300">
-                {submission?.testcaseresult?.map((testCase) => (
+                {submission?.map((testCase) => (
                   <tr key={testCase.id} className="bg-gray-50 dark:bg-gray-800">
                     <td>
                       {testCase.passed ? (
