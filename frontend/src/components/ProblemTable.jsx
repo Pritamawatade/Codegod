@@ -21,8 +21,7 @@ import CreatePlaylistModal from "./CreatePlaylistPattern";
 import AddToPlaylistModal from "./AddToPlaylist";
 import Button from "./Button";
 
-
-  const selectStyles = `
+const selectStyles = `
     w-full pl-12 pr-10 py-3 
     border border-gray-200 dark:border-gray-700 
     rounded-xl 
@@ -36,8 +35,10 @@ import Button from "./Button";
     text-sm font-medium
   `;
 
- const iconStyles = "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 z-10";
-  const chevronStyles = "absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none";
+const iconStyles =
+  "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 z-10";
+const chevronStyles =
+  "absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none";
 
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
@@ -210,7 +211,7 @@ const ProblemTable = ({ problems }) => {
 
         {/* Tags Select */}
         <div className="relative">
-          <Tag className={iconStyles  } />
+          <Tag className={iconStyles} />
           <select
             className={selectStyles}
             value={selectedTag}
@@ -296,6 +297,11 @@ const ProblemTable = ({ problems }) => {
                             className="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 font-medium text-sm sm:text-base transition-colors duration-200 block truncate"
                           >
                             {problem.title}
+                            {problem.title === "Add Two Numbers" && (
+                              <span className="inline-flex items-center px-2 py-0.5 ml-6 rounded text-xs font-medium bg-green-600 text-gray-700 dark:text-gray-300">
+                                demo
+                              </span>
+                            )}
                           </Link>
                           {(problem.tags || []).length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">

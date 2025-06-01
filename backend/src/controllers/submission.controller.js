@@ -6,7 +6,7 @@ import {
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { db } from '../libs/db.js';
-export const executeCode = async (req, res) => {
+export const submission = async (req, res) => {
   const { source_code, language_id, stdin, expected_outputs, problemId } =
     req.body;
 

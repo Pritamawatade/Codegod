@@ -246,6 +246,7 @@ function SignUpPage() {
           </div>
         </form>
       </div>
+
     </div>
   );
 }
