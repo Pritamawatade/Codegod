@@ -12,6 +12,7 @@ import discussionRouter from './routes/discussion.routes.js';
 
 const app = express();
 dotenv.config();
+console.log("env================>",process.env.CLIENT_URL);
 
 app.use(cookieParser());
 app.use(express.json());
