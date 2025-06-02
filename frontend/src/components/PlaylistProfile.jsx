@@ -98,7 +98,7 @@ const togglePlaylist = (id) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-gray-50/30 to-indigo-50/30 dark:from-[#0b1018] dark:via-[#0b1018] dark:to-[#0b1018] dark:bg-[#0b1018] transition-colors duration-300">
+    <div className="min-h-screen w-full bg-white  rounded-2xl dark:bg-[#1e2939] transition-colors duration-300">
       <div className="container mx-auto px-4 py-8 max-w-full w-full">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
