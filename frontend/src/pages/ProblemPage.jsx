@@ -250,7 +250,7 @@ const ProblemPage = () => {
       case "submissions":
         
         return (
-          submitResult ?
+         isSubmitting ? <div>Submitting...</div> :  submitResult ?
          <SubmissionResultCard submission={submitResult} /> : "No submissions yet"
         ); 
 
