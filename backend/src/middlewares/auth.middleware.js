@@ -5,7 +5,9 @@ import { ApiError } from '../utils/api-error.js';
 const authMiddleware = async (req, res, next) => {
   try {
      const token = req.cookies?.accessToken;
+     console.log('token not found', token);
     if (!token) {
+      console.log('token not found', token);
       throw new ApiError(500, 'unauthorized, provide the token bro');
     }
 
