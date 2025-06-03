@@ -148,12 +148,11 @@ const register = async (req, res) => {
     if (!isSent) {
       console.log('email not sent');
     }
-
-    const cookieOption = {
+ const cookieOption = {
       httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV !== 'development',
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: 'none',
     };
 
     return res
