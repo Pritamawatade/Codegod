@@ -147,6 +147,7 @@ exports.Prisma.ProblemScalarFieldEnum = {
   hints: 'hints',
   companyTags: 'companyTags',
   editorial: 'editorial',
+  sheetId: 'sheetId',
   testCases: 'testCases',
   codeSnippets: 'codeSnippets',
   referenceSolutions: 'referenceSolutions',
@@ -255,6 +256,38 @@ exports.Prisma.LikeScalarFieldEnum = {
   discussionId: 'discussionId'
 };
 
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  razorpayPaymentId: 'razorpayPaymentId',
+  razorpayOrderId: 'razorpayOrderId',
+  razorpaySignature: 'razorpaySignature',
+  userId: 'userId',
+  sheetId: 'sheetId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DsaSheetScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  price: 'price',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UserPurchasedSheetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  sheetId: 'sheetId',
+  purchasedAt: 'purchasedAt'
+};
+
+exports.Prisma.UserProgressScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  problemId: 'problemId',
+  completedAt: 'completedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -302,7 +335,11 @@ exports.Prisma.ModelName = {
   DailyStreak: 'DailyStreak',
   Discussion: 'Discussion',
   Comment: 'Comment',
-  Like: 'Like'
+  Like: 'Like',
+  Payment: 'Payment',
+  DsaSheet: 'DsaSheet',
+  UserPurchasedSheet: 'UserPurchasedSheet',
+  UserProgress: 'UserProgress'
 };
 
 /**

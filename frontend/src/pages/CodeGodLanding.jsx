@@ -10,7 +10,6 @@ import {
   Globe,
   BookOpen,
   TrendingUp,
-
 } from "lucide-react";
 import BannerText from "../components/BannerText";
 import { motion } from "framer-motion";
@@ -19,17 +18,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import PricingCards from "../components/PricingCards";
 
 const CodeGodLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState({});
   const observerRef = useRef();
-  const {authUser} = useAuthStore();
+  const { authUser } = useAuthStore();
   const navigate = useNavigate();
 
-  if(authUser){
-    navigate('/problems');
-  }
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -116,26 +113,6 @@ const CodeGodLanding = () => {
         <section className="relative pt-32 pb-20 overflow-hidden dark:bg-[#0e0e0e]">
           <div className="absolute inset-0 "></div>
 
-          {/* Animated Background Elements */}
-          {/* <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-bounce delay-100"></div>
-            <div className="absolute top-40 right-20 w-16 h-16 bg-purple-500/20 rounded-full animate-bounce delay-300"></div>
-            <div className="absolute bottom-20 left-20 w-12 h-12 bg-pink-500/20 rounded-full animate-bounce delay-500"></div>
-            <div className="absolute top-60 left-1/2 w-8 h-8 bg-yellow-500/20 rounded-full animate-bounce delay-700"></div> */}
-
-          {/* Floating Code Elements */}
-          {/* <div className="absolute top-32 right-10 opacity-20 animate-pulse">
-              <div className="text-4xl font-mono text-blue-600 dark:text-blue-400">
-                {"<>"}
-              </div>
-            </div>
-            <div className="absolute bottom-32 left-16 opacity-20 animate-pulse delay-1000">
-              <div className="text-3xl font-mono text-purple-600 dark:text-purple-400">
-                {"{ }"}
-              </div>
-            </div>
-          </div> */}
-
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="animate-fade-in-up">
               <h1 className="text-5xl md:text-7xl font-bold dark:text-white mb-6 leading-tight">
@@ -155,7 +132,10 @@ const CodeGodLanding = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                <button className="group bg-black text-white dark:bg-white dark:hover:bg-blue-600 cursor-pointer  dark:text-black px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform shadow-2xl hover:shadow-blue-500/25 flex items-center space-x-2">
+                <button
+                  onClick={() => navigate("/problems")}
+                  className="group bg-black text-white dark:bg-white dark:hover:bg-blue-600 cursor-pointer  dark:text-black px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform shadow-2xl hover:shadow-blue-500/25 flex items-center space-x-2"
+                >
                   <span>Start Your Journey</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -304,6 +284,7 @@ const CodeGodLanding = () => {
           buttonText="Try for free"
         />
 
+        {/* <PricingCards /> */}
         <WhyChooseCodeGod isVisible={isVisible1} />
 
         {/* CTA Section */}
@@ -330,6 +311,7 @@ const CodeGodLanding = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
+                  onClick={() => navigate("/problems")}
                   className="group bg-black dark:bg-white text-white dark:text-blue-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-blue-600  hover:text-black cursor-pointer transition-all duration-300 shadow-2xl flex items-center justify-center space-x-2"
                 >
                   <span>Start Your Divine Journey</span>
@@ -357,7 +339,6 @@ const CodeGodLanding = () => {
         {/* Footer */}
         <Footer />
       </div>
-
     </div>
   );
 };

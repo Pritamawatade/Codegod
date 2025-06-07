@@ -148,11 +148,13 @@ const register = async (req, res) => {
     if (!isSent) {
       console.log('email not sent');
     }
- const cookieOption = {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    const cookieOption = {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: 'none',
+      sameSite: isProduction ? 'none' : 'lax',
     };
 
     return res
@@ -237,13 +239,15 @@ const login = async (req, res) => {
     //     'user logged in successfully'
     //   )
     // );
+    const isProduction = process.env.NODE_ENV === 'production';
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: 'none',
+      sameSite: isProduction ? 'none' : 'lax',
     };
+
     return res
       .status(200)
       .cookie('accessToken', accessToken, options)
@@ -283,6 +287,8 @@ const logout = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: 'none',
     };
 
     return res
@@ -319,9 +325,13 @@ const refresAceesToken = async (req, res) => {
       return res.status(401).json(new ApiError(401, 'Unauthorized access '));
     }
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: isProduction ? 'none' : 'lax',
     };
 
     const { accessToken, refreshToken: newRefreshToken } =
@@ -381,18 +391,22 @@ const changeCurrentPassword = async (req, res) => {
     },
   });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        image: user.image,
-        username: user.username
-      }
-    }, 'Password changed successfully'));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          image: user.image,
+          username: user.username,
+        },
+      },
+      'Password changed successfully'
+    )
+  );
 };
 
 const updateAccountDetails = async (req, res) => {
@@ -402,7 +416,7 @@ const updateAccountDetails = async (req, res) => {
   if (!name || !username) {
     throw new ApiError(400, 'All fields are required');
   }
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+  const avatarLocalPath = req.files?.avatar[0]?.path;
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
@@ -413,14 +427,13 @@ const updateAccountDetails = async (req, res) => {
     data: {
       name,
       username,
-      image: avatar.url
+      image: avatar.url,
     },
   });
 
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
-
 
   return res.status(200).json(
     new ApiResponse(
@@ -519,11 +532,13 @@ const googleAuthController = async (req, res) => {
       user.id
     );
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== 'development',
-      sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: isProduction,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: isProduction ? 'none' : 'lax',
     };
 
     return res

@@ -18,8 +18,9 @@ import useThemeStore from "./store/useThemeStore.js";
 import PrivacyPolicy from "./pages/LegalPrivacy.jsx";
 import TermsAndConditions from "./pages/TermsAndConditions.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
-
+import RazorpayButton from "./RazorpayButton.jsx";
+import Sheets from "./pages/Sheets.jsx";
+import Sheet from "./pages/Sheet.jsx";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -48,17 +49,34 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Layout />}>
+          <Route index element={<CodeGodLanding />} />
+
           <Route
-            index
-            element={authUser ? <CodeGodLanding /> : <Navigate to={"/login"} />}
+            path="/problems"
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
           />
 
-          <Route path="/problems" element={<HomePage />} />
+           <Route
+          path="/sheets"
+          element={
+            <Sheets />
+          }
+        />
+
+         <Route
+          path="/sheets/:id"
+          element={
+            <Sheet />
+          }
+        />
         </Route>
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndConditions />} />
+       
+
+
 
         <Route
           path="/login"

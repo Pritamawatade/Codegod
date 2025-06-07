@@ -43,16 +43,18 @@ model User {
   provider               String? // 'google' or 'local'
   googleId               String?  @unique
 
-  problems         Problem[]
-  submission       Submission[]
-  problemSolved    ProblemSolved[]
-  Playlist         Playlist[]
-  problemsPlaylist ProblemInPlaylist[]
-  problemFeedbacks ProblemFeedback[]
-  dailyStreak      DailyStreak[]
-  discussion       Discussion[]
-  like             Like[]
-  comment          Comment[]
+  problems           Problem[]
+  submission         Submission[]
+  problemSolved      ProblemSolved[]
+  Playlist           Playlist[]
+  problemsPlaylist   ProblemInPlaylist[]
+  problemFeedbacks   ProblemFeedback[]
+  dailyStreak        DailyStreak[]
+  discussion         Discussion[]
+  like               Like[]
+  comment            Comment[]
+  userPurchasedSheet UserPurchasedSheet[]
+  UserProgress       UserProgress[]
 }
 
 model Problem {
@@ -67,6 +69,8 @@ model Problem {
   hints       String?
   companyTags String[]
   editorial   String?
+  sheet       DsaSheet? @relation("SheetProblems", fields: [sheetId], references: [id])
+  sheetId     String?
 
   testCases          Json
   codeSnippets       Json
@@ -83,6 +87,7 @@ model Problem {
 
   ProblemFeedback ProblemFeedback[]
   Discussion      Discussion[]
+  UserProgress    UserProgress[] // Added opposite relation field
 }
 
 model Submission {
@@ -235,4 +240,45 @@ model Like {
   discussionId String
 
   @@unique([userId, discussionId]) // Prevent duplicate likes
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  razorpayPaymentId String
+  razorpayOrderId   String
+  razorpaySignature String
+  userId            String
+  sheetId           String
+  createdAt         DateTime @default(now())
+}
+
+model DsaSheet {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  price       Int // in INR
+  problems    Problem[] @relation("SheetProblems")
+  createdAt   DateTime  @default(now())
+
+  userPurchasedSheet UserPurchasedSheet[]
+}
+
+model UserPurchasedSheet {
+  id          String   @id @default(cuid())
+  userId      String
+  sheetId     String
+  purchasedAt DateTime @default(now())
+
+  user  User     @relation(fields: [userId], references: [id])
+  sheet DsaSheet @relation(fields: [sheetId], references: [id])
+}
+
+model UserProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  problemId   String
+  completedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
 }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Code, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { z } from "zod";
 import { useAuthStore } from "../store/useAuthStore";
@@ -15,7 +15,7 @@ const LoginSchema = z.object({
 const LoginPage = () => {
   const { isLoggingIn, login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -27,6 +27,7 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       await login(data);
+      navigate('/problems')
     } catch (error) {
       console.error("Login failed", error);
     }

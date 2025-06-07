@@ -44,7 +44,6 @@ export default function DiscussionList({ problemId }) {
     ),
   });
 
-  console.log(addDiscussion);
 
   const onSubmit = async (data) => {
     try {
@@ -67,9 +66,13 @@ export default function DiscussionList({ problemId }) {
     fetchDiscussion(id);
   };
 
+
+
   useEffect(() => {
     fetchDiscussions(problemId);
-  }, [problemId, fetchDiscussions, discussions, addComment]);
+  }, [problemId,fetchDiscussions]);
+
+
 
   return (
     <div className="space-y-6 pb-12">

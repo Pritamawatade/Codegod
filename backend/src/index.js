@@ -9,6 +9,8 @@ import submissionRoute from './routes/submission.routes.js';
 import cors from 'cors';
 import streakRouter from './routes/streak.routes.js';
 import discussionRouter from './routes/discussion.routes.js';
+import paymentRoute from './routes/payment.routes.js';
+import sheetRouter from './routes/sheets.routes.js';
 
 const app = express();
 dotenv.config();
@@ -30,6 +32,8 @@ app.use('/api/v1/submission', submissionRoute);
 app.use('/api/v1/playlists', playlistRouter);
 app.use('/api/v1/streak', streakRouter);
 app.use('/api/v1/discussion', discussionRouter);
+app.use('/api/v1/payments', paymentRoute);
+app.use('/api/v1/sheets', sheetRouter);
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
