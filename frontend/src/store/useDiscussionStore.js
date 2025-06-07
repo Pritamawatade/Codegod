@@ -8,7 +8,6 @@ export const useDiscussionStore = create((set, get) => ({
   fetchDiscussions: async (problemId) => {
     try {
       const res = await axiosInstance.get(`/discussion/get-all-discussions/${problemId}`);
-      console.log(res.data.data);
       set({ discussions: res.data.data });
     } catch (err) {
       console.error('Failed to fetch discussions:', err);

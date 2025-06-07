@@ -4,8 +4,7 @@ import { ApiError } from '../utils/api-error.js';
 
 const authMiddleware = async (req, res, next) => {
   try {
-     const token = req.cookies?.accessToken;
-     console.log('token not found', token);
+     const token = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
     if (!token) {
       console.log('token not found', token);
       throw new ApiError(500, 'unauthorized, provide the token bro');
@@ -20,7 +19,6 @@ const authMiddleware = async (req, res, next) => {
       throw new ApiError(401, 'error in jwt verify');
     }
 
-    console.log("decoed = ",decoded);
     const user = await db.user.findUnique({
       where: {
         id: decoded.id,
@@ -43,8 +41,7 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(error);
-    
-    throw new ApiError(500, 'Error in authMiddleware', error);
+    next(error);
   }
 };
 

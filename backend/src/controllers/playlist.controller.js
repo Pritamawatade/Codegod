@@ -227,6 +227,14 @@ const removeProblemFromPlaylist = async (req, res) => {
   }
 };
 
+const isProblemInPlaylist = async(req,res)=>{
+  try {
+    
+  } catch (error) {
+    
+  }
+}
+
 export {
   addProblemToPlaylist,
   getAllPlaylists,

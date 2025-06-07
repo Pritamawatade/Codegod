@@ -19,9 +19,10 @@ const createProblem = async (req, res) => {
     testCases,
     codeSnippets,
     referenceSolutions,
-    companyTags
+    companyTags,
   } = req.body;
 
+  console.log('referenceSolutions', referenceSolutions);
   if (req.user.role !== 'ADMIN') {
     throw new ApiError(403, 'Unauthorized access, ADMIN only');
   }
@@ -49,19 +50,24 @@ const createProblem = async (req, res) => {
         expected_output: output,
       }));
 
+      console.log('submissions=============>', submissions);
+
       const submissionResults = await submitBatch(submissions);
+
+      console.log('submissionResults', submissionResults);
 
       const tokens = submissionResults.map((res) => res.token);
 
       const results = await poolBatchResult(tokens);
 
+      console.log('results', results);
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
 
         if (result.status.id !== 3) {
           throw new ApiError(
             400,
-            `Test case failed for ${i + 1} for language ${language}`
+            `Reference solution for ${language} failed`
           );
         }
       }
@@ -96,7 +102,7 @@ const createProblem = async (req, res) => {
 
 const getAllProblems = async (req, res) => {
   try {
-    const problems = await db.problem.findMany({
+    const allProblems = await db.problem.findMany({
       include: {
         solvedBy: {
           where: {
@@ -106,10 +112,11 @@ const getAllProblems = async (req, res) => {
       },
     });
 
-    if (!problems) {
+    if (!allProblems) {
       throw new ApiError(404, 'No problems found');
     }
 
+    const problems = allProblems.filter((problem) => !problem.sheetId);
     return res
       .status(200)
       .json(new ApiResponse(200, problems, 'Problems fetched'));
@@ -130,6 +137,21 @@ const getProblem = async (req, res) => {
 
     if (!problem) {
       throw new ApiError(404, 'problem not found');
+    }
+
+    if (problem.sheetId) {
+
+      
+      const access = await db.userPurchasedSheet.findFirst({
+        where: {
+          userId: req.user.id,
+          sheetId: problem.sheetId,
+        },
+      });
+
+      if (!access && req.user.role !== 'ADMIN') {
+        throw new ApiError(403, 'Access denied');
+      }
     }
 
     return res
@@ -175,7 +197,7 @@ const updateProblem = async (req, res) => {
     testCases,
     codeSnippets,
     referenceSolutions,
-    companyTags
+    companyTags,
   } = req.body;
 
   try {
@@ -343,5 +365,4 @@ export {
   getProblemsSolvedByUser,
   postLikeAndDislike,
   getLikeAndDislikeCount,
-  
 };

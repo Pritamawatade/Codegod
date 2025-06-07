@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import Split from "react-split";
 import {
+  Minimize2,
+  Maximize2,
   Play,
   FileText,
   MessageSquare,
@@ -21,7 +23,10 @@ import {
   XCircle,
   ThumbsDown,
   Info,
+  Check,
+  ChevronDown,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import useProblemStore from "../store/useProblemStore";
 import { useExecutionStore } from "../store/useExecutionStore";
@@ -51,9 +56,11 @@ const ProblemPage = () => {
   } = useProblemStore();
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
-  const [selectedLanguage, setSelectedLanguage] = useState("JAVASCRIPT");
+  const [selectedLanguage, setSelectedLanguage] = useState("C");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const wrapperRef = useRef(null);
   const {
     submissionForProblem,
     isLoading: isSubmissionsLoading,
@@ -64,7 +71,14 @@ const ProblemPage = () => {
 
   const { theme } = useThemeStore();
   const { authUser } = useAuthStore();
-  const { executeCode, submission, isExecuting, isSubmitting, submitResult, submitCode } = useExecutionStore();
+  const {
+    executeCode,
+    submission,
+    isExecuting,
+    isSubmitting,
+    submitResult,
+    submitCode,
+  } = useExecutionStore();
 
   if (!authUser) {
     Navigate("/login");
@@ -78,6 +92,15 @@ const ProblemPage = () => {
   useEffect(() => {
     getProblemById(id);
   }, []);
+  useEffect(() => {
+    const exitOnEsc = (e) => {
+      if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener("keydown", exitOnEsc);
+    return () => document.removeEventListener("keydown", exitOnEsc);
+  }, [isFullscreen]);
 
   // ⛔ Disable all shortcuts
   useEffect(() => {
@@ -97,7 +120,7 @@ const ProblemPage = () => {
 
       if (e.ctrlKey && forbiddenKeys.includes(key)) {
         e.preventDefault();
-        toast.error(`"${e.key}" shortcut is disabled`);
+        toast.error(`for your own good "${e.key}" is disabled`);
       }
 
       // ⛔ F12 Developer Tools
@@ -131,9 +154,8 @@ const ProblemPage = () => {
   useEffect(() => {
     if (problem) {
       setCode(problem.codeSnippets?.[selectedLanguage] || "");
-
       setTestCases(
-        problem.testcases?.map((tc) => ({
+        problem.testCases?.map((tc) => ({
           input: tc.input,
           output: tc.output,
         })) || []
@@ -248,11 +270,13 @@ const ProblemPage = () => {
         );
 
       case "submissions":
-        
-        return (
-         isSubmitting ? <div>Submitting...</div> :  submitResult ?
-         <SubmissionResultCard submission={submitResult} /> : "No submissions yet"
-        ); 
+        return isSubmitting ? (
+          <div>Submitting...</div>
+        ) : submitResult ? (
+          <SubmissionResultCard submission={submitResult} />
+        ) : (
+          "No submissions yet"
+        );
 
       case "discussion":
         return <DiscussionList problemId={id} />;
@@ -321,161 +345,185 @@ const ProblemPage = () => {
       const stdin = problem.testCases.map((tc) => tc.input);
       const expected_outputs = problem.testCases.map((tc) => tc.output);
       submitCode(code, language_id, stdin, expected_outputs, id);
-      setActiveTab("submissions")
+      setActiveTab("submissions");
       console.log("submission --------", submitResult);
     } catch (error) {
       console.log("Error executing code", error);
     }
   };
 
-
-
   if (isProblemLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="rounded-full bg-slate-300 dark:bg-slate-700 h-16 w-16 mb-4"></div>
-          <div className="h-4 bg-slate-300 dark:bg-slate-700 rounded w-32 mb-2"></div>
-          <div className="h-3 bg-slate-300 dark:bg-slate-700 rounded w-24"></div>
-        </div>
+        <motion.div
+          className="flex flex-col items-center"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="animate-spin-slow rounded-full bg-gradient-to-r from-blue-400 to-purple-500 h-16 w-16 mb-4"></div>
+          <div className="h-4 bg-gradient-to-r from-blue-400 to-purple-500 rounded w-32 mb-2"></div>
+          <div className="h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded w-24"></div>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className=" min-w-screen min-h-screen max-h-screen overflow-y-scoll overflow-x-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
-      <nav className="bg-white dark:bg-gray-950 shadow-md px-4 py-1 sticky top-0 z-10">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Link
-              to={"/"}
-              className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-            >
-              <Home className="w-5 h-5" />
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-            <div className="nocopy">
-             
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
-               <div className="flex flex-wrap items-center gap-1 text-xs text-slate-400 dark:text-slate-400">
-                  <h1 className="text-lg md:text-xl font-bold line-clamp-1">
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-3 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+        <div className=" mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          {/* Breadcrumb and Problem Info */}
+          <div className="flex flex-col w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              <Link
+                to={"/problems"}
+                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
+              >
+                <Home className="w-5 h-5 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 flex-shrink-0" />
+              </Link>
+
+              <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 line-clamp-1">
                 {problem?.title || "Loading..."}
               </h1>
-                <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full text-xs font-medium">
-                  Easy
+              <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                <span
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    problem?.difficulty === "Easy"
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+                      : problem?.difficulty === "Medium"
+                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                      : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                  }`}
+                >
+                  {problem?.difficulty || "Easy"}
                 </span>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  <span>
-                    Updated{" "}
-                    {problem?.createdAt
-                      ? new Date(problem.createdAt).toLocaleString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
-                      : ""}
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  <span>{submissionCount} Submissions</span>
-                </div>
+              </div>
+            </div>
 
-                <div className="flex items-center gap-1">
-                  <ThumbsUp className="w-3 h-3" />
-                  <span>95% Success Rate</span>
-                </div>
+            {/* Problem Metadata */}
+            {/* <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+          problem?.difficulty === "Easy" 
+            ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+            : problem?.difficulty === "Medium"
+              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+              : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+        }`}>
+          {problem?.difficulty || "Easy"}
+        </span>
+        
+        
 
-               </div>
-                <div className=" ml-18  dark:bg-slate-950 bg-slate-50 ">
-                  <div className="flex justify-center items-center gap-4 mr-32">
-                    <button
-                    style={{zIndex:"600"}}
-                      className={`px-4 runcode py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
-                        isExecuting
-                          ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
-                          : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
-                      } transition-colors`}
-                      onClick={handleRunCode}
-                      disabled={isExecuting}
-                    >
-                      {isExecuting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-slate-400 dark:border-slate-300 border-t-transparent rounded-full animate-spin"></div>
-                          Running...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4" />
-                          Run Code
-                        </>
-                      )}
-                    </button>
+        <div className="flex items-center gap-1.5">
+          <Users className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>{submissionCount} Submissions</span>
+        </div>
 
-                    <button
-                    style={{zIndex:"600"}}
-                      className={`px-4 runcode py-2 rounded-lg flex items-center gap-2 font-medium text-sm ${
-                        isExecuting
-                          ? "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 cursor-not-allowed"
-                          : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
-                      } transition-colors`}
-                      onClick={handleSubmitCode}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-slate-400 dark:border-slate-300 border-t-transparent rounded-full animate-spin"></div>
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4" />
-                          Submit
-                        </>
-                      )}
-                    </button>
-                   
+        <div className="flex items-center gap-1.5">
+          <ThumbsUp className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>95% Success Rate</span>
+        </div>
+      </div> */}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-3">
+              {/* Run and Submit Buttons */}
+              <div className="flex items-center gap-3">
+                <button
+                  className={`px-4 py-2 rounded-md flex items-center gap-2 font-medium text-sm transition-all duration-200 ${
+                    isExecuting
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white shadow-md hover:shadow-lg"
+                  }`}
+                  onClick={handleRunCode}
+                  disabled={isExecuting}
+                >
+                  {isExecuting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-gray-400 dark:border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Running...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      <span>Run Code</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  className={`px-4 py-2 rounded-md flex items-center gap-2 font-medium text-sm transition-all duration-200 ${
+                    isSubmitting
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white shadow-md hover:shadow-lg"
+                  }`}
+                  onClick={handleSubmitCode}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-gray-400 dark:border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Submit</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-2 ml-2">
+                <button
+                  className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                    isBookmarked
+                      ? "text-yellow-500 dark:text-yellow-400"
+                      : "text-gray-500 dark:text-gray-400"
+                  }`}
+                  onClick={() => setIsBookmarked(!isBookmarked)}
+                  aria-label="Bookmark"
+                >
+                  <Bookmark className="w-5 h-5" />
+                </button>
+
+                <button
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400"
+                  aria-label="Share"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("URL copied to clipboard");
+                  }}
+                >
+                  <Share2 className="w-5 h-5" />
+                </button>
+
+                <div className="relative">
+                  <select
+                    className="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 appearance-none sm:text-sm"
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                  >
+                    {Object.keys(problem?.codeSnippets || {}).map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang?.charAt(0).toUpperCase() + lang.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                    <ChevronDown className="h-5 w-5" aria-hidden="true" />
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              className={`btn btn-sm btn-ghost btn-circle ${
-                isBookmarked
-                  ? "text-yellow-500 dark:text-yellow-400"
-                  : "text-slate-500 dark:text-slate-400"
-              }`}
-              onClick={() => setIsBookmarked(!isBookmarked)}
-              aria-label="Bookmark"
-            >
-              <Bookmark className="w-5 h-5" />
-            </button>
-            <button
-              className="btn btn-sm btn-ghost btn-circle text-slate-500 dark:text-slate-400"
-              aria-label="Share"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-            <select
-              className="select select-sm bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-            >
-              {Object.keys(problem?.codeSnippets || {}).map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang?.charAt(0).toUpperCase() + lang.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </nav>
-
       {problem && (
         <div className="container dark:bg-gray-950 min-h-full min-w-screen max-h-screen overflow-y-scroll overflow-x-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[100vh]">
@@ -539,41 +587,40 @@ const ProblemPage = () => {
                 <div className="p-4 dark:bg-black min-h-screen md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
                   {renderTabContent()}
                   {/* Feedback Section */}
-                  
                 </div>
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div className="flex items-center justify-end gap-4">
-                      <button
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                        onClick={() => submitFeedback(true)}
-                      >
-                        <ThumbsUp
-                          className="w-5 h-5 transition-colors duration-200"
-                          strokeWidth={liked ? 0 : 1.5}
-                          fill={liked ? "#10b981" : "none"}
-                          stroke={liked ? "#10b981" : "#6b7280"}
-                        />
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                          {likes}
-                        </span>
-                      </button>
+                  <div className="flex items-center justify-end gap-4">
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                      onClick={() => submitFeedback(true)}
+                    >
+                      <ThumbsUp
+                        className="w-5 h-5 transition-colors duration-200"
+                        strokeWidth={liked ? 0 : 1.5}
+                        fill={liked ? "#10b981" : "none"}
+                        stroke={liked ? "#10b981" : "#6b7280"}
+                      />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        {likes}
+                      </span>
+                    </button>
 
-                      <button
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                        onClick={() => submitFeedback(false)}
-                      >
-                        <ThumbsDown
-                          className="w-5 h-5 transition-colors duration-200"
-                          strokeWidth={liked === false ? 0 : 1.5}
-                          fill={liked === false ? "#ef4444" : "none"}
-                          stroke={liked === false ? "#ef4444" : "#6b7280"}
-                        />
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                          {dislikes}
-                        </span>
-                      </button>
-                    </div>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                      onClick={() => submitFeedback(false)}
+                    >
+                      <ThumbsDown
+                        className="w-5 h-5 transition-colors duration-200"
+                        strokeWidth={liked === false ? 0 : 1.5}
+                        fill={liked === false ? "#ef4444" : "none"}
+                        stroke={liked === false ? "#ef4444" : "#6b7280"}
+                      />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        {dislikes}
+                      </span>
+                    </button>
                   </div>
+                </div>
               </div>
 
               <div className="flex flex-col min-h-screen">
@@ -595,7 +642,24 @@ const ProblemPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex-grow w-full pt-2">
+                    <div
+                      ref={wrapperRef}
+                      className={`rflex-grow w-full pt-2 elative transition-all duration-300 ${
+                        isFullscreen
+                          ? "fixed inset-0 z-50 bg-white dark:bg-gray-900 p-4"
+                          : "relative h-[500px] bg-white dark:bg-gray-950 rounded-xl shadow"
+                      }`}
+                    >
+                      <button
+                        onClick={() => setIsFullscreen(!isFullscreen)}
+                        className="absolute top-2 right-2 z-50 p-2 rounded-md bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+                      >
+                        {isFullscreen ? (
+                          <Minimize2 size={18} />
+                        ) : (
+                          <Maximize2 size={18} />
+                        )}
+                      </button>
                       <Editor
                         className="w-full h-full"
                         height="100%"
@@ -632,8 +696,8 @@ const ProblemPage = () => {
                     </div>
                     <div className="p-4 md:p-6">
                       {submission ? (
-                        console.log("submission--?", submission),
-                        <SubmissionResults submission={submission} />
+                        (console.log("submission--?", submission),
+                        (<SubmissionResults submission={submission} />))
                       ) : (
                         <div className="overflow-x-auto">
                           <table className="w-full border-collapse">
@@ -657,17 +721,27 @@ const ProblemPage = () => {
                                     key={index}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
                                   >
-                                    <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                    <td className="px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
                                       {index + 1}
                                     </td>
                                     <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                      <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                        {testCase.input}
+                                      <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded overflow-x-auto">
+                                        <span className="text-slate-500 dark:text-slate-400">
+                                          Input:
+                                        </span>
+                                        <code className="text-slate-700 dark:text-slate-300">
+                                          {testCase.input}
+                                        </code>
                                       </div>
                                     </td>
                                     <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                      <div className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded overflow-x-auto">
-                                        {testCase.output}
+                                      <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded overflow-x-auto">
+                                        <span className="text-slate-500 dark:text-slate-400">
+                                          Output:
+                                        </span>
+                                        <code className="text-slate-700 dark:text-slate-300">
+                                          {testCase.output}
+                                        </code>
                                       </div>
                                     </td>
                                   </tr>

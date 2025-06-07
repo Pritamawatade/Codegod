@@ -6,6 +6,7 @@ const LogoutButton = ({ children }) => {
 
   const onLogout = async () => {
     await logout();
+    window.location.href = "/";
   };
 
   return (

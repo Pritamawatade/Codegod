@@ -21,7 +21,7 @@ problemRouter.post(
   createProblem
 );
 problemRouter.get('/get-all-problems', authMiddleware, getAllProblems);
-problemRouter.get('/get-problem/:id', authMiddleware, getProblem);
+problemRouter.get('/get-problem/:id', authMiddleware,  getProblem);
 
 problemRouter.delete(
   '/delete-problem/:id',

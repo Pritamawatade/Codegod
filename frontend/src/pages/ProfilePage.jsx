@@ -59,15 +59,22 @@ function ProfilePage() {
   const navigate = useNavigate();
   const {streakData, getStreakData} = useStreakStore();
 
-  if (!authUser) {
+  useEffect(() => {
+      if (!authUser) {
     navigate("/login");
   }
+    window.scrollTo(0, 0);
+    
+  }, []);
+
+  console.log(authUser)
+
   if (!authUser) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
-    );
+    );  
   }
 
   useEffect(() => {
