@@ -20,6 +20,7 @@ prisma/dev.db
 # Environment files
 .env.*
 .env.local
+.env
 
 # Build output
 dist/
