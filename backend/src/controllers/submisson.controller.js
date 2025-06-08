@@ -3,7 +3,7 @@ import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 
 const getAllSubmissions = async (req, res) => {
-    const userID = req.user.id;
+  const userID = req.user.id;
   try {
     const submissions = await db.submission.findMany({
       where: {
@@ -54,9 +54,7 @@ const getSubmissionCountForProblem = async (req, res) => {
 
     return res
       .status(200)
-      .json(
-        new ApiResponse(200, submissionCount, 'Submissions fetched')
-      );
+      .json(new ApiResponse(200, submissionCount, 'Submissions fetched'));
   } catch (error) {
     console.log(error);
     throw new ApiError(
@@ -66,9 +64,45 @@ const getSubmissionCountForProblem = async (req, res) => {
     );
   }
 };
+const getAllSubmissionsForAllProblems = async (req, res) => {
+  try {
+    const submissions = await db.submission.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        Problem: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    });
 
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          submissions,
+          'Submissions for all users and problems fetched'
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      500,
+      'Something went wrong at getAllSubmissionsForAllProblems',
+      error
+    );
+  }
+};
 export {
   getAllSubmissions,
   getSubmissionForProblem,
   getSubmissionCountForProblem,
+  getAllSubmissionsForAllProblems,
 };

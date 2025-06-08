@@ -13,6 +13,7 @@ import {
   Tag,
   ChevronDown,
   Building2,
+  Code,
 } from "lucide-react";
 import { useActionStore } from "../store/useActionStore";
 import toast from "react-hot-toast";
@@ -157,13 +158,7 @@ const ProblemTable = ({ problems }) => {
             Practice coding problems and track your progress
           </p>
         </div>
-        {/* <button
-          className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 gap-2"
-          onClick={() => {setIsCreateModalOpen(true)}}
-        >
-          <Plus className="w-4 h-4" />
-          Create Playlist
-        </button> */}
+
         <Button
           onClick={() => {
             setIsCreateModalOpen(true);
@@ -171,6 +166,21 @@ const ProblemTable = ({ problems }) => {
           buttonText="Create Playlist"
           Icon={Plus}
         />
+
+
+  {authUser.role == "ADMIN" && (
+          <Link
+            to="/add-problem"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+          
+          >
+            <Code className="w-4 h-4 text-gray-400" />
+            <span>Add Problem</span>
+           
+          </Link>
+        )}
+
+        
       </div>
 
       {/* Filters Section */}

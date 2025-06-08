@@ -31,16 +31,13 @@ export const submission = async (req, res) => {
       stdin: input,
     }));
 
-    console.log('submission1', submission1);
 
     const submitResponse = await submitBatch(submission1);
 
-    console.log(`submitResponse---------------->`, submitResponse);
     const tokens = submitResponse.map((res) => res.token);
 
     const result = await poolBatchResult(tokens);
 
-    console.log(`result---------------->`, result);
 
     let allPassed = true;
 
@@ -69,7 +66,6 @@ export const submission = async (req, res) => {
       };
     });
 
-    console.log(`detailedResult---------------->`, detailedResult);
 
     const submission = await db.submission.create({
       data: {
@@ -95,7 +91,6 @@ export const submission = async (req, res) => {
       },
     });
 
-    console.log(`submission---------------->`, submission);
 
     if (allPassed) {
       await db.problemSolved.upsert({
@@ -145,7 +140,6 @@ export const submission = async (req, res) => {
       time: result.time,
     }));
 
-    console.log('testcaseResult ---------------->', testCaseResults);
 
     await db.testCaseResult.createMany({
       data: testCaseResults,

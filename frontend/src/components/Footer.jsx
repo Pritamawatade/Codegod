@@ -28,18 +28,36 @@ function Footer() {
               legends worldwide.
             </p>
             <div className="flex space-x-4">
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-cyan-700 transition-colors cursor-pointer">
-                <Twitter className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors cursor-pointer">
-                <Github className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors cursor-pointer">
-                <Linkedin className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
-                <Mail className="w-5 h-5" />
-              </div>
+              <a
+                href="https://twitter.com/pritam_awatade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-cyan-700 transition-colors cursor-pointer"
+              >
+                <Twitter className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://github.com/pritamawatade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors cursor-pointer"
+              >
+                <Github className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/pritam-awatade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <Linkedin className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="mailto:pritamawatade.work@gmail.com"
+                className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer"
+              >
+                <Mail className="w-5 h-5 text-white" />
+              </a>
             </div>
           </motion.div>
 

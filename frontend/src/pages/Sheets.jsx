@@ -59,10 +59,8 @@ export default function Sheets() {
             receipt: `receipt_${sheetId}`,
           });
 
-          console.log("res = ", res);
           const order = res.data.data;
 
-          console.log("order", order);
 
           const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -72,7 +70,6 @@ export default function Sheets() {
             description: `Purchase ${sheets[i].title}`,
             order_id: order.id,
             handler: async function (response) {
-              console.log("Payment successful", response);
 
               // Optional: store transaction in DB via another API
               await axiosInstance.post("/payments/save-payment", {
@@ -101,9 +98,7 @@ export default function Sheets() {
         navigate(`/sheets/${sheetId}`);
       }
     } catch (error) {
-      if (res.staus === 403) {
-        console.log("403");
-      }
+      
       console.log(error);
       toast.error(error.message);
     } finally {

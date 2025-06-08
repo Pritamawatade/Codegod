@@ -102,7 +102,7 @@ export default function WhyChooseCodeGod({ isVisible }) {
                   },
                   {
                     icon: <Code className="w-8 h-8 text-green-500 mb-2" />,
-                    stat: "500+",
+                    stat: "50+",
                     label: "Problems Solved",
                   },
                 ].map(({ icon, stat, label }, idx) => (

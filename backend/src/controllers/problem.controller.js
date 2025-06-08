@@ -22,7 +22,6 @@ const createProblem = async (req, res) => {
     companyTags,
   } = req.body;
 
-  console.log('referenceSolutions', referenceSolutions);
   if (req.user.role !== 'ADMIN') {
     throw new ApiError(403, 'Unauthorized access, ADMIN only');
   }
@@ -50,17 +49,14 @@ const createProblem = async (req, res) => {
         expected_output: output,
       }));
 
-      console.log('submissions=============>', submissions);
 
       const submissionResults = await submitBatch(submissions);
 
-      console.log('submissionResults', submissionResults);
 
       const tokens = submissionResults.map((res) => res.token);
 
       const results = await poolBatchResult(tokens);
 
-      console.log('results', results);
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
 
@@ -262,7 +258,6 @@ const getProblemsSolvedByUser = async (req, res) => {
       throw new ApiError(404, 'No problems found');
     }
 
-    console.log('Solved problems = ', solvedProblems);
 
     return res
       .status(200)
@@ -331,6 +326,7 @@ const getLikeAndDislikeCount = async (req, res) => {
     const isLiked = await db.problemFeedback.findFirst({
       where: { problemId, liked: true, userId: req.user.id },
     });
+
 
     const likes = allFeedback.filter((f) => f.liked).length;
     const dislikes = allFeedback.length - likes;

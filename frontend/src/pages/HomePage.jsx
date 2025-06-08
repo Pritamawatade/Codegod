@@ -1,16 +1,21 @@
 import React, { useEffect } from "react";
 
 import useProblemStore from "../store/useProblemStore";
-import { Loader } from "lucide-react";
+import { Loader, Star } from "lucide-react";
 import ProblemTable from "../components/ProblemTable";
 import { useActionStore } from "../store/useActionStore";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import StreakCalendar from "../components/StreakCalender";
 
 function HomePage() {
   const { getAllProblems, problems, isProblemsLoading } = useProblemStore();
   const { isDeletingProblem } = useActionStore();
+  const { allUsers, getAllUsers } = useAuthStore();
 
   useEffect(() => {
     getAllProblems();
+    getAllUsers();
   }, [getAllProblems, isDeletingProblem]);
 
   if (isProblemsLoading) {
@@ -55,6 +60,7 @@ function HomePage() {
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                
                 <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
                   Become CodeGod
                 </span>
@@ -66,39 +72,22 @@ function HomePage() {
 
               {/* Subtitle */}
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8">
-                Master coding interviews with our comprehensive platform.
-                Practice problems, track progress, and build the skills that top
-                tech companies value most.
+                Purchase FAANG DSA sheet and unlock Premium collections of
+                problem.
               </p>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mb-12">
-                <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    500+
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Problems
-                  </div>
-                </div>
-                <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    10+
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Solved Daily
-                  </div>
-                </div>
-                <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    95%
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Success Rate
-                  </div>
-                </div>
+              {/* CTA Buttons */}
+              <div className="flex justify-center items-center gap-4 px-6 pb-6">
+                <Link
+                  to="/sheets"
+                  className="w- inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 group/btn"
+                >
+                  Explore Sheets
+                </Link>
               </div>
             </div>
+
+        
 
             {/* Problems Content */}
             <div className="relative">

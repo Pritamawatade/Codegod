@@ -1,43 +1,21 @@
 import React, { useState, useMemo } from "react";
-import {useStreakStore} from "../store/useStreakStore";
+import { useStreakStore } from "../store/useStreakStore";
 import { useEffect } from "react";
 
 const StreakCalendar = () => {
   // Sample data - replace with your API data
-  const streakData1 = [
-    { date: "2025-05-01", count: 1 },
-    { date: "2025-05-05", count: 2 },
-    { date: "2025-05-06", count: 1 },
-    { date: "2025-05-07", count: 3 },
-    { date: "2025-05-08", count: 1 },
-    { date: "2025-05-09", count: 2 },
-    { date: "2025-05-10", count: 1 },
-    { date: "2025-05-11", count: 1 },
-    { date: "2025-05-12", count: 2 },
-    { date: "2025-05-13", count: 1 },
-    { date: "2025-05-14", count: 1 },
-    { date: "2025-05-15", count: 1 },
-    { date: "2025-05-16", count: 2 },
-    { date: "2025-05-17", count: 1 },
-    { date: "2025-05-18", count: 1 },
-    { date: "2025-05-19", count: 1 },
-    { date: "2025-05-20", count: 1 },
-    { date: "2025-05-21", count: 2 },
-    { date: "2025-05-23", count: 0 },
-    { date: "2025-05-31", count: 11 }, // Today
-  ];
-
   const { streakData, getStreakData } = useStreakStore();
+  const [currentDate] = useState(new Date(2025, 5, 1));
 
+ 
+  useEffect(() => {
+    async function fetchData() {
+      await getStreakData();
+      console.log("streakData", streakData);
+    }
+    fetchData();
+  }, []);
 
-
-  const [currentDate] = useState(new Date(2025, 4, 1)); // May 27, 2025
-
-     useEffect(() => {
-        getStreakData();
-        console.log(streakData);
-        console.log(streakData1);
-      }, []);
 
   // Create a map for quick lookup of streak data
   const streakMap = useMemo(() => {
@@ -45,7 +23,7 @@ const StreakCalendar = () => {
       map[item.date] = item.count;
       return map;
     }, {});
-  }, []);
+  }, [streakData]);
 
   // Calculate current and max streak
   const { currentStreak, maxStreak } = useMemo(() => {
@@ -86,6 +64,17 @@ const StreakCalendar = () => {
 
     return { currentStreak, maxStreak };
   }, [streakData]);
+
+  
+   if (streakData.length === 0) {
+    return (
+      <div>
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   // Get calendar data for the current month
   const getCalendarData = () => {
@@ -145,8 +134,10 @@ const StreakCalendar = () => {
     return "😢";
   };
 
+  
+
   return (
-    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 rounded-lg shadow-lg mx-auto mt-6">
       {/* Header */}
       <h1 className="text-2xl font-bold mb-6">Monthly Streak</h1>
 

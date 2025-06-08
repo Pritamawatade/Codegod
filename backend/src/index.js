@@ -14,7 +14,6 @@ import sheetRouter from './routes/sheets.routes.js';
 
 const app = express();
 dotenv.config();
-console.log("env================>",process.env.CLIENT_URL);
 
 app.use(cookieParser());
 app.use(express.json());
@@ -34,6 +33,7 @@ app.use('/api/v1/streak', streakRouter);
 app.use('/api/v1/discussion', discussionRouter);
 app.use('/api/v1/payments', paymentRoute);
 app.use('/api/v1/sheets', sheetRouter);
+
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

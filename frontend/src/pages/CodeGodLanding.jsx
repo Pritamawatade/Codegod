@@ -55,7 +55,7 @@ const CodeGodLanding = () => {
   const features = [
     {
       icon: <Globe className="w-8 h-8" />,
-      title: "5 Programming Languages",
+      title: "13 Programming Languages",
       description:
         "Master DSA in Python, Java, C++, JavaScript, and Go with comprehensive support for all major languages.",
     },
@@ -139,9 +139,7 @@ const CodeGodLanding = () => {
                   <span>Start Your Journey</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="px-8 cursor-pointer py-4 rounded-full text-lg font-semibold border-2 border-slate-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-lg">
-                  Watch Demo
-                </button>
+               
               </div>
 
               {/* Hero Stats */}
@@ -317,15 +315,7 @@ const CodeGodLanding = () => {
                   <span>Start Your Divine Journey</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
-                <motion.button
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="px-8 py-4 rounded-full text-lg font-semibold border-2 border-black dark:border-white text-black dark:text-white hover:bg-white dark:hover:text-black hover:text-blue-600 transition-all duration-300"
-                >
-                  Learn More
-                </motion.button>
+              
               </div>
             </motion.div>
           </div>

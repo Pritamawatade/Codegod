@@ -31,16 +31,13 @@ export const executeCode = async (req, res) => {
       stdin: input,
     }));
 
-    console.log('submission1', submission1);
 
     const submitResponse = await submitBatch(submission1);
 
-    console.log(`submitResponse---------------->`, submitResponse);
     const tokens = submitResponse.map((res) => res.token);
 
     const result = await poolBatchResult(tokens);
 
-    console.log(`result---------------->`, result);
 
     let allPassed = true;
 
@@ -71,7 +68,6 @@ export const executeCode = async (req, res) => {
       };
     });
 
-    console.log(`detailedResult---------------->`, detailedResult);
 
    
     return res.status(200).json(

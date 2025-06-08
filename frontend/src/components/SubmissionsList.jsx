@@ -25,7 +25,6 @@ const SubmissionsList = ({ submissions, isLoading }) => {
     }
   };
 
-  console.log("submissions =================>", submissions);
 
   // Helper function to calculate average memory usage
   const calculateAverageMemory = (memoryData) => {

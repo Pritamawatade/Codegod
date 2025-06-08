@@ -16,6 +16,7 @@ import {
   Pencil,
   User,
   Image,
+  Star,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileSubmission from "../components/ProfileSubmission";
@@ -25,6 +26,7 @@ import StreakCalendar from "../components/StreakCalender";
 import { useEffect } from "react";
 import ContributionHeatmap from "../components/ContributionHeatmap";
 import { useStreakStore } from "../store/useStreakStore";
+import Footer from "../components/Footer";
 
 const updateSchema = z.object({
   name: z
@@ -55,26 +57,26 @@ function ProfilePage() {
     isUpdating,
     isUpdatingPassword,
     updatePassword,
+    allUsers,
+    getAllUsers
   } = useAuthStore();
   const navigate = useNavigate();
-  const {streakData, getStreakData} = useStreakStore();
+  const { streakData, getStreakData } = useStreakStore();
 
   useEffect(() => {
-      if (!authUser) {
-    navigate("/login");
-  }
+    if (!authUser) {
+      navigate("/login");
+    }
+    getAllUsers();
     window.scrollTo(0, 0);
-    
   }, []);
-
-  console.log(authUser)
 
   if (!authUser) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
-    );  
+    );
   }
 
   useEffect(() => {
@@ -138,7 +140,7 @@ function ProfilePage() {
     <>
       <Navbar />
       <div className="w-full  mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans antialiased bg-gray-50 dark:bg-[#0b1018] text-gray-800 dark:text-gray-100 min-h-screen ">
-        <div className="flex  w-full space-x-4 items-start justify-between relative">
+        <div className="flex  w-full space-x-4 items-start justify-between relative mb-12">
           <div className="w-[30%] border-r border-amber-50 pr-4 h-full min-h-screen sticky top-5">
             <div className="profileSection  px-2">
               <div className="dark:bg-[#1e2939] bg-white p-4 rounded-lg shadow-md">
@@ -401,23 +403,108 @@ function ProfilePage() {
                 </div>
               </dialog>
             </div>
-            <StreakCalendar />
           </div>
           <div className="w-[70%]">
             <div className="min-h-screen bg-white dark:bg-[#0b1018] flex flex-col items-center justify-between py-10 px-4  w-full">
               {/* Header with back button */}
+
               <div className="flex flex-col gap-6 justify-between items-start w-full mb-6">
                 <ProfileSubmission />
+
                 <ContributionHeatmap data={streakData} />
                 <ProblemSolvedByUser />
-
                 <PlaylistProfile />
               </div>
 
-              {/* PLaylist created by the user and their actions */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                  <StreakCalendar />
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ backgroundColor: "#1e2939" }}
+                  >
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                      Leaderboard
+                    </h2>
+                    <div className="space-y-3">
+                      {[...allUsers]
+                        .sort(
+                          (a, b) => b.dailyStreak.length - a.dailyStreak.length
+                        )
+                        .map((user, index) => (
+                          <div
+                            key={index}
+                            className={`flex items-center justify-between p-4 rounded-lg ${
+                              index < 3 ? "border-l-4" : ""
+                            }`}
+                            style={{
+                              backgroundColor:
+                                index === 0 ? "#2d3b4e" : "#1e2939",
+                              borderLeftColor:
+                                index === 0
+                                  ? "#f59e0b"
+                                  : index === 1
+                                  ? "#9ca3af"
+                                  : index === 2
+                                  ? "#f97316"
+                                  : "transparent",
+                            }}
+                          >
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center">
+                                <span
+                                  className={`w-6 text-center mr-4 font-bold ${
+                                    index === 0
+                                      ? "text-yellow-400 text-xl"
+                                      : index === 1
+                                      ? "text-gray-300 text-lg"
+                                      : index === 2
+                                      ? "text-orange-400 text-lg"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  {index + 1}
+                                </span>
+                                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-600">
+                                  <img
+                                    src={user.image}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <div className="font-medium text-white">
+                                  {user.name}
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  {user.problemSolved.length} problems solved
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="flex items-center justify-end space-x-1">
+                                <Star className="w-4 h-4 text-yellow-500" />
+                                <span className="text-sm font-bold text-white">
+                                  {user.dailyStreak.length}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                day streak
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <Footer className="w-full bg-gray-700 rounded-2xl" />
       </div>
     </>
   );

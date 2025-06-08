@@ -174,10 +174,11 @@ const ProblemPage = () => {
     getLikesAndDislikes(id);
   };
 
+  
+
   useEffect(() => {
     if (activeTab == "submissions") {
       getSubmissionForProblem(id);
-      console.log("submissions  ==> ", submissionForProblem);
     }
   }, [activeTab]);
 
@@ -322,23 +323,20 @@ const ProblemPage = () => {
         return null;
     }
   };
-  const handleRunCode = (e) => {
-    e.preventDefault();
-    console.log("submission -------->>>>>>>>", submission);
+    const handleRunCode = (e) => {
+      e?.preventDefault();
 
-    try {
-      const language_id = getLanguageId(selectedLanguage);
-      const stdin = problem.testCases.map((tc) => tc.input);
-      const expected_outputs = problem.testCases.map((tc) => tc.output);
-      executeCode(code, language_id, stdin, expected_outputs, id);
-      console.log("submission --------", submission);
-    } catch (error) {
-      console.log("Error executing code", error);
-    }
-  };
+      try {
+        const language_id = getLanguageId(selectedLanguage);
+        const stdin = problem.testCases.map((tc) => tc.input);
+        const expected_outputs = problem.testCases.map((tc) => tc.output);
+        executeCode(code, language_id, stdin, expected_outputs, id);
+      } catch (error) {
+        console.log("Error executing code", error);
+      }
+    };
   const handleSubmitCode = (e) => {
-    e.preventDefault();
-    console.log("submission -------->>>>>>>>", submitResult);
+    e?.preventDefault();
 
     try {
       const language_id = getLanguageId(selectedLanguage);
@@ -346,11 +344,37 @@ const ProblemPage = () => {
       const expected_outputs = problem.testCases.map((tc) => tc.output);
       submitCode(code, language_id, stdin, expected_outputs, id);
       setActiveTab("submissions");
-      console.log("submission --------", submitResult);
     } catch (error) {
       console.log("Error executing code", error);
     }
   };
+
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl + '
+      if (e.ctrlKey && e.key === "'") {
+        e.preventDefault(); // Prevent any default behavior
+        handleRunCode();
+      }
+
+      // Ctrl + Enter
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        handleSubmitCode();
+      }
+    };
+
+    // Add the event listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleRunCode, handleSubmitCode]);
+
+
 
   if (isProblemLoading) {
     return (
@@ -402,30 +426,6 @@ const ProblemPage = () => {
               </div>
             </div>
 
-            {/* Problem Metadata */}
-            {/* <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-          problem?.difficulty === "Easy" 
-            ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
-            : problem?.difficulty === "Medium"
-              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
-              : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-        }`}>
-          {problem?.difficulty || "Easy"}
-        </span>
-        
-        
-
-        <div className="flex items-center gap-1.5">
-          <Users className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{submissionCount} Submissions</span>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <ThumbsUp className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>95% Success Rate</span>
-        </div>
-      </div> */}
           </div>
 
           {/* Action Buttons */}
@@ -696,8 +696,7 @@ const ProblemPage = () => {
                     </div>
                     <div className="p-4 md:p-6">
                       {submission ? (
-                        (console.log("submission--?", submission),
-                        (<SubmissionResults submission={submission} />))
+                        <SubmissionResults submission={submission} />
                       ) : (
                         <div className="overflow-x-auto">
                           <table className="w-full border-collapse">

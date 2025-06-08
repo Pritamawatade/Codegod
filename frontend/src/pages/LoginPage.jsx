@@ -13,7 +13,7 @@ const LoginSchema = z.object({
 });
 
 const LoginPage = () => {
-  const { isLoggingIn, login } = useAuthStore();
+  const { isLoggingIn, login, authUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const {
@@ -27,6 +27,7 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       await login(data);
+      if(authUser?.role === "ADMIN") navigate('/admin')
       navigate('/problems')
     } catch (error) {
       console.error("Login failed", error);

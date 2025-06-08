@@ -21,6 +21,8 @@ import NotFound from "./pages/NotFound.jsx";
 import RazorpayButton from "./RazorpayButton.jsx";
 import Sheets from "./pages/Sheets.jsx";
 import Sheet from "./pages/Sheet.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminUsersPage from "./pages/AdminUsersPage.jsx";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -56,27 +58,15 @@ function App() {
             element={authUser ? <HomePage /> : <Navigate to="/login" />}
           />
 
-           <Route
-          path="/sheets"
-          element={
-            <Sheets />
-          }
-        />
+          <Route path="/sheets" element={<Sheets />} />
 
-         <Route
-          path="/sheets/:id"
-          element={
-            <Sheet />
-          }
-        />
+          <Route path="/sheets/:id" element={<Sheet />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
         </Route>
 
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsAndConditions />} />
-       
-
-
+        <Route path="/admin" element={<AdminDashboard />} />
 
         <Route
           path="/login"

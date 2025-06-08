@@ -9,6 +9,7 @@ import {
   refresAceesToken,
   updateAccountDetails,
   googleAuthController,
+  getAllUsers,
 } from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
@@ -40,6 +41,9 @@ authRouter.post(
   upload.fields([{ name: 'avatar', maxCount: 1 }]),
   updateAccountDetails
 );
+
+authRouter.get('/get-all-users', authMiddleware, getAllUsers);
+
 
 
 export default authRouter;

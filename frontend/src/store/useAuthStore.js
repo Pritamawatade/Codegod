@@ -9,6 +9,7 @@ export const useAuthStore = create((set) => ({
   isUpdating: false,
   isCheckingAuth: false,
   isUpdatingPassword: false,
+  allUsers:[],
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -104,4 +105,15 @@ export const useAuthStore = create((set) => ({
       toast.error("Error logging out");
     }
   },
+
+  getAllUsers: async () => {
+    try {
+      const res = await axiosInstance.get("/users/get-all-users");
+
+      set({ allUsers: res?.data?.data });
+    } catch (error) {
+      console.log("Error getting all users ", error);
+    }
+  },
+
 }));

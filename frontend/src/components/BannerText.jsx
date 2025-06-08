@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const BannerText = ({ title, description, buttonText }) => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex items-center  dark:bg-gray-900 bg-gray-300 ">
       <motion.div
@@ -30,31 +32,37 @@ const BannerText = ({ title, description, buttonText }) => {
         </div>
 
         <motion.h1
-         initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-4xl sm:text-5xl md:text-6xl font-bold text-black capitalize  leading-tight p-20">
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl sm:text-5xl md:text-6xl font-bold text-black capitalize  leading-tight p-20"
+        >
           {/* Scrape Anything from <span className="block sm:inline">LinkedIn, without limits.</span> */}
           <span className="text-4xl sm:text-5xl md:text-6xl font-bold text-blue-600 capitalize dark:text-white leading-tight p-4">
             Level up from mortal to God
           </span>
-          One problem <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-black  mb-6 leading-tight">at a time.</p>
+          One problem{" "}
+          <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-black  mb-6 leading-tight">
+            at a time.
+          </p>
         </motion.h1>
         <motion.p
-         initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-lg sm:text-xl text-slate-700 dark:text-slate-700 mb-10 max-w-2xl mx-auto">
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-lg sm:text-xl text-slate-700 dark:text-slate-700 mb-10 max-w-2xl mx-auto"
+        >
           {/* A streamlined LinkedIn scraper API for real-time data scraping of profiles and company information at scale. */}
           Track your growth, crush your weaknesses, and become unstoppable.
         </motion.p>
         <motion.button
-           initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          onClick={()=> navigate('/problems')}
           className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg shadow-md transition-colors duration-300"
         >
           {buttonText}

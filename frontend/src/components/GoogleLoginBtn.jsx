@@ -13,10 +13,8 @@ function GoogleLoginBtn() {
         { credential: credentialResponse.credential },
         { withCredentials: true }
       );
-      console.log('Google login success:', res.data);
       checkAuth();
       navigate('/');
-      // redirect to dashboard or homepage
     } catch (err) {
       console.error('Google login failed:', err.response?.data || err.message);
     }

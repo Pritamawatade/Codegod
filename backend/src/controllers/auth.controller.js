@@ -217,28 +217,7 @@ const login = async (req, res) => {
       user.id
     );
 
-    // res.cookie('jwt', token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV !== 'development',
-    //   maxAge: 1000 * 60 * 60 * 24 * 7,
-    //   sameSite: 'strict',
-    // });
-
-    // return res.status(200).json(
-    //   new ApiResponse(
-    //     200,
-    //     {
-    //       user: {
-    //         id: user.id,
-    //         email: user.email,
-    //         name: user.name,
-    //         role: user.role,
-    //         image: user.image,
-    //       },
-    //     },
-    //     'user logged in successfully'
-    //   )
-    // );
+    
     const isProduction = process.env.NODE_ENV === 'production';
 
     const options = {
@@ -410,7 +389,6 @@ const changeCurrentPassword = async (req, res) => {
 };
 
 const updateAccountDetails = async (req, res) => {
-  console.log('req.body', req.body);
   const { name, username } = req.body;
 
   if (!name || !username) {
@@ -568,6 +546,29 @@ const googleAuthController = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await db.user.findMany({
+    
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include:{
+        dailyStreak:true,
+        problemSolved:true
+      }
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, users, 'Users fetched'));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw new ApiError(500, 'Internal Server Error', error);
+  }
+};
+
+
 export {
   register,
   login,
@@ -578,4 +579,5 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   googleAuthController,
+  getAllUsers
 };
