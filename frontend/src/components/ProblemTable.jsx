@@ -307,11 +307,7 @@ const ProblemTable = ({ problems }) => {
                             className="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 font-medium text-sm sm:text-base transition-colors duration-200 block truncate"
                           >
                             {problem.title}
-                            {problem.title === "Product of Two Numbers" && (
-                              <span className="inline-flex items-center px-2 py-0.5 ml-6 rounded text-xs font-medium bg-green-600 text-gray-700 dark:text-gray-300">
-                                demo
-                              </span>
-                            )}
+                            
                           </Link>
                           {(problem.tags || []).length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">

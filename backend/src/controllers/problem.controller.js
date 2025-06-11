@@ -277,7 +277,7 @@ const postLikeAndDislike = async (req, res) => {
       throw new ApiError(400, 'userId and problemId are required');
     }
 
-    const feedback = await prisma.problemFeedback.upsert({
+    const feedback = await db.problemFeedback.upsert({
       where: {
         userId_problemId: { userId, problemId },
       },

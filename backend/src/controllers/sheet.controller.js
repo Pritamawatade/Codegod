@@ -156,11 +156,11 @@ const getProgress = async (req, res) => {
   const { sheetId } = req.params;
 
   try {
-    const total = await prisma.problem.count({
+    const total = await db.problem.count({
       where: { sheetId },
     });
 
-    const completed = await prisma.userProgress.count({
+    const completed = await db.userProgress.count({
       where: {
         userId,
         problem: { sheetId },

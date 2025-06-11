@@ -41,6 +41,7 @@ const register = async (req, res) => {
       throw new ApiError(400, 'Invalid data');
     }
 
+    
     const existingUser = await db.user.findUnique({
       where: {
         email,
@@ -50,7 +51,7 @@ const register = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json(new ApiError(400, 'User already exists').toJSON());
+        .json(new ApiError(400, 'User already exists'))
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
