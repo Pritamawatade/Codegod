@@ -646,15 +646,15 @@ const ProblemPage = () => {
 
                     <div
                       ref={wrapperRef}
-                      className={`flex-grow w-full pt-2 relative transition-all duration-300 ${
+                      className={`${
                         isFullscreen
-                          ? "fixed inset-0 z-50 bg-white dark:bg-gray-900 p-4"
-                          : "relative h-full bg-white dark:bg-gray-950 rounded-xl shadow"
-                      }`}
+                          ? "fixed inset-0 z-[9999] bg-white dark:bg-gray-900 w-screen h-screen"
+                          : "relative h-full bg-white dark:bg-gray-950 rounded-xl shadow flex-grow w-full pt-2"
+                      } transition-all duration-300`}
                     >
                       <button
                         onClick={() => setIsFullscreen(!isFullscreen)}
-                        className="absolute top-2 right-2 z-50 p-2 rounded-md bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+                        className="absolute top-4 right-4 z-[9999] p-2 rounded-md bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
                       >
                         {isFullscreen ? (
                           <Minimize2 size={18} />
