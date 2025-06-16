@@ -21,73 +21,94 @@ export default function SubmissionResultCard({ submission }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-sm w-full max-w-4xl mx-auto p-5"
+      className="w-full"
     >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-          Submission Report
-        </h2>
-        <span
-          className={clsx(
-            "px-3 py-1 text-sm font-medium rounded-full capitalize",
-            statusColorMap[submission.status] || "bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100"
-          )}
-        >
-          {submission.status}
-        </span>
+      {/* Status Header */}
+      <div className="flex items-center gap-4 mb-6 px-4">
+        {submission.status === "Accepted" ? (
+          <CheckCircle className="w-8 h-8 text-green-500" />
+        ) : (
+          <XCircle className="w-8 h-8 text-red-500" />
+        )}
+        <div>
+          <h2 className={clsx(
+            "text-2xl font-medium",
+            submission.status === "Accepted" ? "text-green-500" : "text-red-500"
+          )}>
+            {submission.status}
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            {totalPassed} / {totalCases} test cases passed
+          </p>
+        </div>
       </div>
 
-      {/* Meta Info */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-5 text-zinc-700 dark:text-zinc-300">
-        <div><span className="font-medium">Language:</span> {submission.language}</div>
-        <div><span className="font-medium">Submitted:</span> {new Date(submission.createdAt).toLocaleString()}</div>
-        <div><span className="font-medium">Passed:</span> {totalPassed}/{totalCases}</div>
-        <div><span className="font-medium">Avg Time:</span> {avgTime} ms</div>
+      {/* Submission Details */}
+      <div className="border-y border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+        <div className="grid grid-cols-4 text-sm">
+          <div className="p-4 border-r border-zinc-200 dark:border-zinc-700">
+            <div className="text-zinc-500 dark:text-zinc-400">Runtime</div>
+            <div className="font-medium text-zinc-900 dark:text-zinc-100">{avgTime} ms</div>
+          </div>
+          <div className="p-4 border-r border-zinc-200 dark:border-zinc-700">
+            <div className="text-zinc-500 dark:text-zinc-400">Memory</div>
+            <div className="font-medium text-zinc-900 dark:text-zinc-100">
+              {submission.testcaseresult[0]?.memory || "N/A"}
+            </div>
+          </div>
+          <div className="p-4 border-r border-zinc-200 dark:border-zinc-700">
+            <div className="text-zinc-500 dark:text-zinc-400">Language</div>
+            <div className="font-medium text-zinc-900 dark:text-zinc-100">{submission.language}</div>
+          </div>
+          <div className="p-4">
+            <div className="text-zinc-500 dark:text-zinc-400">Submitted</div>
+            <div className="font-medium text-zinc-900 dark:text-zinc-100">
+              {new Date(submission.createdAt).toLocaleString()}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-zinc-200 dark:border-zinc-700 mb-4" />
+      {/* Test Cases */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between px-4 mb-4">
+          <h3 className="font-medium text-zinc-900 dark:text-zinc-100">Test Cases</h3>
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">
+            {totalPassed} passed, {totalCases - totalPassed} failed
+          </div>
+        </div>
 
-      {/* Test Case Section */}
-      <div>
-        <h3 className="text-md sm:text-lg font-medium mb-3 text-zinc-800 dark:text-zinc-100">
-          Test Case Details
-        </h3>
-
-        <div className="space-y-3">
+        <div className="space-y-2">
           {submission.testcaseresult.map((tc, index) => (
             <div
               key={tc.id}
-              className="border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-3 bg-zinc-50 dark:bg-zinc-800/40"
+              className="px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                <div className="flex items-center gap-2">
                   {tc.passed ? (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <CheckCircle className="w-4 h-4 text-green-500" />
                   ) : (
-                    <XCircle className="w-5 h-5 text-red-500" />
+                    <XCircle className="w-4 h-4 text-red-500" />
                   )}
-                  Test Case #{tc.testCase}
+                  <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    Test Case {index + 1}
+                  </span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-300">
-                  <div className="flex items-center gap-1">
-                    <TimerIcon className="w-4 h-4" /> {tc.time} ms
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Code2 className="w-4 h-4" /> {tc.memory}
-                  </div>
+                <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span>{tc.time} ms</span>
+                  <span>{tc.memory}</span>
                 </div>
               </div>
 
-              <div className="text-sm text-zinc-700 dark:text-zinc-300 space-y-1">
-                <div>
-                  <span className="font-medium">Expected:</span>{" "}
-                  <code className="text-zinc-900 dark:text-zinc-100">{tc.expected}</code>
+              <div className="pl-6 text-sm space-y-1">
+                <div className="text-zinc-600 dark:text-zinc-300">
+                  <span className="text-zinc-400 dark:text-zinc-500">Input:</span>{" "}
+                  <code className="font-mono">{tc.expected}</code>
                 </div>
-                <div>
-                  <span className="font-medium">Output:</span>{" "}
-                  <code className="text-zinc-900 dark:text-zinc-100">{tc.stdout}</code>
+                <div className="text-zinc-600 dark:text-zinc-300">
+                  <span className="text-zinc-400 dark:text-zinc-500">Output:</span>{" "}
+                  <code className="font-mono">{tc.stdout}</code>
                 </div>
               </div>
             </div>

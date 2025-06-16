@@ -61,6 +61,7 @@ const ProblemPage = () => {
   const [testCases, setTestCases] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const wrapperRef = useRef(null);
+  const [activeTestCase, setActiveTestCase] = useState(0);
   const {
     submissionForProblem,
     isLoading: isSubmissionsLoading,
@@ -700,65 +701,56 @@ const ProblemPage = () => {
                       {submission ? (
                         <SubmissionResults submission={submission} />
                       ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse">
-                            <thead>
-                              <tr className="bg-slate-50 dark:bg-slate-700/50">
-                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                  Test Case
-                                </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                  Input
-                                </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                  Expected Output
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {testCases.length > 0 ? (
-                                testCases.map((testCase, index) => (
-                                  <tr
-                                    key={index}
-                                    className="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors"
-                                  >
-                                    <td className="px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                      {index + 1}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                      <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded overflow-x-auto">
-                                        <span className="text-slate-500 dark:text-slate-400">
-                                          Input:
-                                        </span>
-                                        <code className="text-slate-700 dark:text-slate-300">
-                                          {testCase.input}
-                                        </code>
-                                      </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 break-all">
-                                      <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded overflow-x-auto">
-                                        <span className="text-slate-500 dark:text-slate-400">
-                                          Output:
-                                        </span>
-                                        <code className="text-slate-700 dark:text-slate-300">
-                                          {testCase.output}
-                                        </code>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="3"
-                                    className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
-                                  >
-                                    No test cases available
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
+                        <div className="w-full">
+                          {/* Test Case Tabs */}
+                          <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
+                            {testCases.length > 0 ? (
+                              testCases.map((_, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setActiveTestCase(index)}
+                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap
+                                    ${activeTestCase === index 
+                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' 
+                                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                                >
+                                  Test Case {index + 1}
+                                </button>
+                              ))
+                            ) : (
+                              <div className="text-center text-slate-500 dark:text-slate-400 py-8">
+                                No test cases available
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Active Test Case Content */}
+                          {testCases.length > 0 && (
+                            <div className="space-y-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                              <div className="space-y-2">
+                                <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                  Input:
+                                </div>
+                                <div className="bg-white dark:bg-slate-800 rounded-lg p-3 font-mono text-sm overflow-x-auto">
+                                  <code className="text-slate-700 dark:text-slate-300">
+                                    {testCases[activeTestCase]?.input}
+                                  </code>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                  Expected Output:
+                                </div>
+                                <div className="bg-white dark:bg-slate-800 rounded-lg p-3 font-mono text-sm overflow-x-auto">
+                                  <code className="text-slate-700 dark:text-slate-300">
+                                    {testCases[activeTestCase]?.output}
+                                  </code>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
