@@ -25,6 +25,8 @@ import {
   Info,
   Check,
   ChevronDown,
+  RotateCcw,
+  Pause,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -62,6 +64,10 @@ const ProblemPage = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const wrapperRef = useRef(null);
   const [activeTestCase, setActiveTestCase] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [startTime, setStartTime] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+
   const {
     submissionForProblem,
     isLoading: isSubmissionsLoading,
@@ -175,15 +181,37 @@ const ProblemPage = () => {
     getLikesAndDislikes(id);
   };
 
-  
-
   useEffect(() => {
     if (activeTab == "submissions") {
       getSubmissionForProblem(id);
     }
   }, [activeTab]);
 
-  // React.useMemo(getSubmissionForProblem(id), [activeTab]);
+  // Format milliseconds into HH:MM:SS format
+  const formatTime = (ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const pad = (num) => num.toString().padStart(2, "0");
+
+    if (hours > 0) {
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+    return `${pad(minutes)}:${pad(seconds)}`;
+  };
+
+  // Update elapsed time every second when timer is running
+  useEffect(() => {
+    let intervalId;
+    if (isTimerRunning) {
+      intervalId = setInterval(() => {
+        setElapsedTime(Date.now() - startTime);
+      }, 1000);
+    }
+    return () => clearInterval(intervalId);
+  }, [isTimerRunning, startTime]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -324,18 +352,18 @@ const ProblemPage = () => {
         return null;
     }
   };
-    const handleRunCode = (e) => {
-      e?.preventDefault();
+  const handleRunCode = (e) => {
+    e?.preventDefault();
 
-      try {
-        const language_id = getLanguageId(selectedLanguage);
-        const stdin = problem.testCases.map((tc) => tc.input);
-        const expected_outputs = problem.testCases.map((tc) => tc.output);
-        executeCode(code, language_id, stdin, expected_outputs, id);
-      } catch (error) {
-        console.log("Error executing code", error);
-      }
-    };
+    try {
+      const language_id = getLanguageId(selectedLanguage);
+      const stdin = problem.testCases.map((tc) => tc.input);
+      const expected_outputs = problem.testCases.map((tc) => tc.output);
+      executeCode(code, language_id, stdin, expected_outputs, id);
+    } catch (error) {
+      console.log("Error executing code", error);
+    }
+  };
   const handleSubmitCode = (e) => {
     e?.preventDefault();
 
@@ -349,7 +377,6 @@ const ProblemPage = () => {
       console.log("Error executing code", error);
     }
   };
-
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -367,15 +394,13 @@ const ProblemPage = () => {
     };
 
     // Add the event listener
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     // Cleanup
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleRunCode, handleSubmitCode]);
-
-
 
   if (isProblemLoading) {
     return (
@@ -414,20 +439,20 @@ const ProblemPage = () => {
                   {problem?.title || "Loading..."}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                <span
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                    problem?.difficulty === "Easy"
-                      ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
-                      : problem?.difficulty === "Medium"
-                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
-                      : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                  }`}
-                >
-                  {problem?.difficulty || "Easy"}
-                </span>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                      problem?.difficulty === "Easy"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+                        : problem?.difficulty === "Medium"
+                        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                        : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                    }`}
+                  >
+                    {problem?.difficulty || "Easy"}
+                  </span>
                 </div>
               </div>
-              
+
               {/* Like/Dislike buttons moved to top */}
               <div className="flex items-center gap-2">
                 <button
@@ -461,6 +486,45 @@ const ProblemPage = () => {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* Stopwatch Section */}
+          <div className="flex items-center justify-center flex-1">
+            {!isTimerRunning ? (
+              <button
+                onClick={() => {
+                  setIsTimerRunning(true);
+                  setStartTime(Date.now() - elapsedTime);
+                }}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400"
+                aria-label="Start Timer"
+              >
+                <Clock className="w-5 h-5" />
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg text-gray-700 dark:text-gray-300">
+                  {formatTime(elapsedTime)}
+                </span>
+                <button
+                  onClick={() => setIsTimerRunning(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400"
+                  aria-label="Pause Timer"
+                >
+                  <Pause className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsTimerRunning(false);
+                    setElapsedTime(0);
+                  }}
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400"
+                  aria-label="Reset Timer"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -619,7 +683,10 @@ const ProblemPage = () => {
                   </div>
                 </div>
 
-                <div className="p-4 dark:bg-black md:p-6 overflow-auto flex-grow overflow-y-auto" style={{maxHeight: "calc(100vh - 150px)"}}>
+                <div
+                  className="p-4 dark:bg-black md:p-6 overflow-auto flex-grow overflow-y-auto"
+                  style={{ maxHeight: "calc(100vh - 150px)" }}
+                >
                   {renderTabContent()}
                   {/* Feedback Section */}
                 </div>
@@ -710,9 +777,10 @@ const ProblemPage = () => {
                                   key={index}
                                   onClick={() => setActiveTestCase(index)}
                                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap
-                                    ${activeTestCase === index 
-                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' 
-                                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    ${
+                                      activeTestCase === index
+                                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                                     }`}
                                 >
                                   Test Case {index + 1}
