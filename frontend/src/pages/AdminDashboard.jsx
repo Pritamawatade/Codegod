@@ -354,7 +354,7 @@ const AdminDashboard = () => {
                 </h3>
               </div>
               <div
-                className="p-4 rounded-lg"
+                className="p-4 rounded-lg max-h-[400px] overflow-y-scroll"
                 style={{ backgroundColor: "#1e2939" }}
               >
                 <h2 className="text-2xl font-bold text-white mb-6 text-center">
