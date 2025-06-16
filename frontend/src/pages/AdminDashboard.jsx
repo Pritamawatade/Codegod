@@ -135,15 +135,6 @@ const AdminDashboard = () => {
     
   ];
 
-  const activityData = [
-    { day: "Mon", submissions: 420, users: 180 },
-    { day: "Tue", submissions: 380, users: 160 },
-    { day: "Wed", submissions: 520, users: 220 },
-    { day: "Thu", submissions: 480, users: 200 },
-    { day: "Fri", submissions: 680, users: 280 },
-    { day: "Sat", submissions: 340, users: 140 },
-    { day: "Sun", submissions: 290, users: 120 },
-  ];
 
   const COLORS = ["#10b981", "#f59e0b", "#ef4444"];
 

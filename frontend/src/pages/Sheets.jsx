@@ -14,7 +14,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
-import RazorpayButton from "../RazorpayButton";
 import { useAuthStore } from "../store/useAuthStore";
 
 const cardVariants = {

@@ -66,6 +66,7 @@ const useProblemStore = create((set) => ({
   },
 
   postLikeAndDislike: async (id, data) => {
+    console.log(id, data);
     try {
       const res = await axiosInstance.post(`/problems/${id}/feedback`, data);
       set({

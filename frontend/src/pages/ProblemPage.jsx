@@ -385,33 +385,34 @@ const ProblemPage = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="animate-spin-slow rounded-full bg-gradient-to-r from-blue-400 to-purple-500 h-16 w-16 mb-4"></div>
-          <div className="h-4 bg-gradient-to-r from-blue-400 to-purple-500 rounded w-32 mb-2"></div>
-          <div className="h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded w-24"></div>
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="h-4 bg-blue-500 rounded w-32 mb-2 animate-pulse"></div>
+          <div className="h-3 bg-blue-500 rounded w-24 animate-pulse"></div>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className=" min-w-screen min-h-screen max-h-screen overflow-y-scoll overflow-x-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
-      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-3 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+    <div className="min-w-screen h-screen overflow-hidden bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100">
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-2 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
         <div className=" mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           {/* Breadcrumb and Problem Info */}
           <div className="flex flex-col w-full md:w-auto">
-            <div className="flex items-center gap-2">
-              <Link
-                to={"/problems"}
-                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
-              >
-                <Home className="w-5 h-5 flex-shrink-0" />
-                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-              </Link>
+            <div className="flex items-center gap-2 justify-between">
+              <div className="flex items-center gap-2">
+                <Link
+                  to={"/problems"}
+                  className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
+                >
+                  <Home className="w-5 h-5 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                </Link>
 
-              <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 line-clamp-1">
-                {problem?.title || "Loading..."}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 line-clamp-1">
+                  {problem?.title || "Loading..."}
+                </h1>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                 <span
                   className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                     problem?.difficulty === "Easy"
@@ -423,9 +424,42 @@ const ProblemPage = () => {
                 >
                   {problem?.difficulty || "Easy"}
                 </span>
+                </div>
+              </div>
+              
+              {/* Like/Dislike buttons moved to top */}
+              <div className="flex items-center gap-2">
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                  onClick={() => submitFeedback(true)}
+                >
+                  <ThumbsUp
+                    className="w-4 h-4 transition-colors duration-200"
+                    strokeWidth={liked ? 0 : 1.5}
+                    fill={liked ? "#10b981" : "none"}
+                    stroke={liked ? "#10b981" : "#6b7280"}
+                  />
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {likes}
+                  </span>
+                </button>
+
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
+                  onClick={() => submitFeedback(false)}
+                >
+                  <ThumbsDown
+                    className="w-4 h-4 transition-colors duration-200"
+                    strokeWidth={liked === false ? 0 : 1.5}
+                    fill={liked === false ? "#ef4444" : "none"}
+                    stroke={liked === false ? "#ef4444" : "#6b7280"}
+                  />
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {dislikes}
+                  </span>
+                </button>
               </div>
             </div>
-
           </div>
 
           {/* Action Buttons */}
@@ -525,8 +559,8 @@ const ProblemPage = () => {
         </div>
       </nav>
       {problem && (
-        <div className="container dark:bg-gray-950 min-h-full min-w-screen max-h-screen overflow-y-scroll overflow-x-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-[100vh]">
+        <div className="container dark:bg-gray-950 h-[calc(100vh-56px)] min-w-screen overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
             <Split
               className="min-w-screen split"
               minSize={100}
@@ -534,7 +568,7 @@ const ProblemPage = () => {
               snapOffset={0}
               dragInterval={2}
             >
-              <div className=" bg-white   dark:bg-black rounded-xl shadow-lg text-sm ">
+              <div className="bg-white dark:bg-black rounded-xl shadow-lg text-sm h-full flex flex-col">
                 <div className="border-b border-slate-200 dark:border-slate-700">
                   <div className="flex ">
                     <button
@@ -584,55 +618,23 @@ const ProblemPage = () => {
                   </div>
                 </div>
 
-                <div className="p-4 dark:bg-black min-h-screen md:p-6 overflow-auto max-h-[calc(100vh)] overflow-y-scroll">
+                <div className="p-4 dark:bg-black md:p-6 overflow-auto flex-grow overflow-y-auto" style={{maxHeight: "calc(100vh - 150px)"}}>
                   {renderTabContent()}
                   {/* Feedback Section */}
                 </div>
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <div className="flex items-center justify-end gap-4">
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                      onClick={() => submitFeedback(true)}
-                    >
-                      <ThumbsUp
-                        className="w-5 h-5 transition-colors duration-200"
-                        strokeWidth={liked ? 0 : 1.5}
-                        fill={liked ? "#10b981" : "none"}
-                        stroke={liked ? "#10b981" : "#6b7280"}
-                      />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                        {likes}
-                      </span>
-                    </button>
-
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 group"
-                      onClick={() => submitFeedback(false)}
-                    >
-                      <ThumbsDown
-                        className="w-5 h-5 transition-colors duration-200"
-                        strokeWidth={liked === false ? 0 : 1.5}
-                        fill={liked === false ? "#ef4444" : "none"}
-                        stroke={liked === false ? "#ef4444" : "#6b7280"}
-                      />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                        {dislikes}
-                      </span>
-                    </button>
-                  </div>
-                </div>
+                {/* Removed like/dislike buttons from bottom as they're now at the top */}
               </div>
 
-              <div className="flex flex-col min-h-screen">
+              <div className="flex flex-col h-full">
                 <Split
-                  className="min-w-full flex flex-col min-h-screen split1 "
+                  className="min-w-full flex flex-col h-full split1"
                   minSize={200}
                   gutterSize={4}
                   snapOffset={0}
                   dragInterval={2}
                   direction="vertical"
                 >
-                  <div className=" pt-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col">
+                  <div className="pt-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg flex flex-col h-3/5">
                     <div className="border-b border-slate-200 dark:border-slate-700">
                       <div className="flex overflow-x-auto items-start scrollbar-hide">
                         <button className="flex items-start gap-2 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
@@ -644,10 +646,10 @@ const ProblemPage = () => {
 
                     <div
                       ref={wrapperRef}
-                      className={`rflex-grow w-full pt-2 elative transition-all duration-300 ${
+                      className={`flex-grow w-full pt-2 relative transition-all duration-300 ${
                         isFullscreen
                           ? "fixed inset-0 z-50 bg-white dark:bg-gray-900 p-4"
-                          : "relative h-[500px] bg-white dark:bg-gray-950 rounded-xl shadow"
+                          : "relative h-full bg-white dark:bg-gray-950 rounded-xl shadow"
                       }`}
                     >
                       <button
@@ -688,7 +690,7 @@ const ProblemPage = () => {
                     </div>
                   </div>
 
-                  <div className="z-40 bg-white max-h-[80vh]   dark:bg-[#000000] shadow-lg mt-1 overflow-y-scroll">
+                  <div className="z-40 bg-white dark:bg-[#000000] shadow-lg mt-1 overflow-y-auto h-2/5">
                     <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
                       <h3 className="text-lg font-bold">
                         {submission ? "Execution Results" : "Test Cases"}

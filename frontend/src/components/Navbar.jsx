@@ -125,173 +125,184 @@ const Navbar = () => {
               </div>
 
               {/* User Profile Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={toggleProfile}
-                  className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 group"
-                >
-                  <div className="relative">
-                    <img
-                      src={
-                        authUser?.image ||
-                        "https://avatar.iran.liara.run/public/boy"
-                      }
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors"
-                    />
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-gray-900"></div>
-                  </div>
-                  <div className="hidden xl:block text-left">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {authUser?.name?.charAt(0)?.toUpperCase() +
-                        authUser?.name?.slice(1) || "User"}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {authUser?.role?.toLowerCase()}
-                    </p>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                      isProfileOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
+{
+  authUser ?               <div className="relative">
+  <button
+    onClick={toggleProfile}
+    className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 group"
+  >
+    <div className="relative">
+      <img
+        src={
+          authUser?.image ||
+          "https://avatar.iran.liara.run/public/boy"
+        }
+        alt="User Avatar"
+        className="w-8 h-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors"
+      />
+      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-gray-900"></div>
+    </div>
+    <div className="hidden xl:block text-left">
+      <p className="text-sm font-medium text-gray-900 dark:text-white">
+        {authUser?.name?.charAt(0)?.toUpperCase() +
+          authUser?.name?.slice(1) || "User"}
+      </p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">
+        {authUser?.role?.toLowerCase()}
+      </p>
+    </div>
+    <ChevronDown
+      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+        isProfileOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
 
-                {/* Profile Dropdown */}
-                {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
-                    {/* User Info Header */}
-                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={
-                            authUser?.image ||
-                            "https://avatar.iran.liara.run/public/boy"
-                          }
-                          alt="User Avatar"
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                            {authUser?.name?.charAt(0)?.toUpperCase() +
-                              authUser?.name?.slice(1) || "User"}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {authUser?.email}
-                          </p>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 mt-1">
-                            {authUser?.role}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+  {/* Profile Dropdown */}
+  {isProfileOpen && (
+    <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
+      {/* User Info Header */}
+      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-3">
+          <img
+            src={
+              authUser?.image ||
+              "https://avatar.iran.liara.run/public/boy"
+            }
+            alt="User Avatar"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+              {authUser?.name?.charAt(0)?.toUpperCase() +
+                authUser?.name?.slice(1) || "User"}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {authUser?.email}
+            </p>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 mt-1">
+              {authUser?.role}
+            </span>
+          </div>
+        </div>
+      </div>
 
-                    {/* Menu Items */}
-                    <div className="py-2">
-                      <Link
-                        to="/profile"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                        onClick={closeMenus}
-                      >
-                        <User className="w-4 h-4 text-gray-400" />
-                        <span>My Profile</span>
-                      </Link>
+      {/* Menu Items */}
+      <div className="py-2">
+        <Link
+          to="/profile"
+          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+          onClick={closeMenus}
+        >
+          <User className="w-4 h-4 text-gray-400" />
+          <span>My Profile</span>
+        </Link>
 
-                      <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
-                      >
-                        <Settings className="w-4 h-4 text-gray-400" />
-                        <span>Settings</span>
-                      </button>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
+        >
+          <Settings className="w-4 h-4 text-gray-400" />
+          <span>Settings</span>
+        </button>
 
-                      {isOpen && (
-                        <div className="fixed top-60 inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50">
-                          <div className="relative bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 w-[90%] max-w-md rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700 transition-all">
-                            {/* Close button */}
-                            <button
-                              onClick={() => setIsOpen(false)}
-                              className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-red-500"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
+        {isOpen && (
+          <div className="fixed top-60 inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50">
+            <div className="relative bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 w-[90%] max-w-md rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700 transition-all">
+              {/* Close button */}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-red-500"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-                            <h2 className="text-xl font-semibold mb-4">
-                              Keyboard Shortcuts
-                            </h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Keyboard Shortcuts
+              </h2>
 
-                            <ul className="space-y-3 text-sm">
-                              <li className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-                                <span>Run Code</span>
-                                <kbd className="px-2 py-1 bg-white dark:bg-gray-700 text-sm rounded border dark:border-gray-600 border-gray-300 shadow-sm">
-                                  Ctrl + '
-                                </kbd>
-                              </li>
-                              <li className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-                                <span>Submit Code</span>
-                                <kbd className="px-2 py-1 bg-white dark:bg-gray-700 text-sm rounded border dark:border-gray-600 border-gray-300 shadow-sm">
-                                  Ctrl + Enter
-                                </kbd>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      )}
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+                  <span>Run Code</span>
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-700 text-sm rounded border dark:border-gray-600 border-gray-300 shadow-sm">
+                    Ctrl + '
+                  </kbd>
+                </li>
+                <li className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+                  <span>Submit Code</span>
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-700 text-sm rounded border dark:border-gray-600 border-gray-300 shadow-sm">
+                    Ctrl + Enter
+                  </kbd>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
 
-                      {authUser?.role === "ADMIN" && (
-                        <Link
-                          to="/admin"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                          onClick={closeMenus}
-                        >
-                          <Code className="w-4 h-4 text-gray-400" />
-                          <span>Admin dashboard</span>
-                          <span className="ml-auto px-2 py-0.5 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-full text-xs font-medium">
-                            Admin
-                          </span>
-                        </Link>
-                      )}
+        {authUser?.role === "ADMIN" && (
+          <Link
+            to="/admin"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+            onClick={closeMenus}
+          >
+            <Code className="w-4 h-4 text-gray-400" />
+            <span>Admin dashboard</span>
+            <span className="ml-auto px-2 py-0.5 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-full text-xs font-medium">
+              Admin
+            </span>
+          </Link>
+        )}
 
-                      <button
-                        onClick={toggleTheme}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
-                      >
-                        {theme === "dark" ? (
-                          <Sun className="w-4 h-4 text-gray-400" />
-                        ) : (
-                          <Moon className="w-4 h-4 text-gray-400" />
-                        )}
-                        <span>
-                          {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                        </span>
-                      </button>
-                    </div>
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-4 h-4 text-gray-400" />
+          ) : (
+            <Moon className="w-4 h-4 text-gray-400" />
+          )}
+          <span>
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </span>
+        </button>
+      </div>
 
-                    {/* Logout */}
-                    <div className="border-t border-gray-100 dark:border-gray-700 pt-2">
-                      {authUser ? (
-                        <LogoutButton
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full"
-                          onClick={closeMenus}
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Sign Out</span>
-                        </LogoutButton>
-                      ) : (
-                        <Link
-                          to="/login"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
-                          onClick={closeMenus}
-                        >
-                          <LogIn className="w-4 h-4" />
+      {/* Logout */}
+      <div className="border-t border-gray-100 dark:border-gray-700 pt-2">
+        {authUser ? (
+          <LogoutButton
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full"
+            onClick={closeMenus}
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </LogoutButton>
+        ) : (
+          <Link
+            to="/login"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors w-full"
+            onClick={closeMenus}
+          >
+            <LogIn className="w-4 h-4" />
 
-                          <span>Sign In</span>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+            <span>Sign In</span>
+          </Link>
+        )}
+      </div>
+    </div>
+  )}
+</div> : 
+<div>
+<Link
+  to="/login"
+  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
+>
+  <LogIn className="w-4 h-4" />
+  <span>Sign In</span>
+</Link>
+</div>
+}
             </div>
 
             {/* Mobile Menu Button */}
