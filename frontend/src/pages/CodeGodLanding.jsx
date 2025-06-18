@@ -279,7 +279,7 @@ const CodeGodLanding = () => {
         <BannerText
           title="Level up from mortal to CodeGod—one problem at a time."
           description="Level up from mortal to CodeGod—one problem at a time."
-          buttonText="Try for free"
+          buttonText="try for free"
         />
 
         {/* <PricingCards /> */}
