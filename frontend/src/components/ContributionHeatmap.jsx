@@ -343,4 +343,4 @@ const ContributionHeatmap = ({ data = [] }) => {
   );
 };
 
-export default ContributionHeatmap;
+export default ContributionHeatmap; 

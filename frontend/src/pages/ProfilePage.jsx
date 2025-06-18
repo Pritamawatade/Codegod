@@ -58,7 +58,7 @@ function ProfilePage() {
     isUpdatingPassword,
     updatePassword,
     allUsers,
-    getAllUsers
+    getAllUsers,
   } = useAuthStore();
   const navigate = useNavigate();
   const { streakData, getStreakData } = useStreakStore();
@@ -410,7 +410,6 @@ function ProfilePage() {
 
               <div className="flex flex-col gap-6 justify-between items-start w-full mb-6">
                 <ProfileSubmission />
-
                 <ContributionHeatmap data={streakData} />
                 <ProblemSolvedByUser />
                 <PlaylistProfile />
