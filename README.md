@@ -31,6 +31,9 @@ Whether you’re preparing for technical interviews, improving your problem-solv
 
 ## 🚀 Getting Started
 
+Codegod is split into two parts: **frontend** and **backend**.  
+You need to run both servers to use the full platform locally.
+
 ### 1. Clone the Repository
 
 ```bash
@@ -38,19 +41,75 @@ git clone https://github.com/Pritamawatade/Codegod.git
 cd Codegod
 ```
 
+---
+
 ### 2. Install Dependencies
 
+#### Frontend
+
 ```bash
+cd frontend
 npm install
 ```
 
-### 3. Start the Development Server
+#### Backend
+
+Open a new terminal (or tab):
+
+```bash
+cd backend
+npm install
+```
+
+---
+
+### 3. Start the Development Servers
+
+#### Start Backend Server
+
+In the `backend` directory:
 
 ```bash
 npm run dev
 ```
 
-Then, open [http://localhost:3000](http://localhost:3000) in your browser to start solving problems!
+The backend server will start (by default on port 5000 or configured port).
+
+#### Start Frontend Server
+
+In a separate terminal, in the `frontend` directory:
+
+```bash
+npm run dev
+```
+
+The frontend server will start (by default on [http://localhost:5173](http://localhost:5173)).
+
+---
+
+### 4. Open in Browser
+
+Visit [http://localhost:5173](http://localhost:5173) to use Codegod.
+
+> **Note:**  
+> Make sure both backend and frontend servers are running for full functionality.
+
+---
+
+### 5. Environment Variables
+
+- You may need to create `.env` files for both frontend and backend depending on your configuration (API URLs, database credentials, etc.).
+- Refer to any `.env.example` files provided in each folder for guidance.
+
+---
+
+## 🤔 Example Workflow
+
+1. Log in or create your Codegod account.
+2. Choose a coding challenge.
+3. Write and test your solution in the built-in editor.
+4. Submit your code for instant feedback.
+5. Keep your streak alive by solving problems daily!
 
 ---
 
