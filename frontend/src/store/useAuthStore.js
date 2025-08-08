@@ -9,7 +9,7 @@ export const useAuthStore = create((set) => ({
   isUpdating: false,
   isCheckingAuth: false,
   isUpdatingPassword: false,
-  allUsers:[],
+  allUsers: [],
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -48,7 +48,7 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await axiosInstance.post("/users/login", data);
 
-
+      console.log(import.meta.env.VITE_SERVER_URL);
       set({ authUser: res?.data?.data?.user, isLoggingIn: false });
       toast.success("Logged in successfully");
     } catch (error) {
@@ -59,15 +59,18 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-   updateProfile: async (data) => {
+  updateProfile: async (data) => {
     set({ isUpdating: true });
 
     try {
-      const res = await axiosInstance.post("/users/update-account-details", data);
+      const res = await axiosInstance.post(
+        "/users/update-account-details",
+        data
+      );
 
       console.log("line 48 res = ", res);
-      console.log("res.data on login 49",res?.data?.data);
-      console.log("res.data on login 45",res?.data?.data?.user);
+      console.log("res.data on login 49", res?.data?.data);
+      console.log("res.data on login 45", res?.data?.data?.user);
 
       set({ authUser: res?.data?.data?.user, isUpdating: false });
       toast.success("profile updated successfully");
@@ -79,7 +82,7 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  updatePassword: async (data)=>{
+  updatePassword: async (data) => {
     set({ isUpdatingPassword: true });
 
     try {
@@ -115,5 +118,4 @@ export const useAuthStore = create((set) => ({
       console.log("Error getting all users ", error);
     }
   },
-
 }));
