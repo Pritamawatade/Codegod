@@ -4,3 +4,4 @@ backend/note.txt
 frontend/.env
 notes.md
 
+backend/generated/
