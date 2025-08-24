@@ -11,11 +11,9 @@ import StreakCalendar from "../components/StreakCalender";
 function HomePage() {
   const { getAllProblems, problems, isProblemsLoading } = useProblemStore();
   const { isDeletingProblem } = useActionStore();
-  const { allUsers, getAllUsers } = useAuthStore();
 
   useEffect(() => {
     getAllProblems();
-    getAllUsers();
   }, [getAllProblems, isDeletingProblem]);
 
   if (isProblemsLoading) {

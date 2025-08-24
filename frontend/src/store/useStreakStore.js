@@ -8,7 +8,6 @@ export const useStreakStore = create((set) => ({
     getStreakData: async () => {
         try {
             const response = await axiosInstance.get("/streak/heatmap");
-            console.log(response.data.data);
             set({ streakData: response.data.data });
         } catch (error) {
             console.error("Error fetching streak stats:", error);

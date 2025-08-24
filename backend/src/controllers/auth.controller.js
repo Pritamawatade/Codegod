@@ -11,6 +11,8 @@ import Mailgen from 'mailgen';
 import sendMail from '../utils/sendMail.js';
 import pkg from 'google-auth-library';
 const { OAuth2Client } = pkg;
+import dotenv from 'dotenv';
+dotenv.config();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const generateAccessAndRefereshTokens = async (userId) => {

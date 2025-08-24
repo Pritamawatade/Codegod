@@ -32,7 +32,7 @@ const Navbar = () => {
 
   useEffect(() => {
     getAllSubmissions();
-  }, []);
+  }, [showPopup, setShowPopup]);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
