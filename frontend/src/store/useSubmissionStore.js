@@ -54,7 +54,6 @@ export const useSubmissionStore = create((set) => ({
   getAllSubmissionsForAdmin: async () => {
     try {
       const res = await axiosInstance.get('/submission/get-submissions');
-      console.log(res.data.data)
       set({ allSubmissions: res.data.data });
     } catch (error) {
       console.log("Error getting submission count for problem", error);

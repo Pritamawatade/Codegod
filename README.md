@@ -5,7 +5,7 @@ Built and maintained by [Pritamawatade](https://github.com/Pritamawatade), Codeg
 
 ---
 
-## 🌟 What is Codegod?
+## What is Codegod?
 
 **Codegod** is a dynamic online judge and problem-solving platform where you can:
 
