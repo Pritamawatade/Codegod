@@ -34,6 +34,12 @@ app.use('/api/v1/discussion', discussionRouter);
 app.use('/api/v1/payments', paymentRoute);
 app.use('/api/v1/sheets', sheetRouter);
 
+app.get('/healthcheck', (req, res)=>{
+  res.status(200).json({
+    message: 'Server is running',
+  });
+});
+
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

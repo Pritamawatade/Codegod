@@ -15,7 +15,6 @@ export const useExecutionStore = create((set) => ({
     problemId
   ) => {
     try {
-      console.log("entered in to execute code , source_code", source_code);
       set({ isExecuting: true });
 
       const res = await axiosInstance.post("/execute-code", {
@@ -50,7 +49,6 @@ export const useExecutionStore = create((set) => ({
     problemId
   ) => {
     try {
-      console.log("entered in to execute code , source_code", source_code);
       set({ isSubmitting: true });
 
       const res = await axiosInstance.post("/execute-code/submit", {
