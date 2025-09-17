@@ -146,4 +146,4 @@ This project is open source under the [MIT License](LICENSE).
 
 Made with ❤️ by [Pritamawatade](https://github.com/Pritamawatade)
 
-Happy coding! 🚀
+Happy coding!
