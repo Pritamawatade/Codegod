@@ -20,7 +20,7 @@ prisma/dev.db
 
 
 # Environment files
-.env.*
+.env
 .env.local
 .env
 
