@@ -5,7 +5,11 @@ import { useEffect } from "react";
 const StreakCalendar = () => {
   // Sample data - replace with your API data
   const { streakData, getStreakData } = useStreakStore();
-  const [currentDate] = useState(new Date(2025, 5, 1));
+
+  const month = new Date().getMonth(); // Current month
+  const year = new Date().getFullYear(); // Current year
+  
+  const [currentDate] = useState(new Date(year, month , 1));
 
  
   useEffect(() => {

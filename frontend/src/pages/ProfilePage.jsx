@@ -207,6 +207,7 @@ function ProfilePage() {
               >
                 <span>Edit Profile</span>
                 <Pencil />
+                
               </button>
 
               <dialog id="my_modal_1" className="modal">
@@ -416,10 +417,11 @@ function ProfilePage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 h-[800px]">
                   <StreakCalendar />
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700  pt-8 h-[800px] overflow-y-scroll
+                ">
                   <div
                     className="p-4 rounded-lg"
                     style={{ backgroundColor: "#1e2939" }}
@@ -427,7 +429,7 @@ function ProfilePage() {
                     <h2 className="text-2xl font-bold text-white mb-6 text-center">
                       Leaderboard
                     </h2>
-                    <div className="space-y-3">
+                    <div className="space-y-3  overflow-y-auto ">
                       {[...allUsers]
                         .sort(
                           (a, b) => b.dailyStreak.length - a.dailyStreak.length
