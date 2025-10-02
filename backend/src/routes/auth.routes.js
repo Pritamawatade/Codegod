@@ -17,7 +17,6 @@ const authRouter = Router();
 
 authRouter.post(
   '/register',
-  upload.fields([{ name: 'avatar', maxCount: 1 }]),
   register
 );
 authRouter.post('/google-login', googleAuthController);

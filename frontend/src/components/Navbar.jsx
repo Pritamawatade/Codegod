@@ -29,10 +29,6 @@ const Navbar = () => {
   const { submissions, getAllSubmissions } = useSubmissionStore();
   const [showPopup, setShowPopup] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    getAllSubmissions();
-  }, [showPopup, setShowPopup]);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -42,11 +38,17 @@ const Navbar = () => {
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
-
+  
   const closeMenus = () => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
   };
+  
+    useEffect(() => {
+      if (showPopup) {
+        getAllSubmissions();
+      }
+    }, [showPopup]);
 
   return (
     <>

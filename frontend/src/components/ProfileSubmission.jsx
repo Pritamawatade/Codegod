@@ -55,7 +55,9 @@ const ProfileSubmission = () => {
   useEffect(() => {
     getAllSubmissions();
     getStreakData();
-  }, [getAllSubmissions]);
+    // Run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
  const getStatusClass = (status) => {
     switch (status) {

@@ -17,15 +17,15 @@ dotenv.config();
 
 // Ensure correct cookie behavior behind proxies (e.g., Nginx, Cloudflare, Render)
 app.set('trust proxy', 1);
-
-app.use(cookieParser());
-app.use(express.json());
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || "https://www.codegod.com", 'http://localhost:5173', "https://codegod.com"].filter(Boolean),
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use('/api/v1/users', authRouter);
 app.use('/api/v1/problems', problemRouter);

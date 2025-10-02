@@ -56,13 +56,13 @@ const register = async (req, res) => {
         .json(new ApiError(400, 'User already exists'))
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    // const avatarLocalPath = req.files?.avatar[0]?.path;
 
-    if (!avatarLocalPath) {
-      throw new ApiError(400, 'Avatar file is required');
-    }
+    //   if (!avatarLocalPath) {
+    //     throw new ApiError(400, 'Avatar file is required');
+    // }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    // const avatar = await uploadOnCloudinary(avatarLocalPath);
 
     const hashedPassword = await bcrypt.hash(password, 10);
     let newUser;
@@ -73,7 +73,7 @@ const register = async (req, res) => {
           password: hashedPassword,
           email,
           role: UserRole.USER,
-          image: avatar.url,
+          image: "https://www.shutterstock.com/image-vector/male-default-avatar-profile-gray-260nw-362901365.jpg",
           username,
         },
       });
@@ -110,7 +110,7 @@ const register = async (req, res) => {
       product: {
         // Appears in header & footer of e-mails
         name: 'Codegod',
-        link: 'https://codegod.in',
+        link: 'https://codegod.fun',
         // Optional product logo
         // logo: 'https://mailgen.js/img/logo.png'
       },
@@ -463,6 +463,7 @@ const updateUserAvatar = async (req, res) => {
 };
 
 const check = async (req, res) => {
+  console.log('req.user', req?.user);
   try {
     if (!req.user) {
       return res.status(401).json(new ApiError(401, 'User not authenticated'));

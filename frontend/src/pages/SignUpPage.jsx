@@ -40,9 +40,9 @@ function SignUpPage() {
   }, [file]);
   const onSubmit = async (data) => {
     try {
-      if (!file) {
-        toast.error("Please select an image");
-      }
+      // if (!file) {
+      //   toast.error("Please select an image");
+      // }
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("email", data.email);
@@ -188,7 +188,7 @@ function SignUpPage() {
             )}
           </div>
 
-          <div className="relative mt-4 mb-4">
+          {/* <div className="relative mt-4 mb-4">
             <div className="flex justify-center items-center w-full">
               <label
                 htmlFor="avatar"
@@ -214,13 +214,13 @@ function SignUpPage() {
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={isSigninUp}
-            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+            className="w-full mt-4 mb-2 bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
           >
             {isSigninUp ? (
               <div className="flex items-center justify-center space-x-2">
