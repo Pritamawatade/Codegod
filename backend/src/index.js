@@ -15,11 +15,14 @@ import sheetRouter from './routes/sheets.routes.js';
 const app = express();
 dotenv.config();
 
+// Ensure correct cookie behavior behind proxies (e.g., Nginx, Cloudflare, Render)
+app.set('trust proxy', 1);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL, 'http://localhost:5173'],
+    origin: [process.env.CLIENT_URL || "https://www.codegod.com", 'http://localhost:5173', "https://codegod.com"].filter(Boolean),
     credentials: true,
   })
 );

@@ -266,11 +266,12 @@ const logout = async (req, res) => {
       },
     });
 
+    const isProduction = process.env.NODE_ENV === 'production';
     const options = {
       httpOnly: true,
-      secure: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: 'none',
+      secure: isProduction,
+      maxAge: 0,
+      sameSite: isProduction ? 'none' : 'lax',
     };
 
     return res
@@ -291,7 +292,7 @@ const refresAceesToken = async (req, res) => {
       return res.status(401).json(new ApiError(401, 'Unauthorized'));
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     const user = await db.user.findUnique({
       where: {
@@ -476,45 +477,77 @@ const check = async (req, res) => {
 };
 
 const googleAuthController = async (req, res) => {
-  const { credential } = req.body; // coming from Google login on frontend
+  const { credential } = req.body; // Google ID token from frontend
 
   try {
+    if (!credential) {
+      return res.status(400).json(new ApiError(400, 'Missing Google credential'));
+    }
+
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(401).json(new ApiError(401, 'Invalid Google token'));
+    }
 
-    const { email, name, picture, sub: googleId } = payload;
+    const { email, name, picture, sub: googleId, email_verified: emailVerified } = payload;
+    if (!email || !googleId) {
+      return res.status(400).json(new ApiError(400, 'Google account missing required fields'));
+    }
 
-    let user = await db.user.findUnique({
-      where: { email },
+    // Ensure a stable username generation if missing
+    const baseUsername = `google_${googleId.slice(0, 8)}`;
+
+    // Find existing user by email or googleId
+    let user = await db.user.findFirst({
+      where: {
+        OR: [{ email }, { googleId }],
+      },
     });
 
     if (!user) {
-      // User doesn't exist, create them
+      // Create user if not exists
+      // Ensure username is unique
+      let candidateUsername = baseUsername;
+      let suffix = 1;
+      while (await db.user.findUnique({ where: { username: candidateUsername } })) {
+        candidateUsername = `${baseUsername}${suffix++}`;
+      }
+
       user = await db.user.create({
         data: {
-          name,
+          name: name || baseUsername,
           email,
-          image: picture,
-          password: `google_${googleId.slice(0, 8)} ${email}`,
+          image: picture || null,
           role: 'USER',
           provider: 'google',
           googleId,
-          username: `google_${googleId.slice(0, 8)}`,
+          username: candidateUsername,
+          emailVerified: !!emailVerified,
+          password: `google-oauth-${googleId}`,
+        },
+      });
+    } else {
+      // Link google fields if missing and update avatar/name opportunistically
+      user = await db.user.update({
+        where: { id: user.id },
+        data: {
+          googleId: user.googleId || googleId,
+          provider: 'google',
+          image: user.image || picture || null,
+          name: user.name || name || user.username,
+          emailVerified: user.emailVerified || !!emailVerified,
         },
       });
     }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
-      user.id
-    );
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.id);
 
     const isProduction = process.env.NODE_ENV === 'production';
-
     const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
@@ -536,6 +569,7 @@ const googleAuthController = async (req, res) => {
               name: user.name,
               role: user.role,
               image: user.image,
+              username: user.username,
             },
           },
           'Google login successful'
@@ -543,9 +577,7 @@ const googleAuthController = async (req, res) => {
       );
   } catch (error) {
     console.error('Google login error:', error);
-    return res
-      .status(500)
-      .json(new ApiError(500, 'Google login failed').toJSON());
+    return res.status(500).json(new ApiError(500, 'Google login failed').toJSON());
   }
 };
 
