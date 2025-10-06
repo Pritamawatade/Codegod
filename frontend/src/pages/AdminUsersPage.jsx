@@ -37,7 +37,6 @@ const AdminUsersPage = () => {
   useEffect(() => {
     console.log("HI")
     getAllUsers();
-    console.log("allUsers", allUsers);
     setUsers(allUsers)
   }, []);
 

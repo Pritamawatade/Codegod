@@ -17,10 +17,8 @@ const RazorpayButton = ({ sheetId, sheetTitle, amount }) => {
         
       );
 
-      console.log("res = ", res);
       const order = res.data.data;
 
-      console.log("order", order);
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,

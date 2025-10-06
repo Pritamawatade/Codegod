@@ -40,17 +40,24 @@ function SignUpPage() {
   }, [file]);
   const onSubmit = async (data) => {
     try {
-      // if (!file) {
-      //   toast.error("Please select an image");
-      // }
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("password", data.password);
-      formData.append("username", data.username); // if you're collecting this too
-      formData.append("avatar", file); // file from state
+      // // if (!file) {
+      // //   toast.error("Please select an image");
+      // // }
+      // const formData = new FormData();
+      // formData.append("name", data.name);
+      // formData.append("email", data.email);
+      // formData.append("password", data.password);
+      // formData.append("username", data.username); // if you're collecting this too
+      // // formData.append("avatar", file); // file from state
 
-      await signup(formData);
+       const userData = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      username: data.username
+    };
+
+      await signup(userData);
     } catch (error) {
       console.error("Signup failed", error);
     }

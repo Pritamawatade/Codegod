@@ -3,13 +3,10 @@ import { db } from '../libs/db.js';
 import { ApiError } from '../utils/api-error.js';
 
 const authMiddleware = async (req, res, next) => {
-  console.log('req.cookies', req.cookies);
-  console.log('req.headers', req.headers);
+
   try {
      const token = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
-     console.log('token', token);
     if (!token) {
-      console.log('token not found', token);
       throw new ApiError(500, 'unauthorized, provide the token bro');
     }
 

@@ -27,6 +27,10 @@ export const useAuthStore = create((set) => ({
   },
 
   signup: async (data) => {
+    console.log("data in signup store = ", data);
+  const { name, password, email, username } = data;
+  console.log("name, password, email, username = ", name, password, email, username);
+    
     set({ isSigninUp: true });
     try {
       const res = await axiosInstance.post("/users/register", data);
@@ -68,9 +72,6 @@ export const useAuthStore = create((set) => ({
         data
       );
 
-      console.log("line 48 res = ", res);
-      console.log("res.data on login 49", res?.data?.data);
-      console.log("res.data on login 45", res?.data?.data?.user);
 
       set({ authUser: res?.data?.data?.user, isUpdating: false });
       toast.success("profile updated successfully");

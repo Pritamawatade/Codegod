@@ -15,7 +15,6 @@ const StreakCalendar = () => {
   useEffect(() => {
     async function fetchData() {
       await getStreakData();
-      console.log("streakData", streakData);
     }
     fetchData();
   }, []);
