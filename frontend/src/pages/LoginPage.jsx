@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { Code, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import { Terminal, Eye, EyeOff, Loader2, ArrowRight, Check } from "lucide-react";
 import { z } from "zod";
 import { useAuthStore } from "../store/useAuthStore";
 import GoogleLoginBtn from "../components/GoogleLoginBtn";
@@ -12,146 +12,133 @@ const LoginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const inputClass = (hasError) =>
+  `h-11 w-full rounded-lg border bg-white dark:bg-white/[0.03] pl-3.5 pr-10 text-sm outline-none transition-colors placeholder:text-zinc-400 ${
+    hasError
+      ? "border-rose-300 dark:border-rose-500/50 focus:border-rose-500"
+      : "border-zinc-200 dark:border-white/10 focus:border-zinc-400 dark:focus:border-white/30"
+  }`;
+
 const LoginPage = () => {
-  const { isLoggingIn, login, authUser } = useAuthStore();
+  const { isLoggingIn, login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(LoginSchema),
-  });
+  } = useForm({ resolver: zodResolver(LoginSchema) });
 
   const onSubmit = async (data) => {
     try {
       await login(data);
-      if(authUser?.role === "ADMIN") navigate('/admin')
-      navigate('/problems')
+      navigate("/problems");
     } catch (error) {
       console.error("Login failed", error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 sm:p-10 transition-all duration-300">
-        {/* Logo Section */}
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg">
-              <Code className="w-7 h-7 text-white" />
-            </div>
-          </div>
-          <h1 className="text-3xl dark:text-white font-bold text-gray-900 mb-2 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text ">
-          Welcome Back
-          </h1>
-          <p className="text-gray-500">Sign in to continue to your account</p>
-        </div>
+    <div className="grid min-h-screen bg-white dark:bg-[#09090b] lg:grid-cols-2">
+      {/* Form */}
+      <div className="flex items-center justify-center px-4 py-12 sm:px-8">
+        <div className="w-full max-w-[380px]">
+          <Link to="/" className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-zinc-950 dark:bg-white">
+              <Terminal className="h-4 w-4 text-white dark:text-zinc-950" strokeWidth={2.5} />
+            </span>
+            <span className="text-[15px] font-bold tracking-tight">CodeGod</span>
+          </Link>
 
-        {/* Form Section */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email address
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+          <h1 className="mt-8 text-[28px] font-bold tracking-tight">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-zinc-500">Sign in to continue your practice.</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-7 space-y-4">
+            <div>
+              <label className="mb-1.5 block text-[13px] font-medium">Email</label>
+              <input type="email" {...register("email")} placeholder="you@example.com" className={inputClass(errors.email)} />
+              {errors.email && <p className="mt-1.5 text-xs text-rose-600">{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="block text-[13px] font-medium">Password</label>
+                <Link to="/forgot-password" className="text-[13px] font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+                  Forgot password?
+                </Link>
               </div>
-              <input
-                type="email"
-                {...register("email")}
-                className={`w-full text-black dark:text-white placeholder:text-gray-400 pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
-                  errors.email
-                    ? "border-red-300 focus:ring-red-500"
-                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
-                placeholder="you@example.com"
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Password Input */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-500"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  placeholder="Enter your password"
+                  className={inputClass(errors.password)}
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
+                  {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                </button>
               </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
-                className={`w-full text-black dark:text-white pl-10 placeholder:text-gray-400 pr-12 py-3 rounded-lg border focus:outline-none focus:ring-2 ${
-                  errors.password
-                    ? "border-red-300 focus:ring-red-500"
-                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                }`}
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-500"
-              >
-                {!showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
-                )}
-              </button>
+              {errors.password && <p className="mt-1.5 text-xs text-rose-600">{errors.password.message}</p>}
             </div>
-            {errors.password && (
-              <p className="mt-2 text-sm text-red-600">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoggingIn}
-            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer"
-          >
-            {isLoggingIn ? (
-              <div className="flex items-center justify-center space-x-2">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Signing in...</span>
-              </div>
-            ) : (
-              "Sign in"
-            )}
-          </button>
-
-          <GoogleLoginBtn className="mt-4" />
-
-          {/* Sign Up Link */}
-          <div className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="font-medium text-blue-600 hover:text-blue-500"
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="group flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-zinc-950 dark:bg-white text-sm font-semibold text-white dark:text-zinc-950 transition-opacity hover:opacity-85 disabled:opacity-60"
             >
-              Create account
-            </Link>
+              {isLoggingIn ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</>
+              ) : (
+                <>Sign in <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></>
+              )}
+            </button>
+
+            <div className="flex items-center gap-3 text-xs text-zinc-400">
+              <span className="h-px flex-1 bg-zinc-200 dark:bg-white/10" /> or <span className="h-px flex-1 bg-zinc-200 dark:bg-white/10" />
+            </div>
+
+            <GoogleLoginBtn className="mt-4" />
+
+            <p className="pt-1 text-center text-[13px] text-zinc-500">
+              Don't have an account?{" "}
+              <Link to="/signup" className="font-semibold text-zinc-900 dark:text-white hover:underline">Create account</Link>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      {/* Visual */}
+      <div className="relative hidden overflow-hidden bg-zinc-950 dark:bg-black lg:block">
+        <div className="bg-grid absolute inset-0 opacity-60" />
+        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-white/10 blur-[100px]" />
+        <div className="relative flex h-full flex-col justify-center p-14">
+          <div className="max-w-md">
+            <p className="code-font text-xs text-white/40">$ today --practice</p>
+            <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-white">
+              Consistency is the whole game.
+            </h2>
+            <div className="mt-8 space-y-3.5">
+              {["Curated problems with company tags", "Streaks and progress that keep you going", "A fast IDE with 13 language runtimes"].map((t) => (
+                <p key={t} className="flex items-center gap-2.5 text-sm text-white/70">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
+                    <Check className="h-3 w-3 text-emerald-400" />
+                  </span>
+                  {t}
+                </p>
+              ))}
+            </div>
+            <div className="mt-10 rounded-xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-white/20" />
+                <span className="h-2 w-2 rounded-full bg-white/20" />
+                <span className="h-2 w-2 rounded-full bg-white/20" />
+              </div>
+              <pre className="code-font mt-3 text-[12px] leading-relaxed text-white/70">
+                {`day 47  ▓▓▓▓▓▓▓░  solved: 128\nrating ▲ 12 this week\nkeep going.`}
+              </pre>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

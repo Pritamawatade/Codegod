@@ -1,11 +1,14 @@
-
-function Button({ onClick, buttonText, Icon }) {
+function Button({ onClick, buttonText, Icon, variant = "primary", className = "" }) {
+  const styles =
+    variant === "primary"
+      ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-85"
+      : "border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-white/5";
   return (
     <button
-      onClick={() => onClick()}
-      className="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-xl flex items-center gap-2"
+      onClick={() => onClick?.()}
+      className={`flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-[13px] font-semibold transition-all ${styles} ${className}`}
     >
-      {<Icon className="w-4 h-4" />}
+      {Icon && <Icon className="h-3.5 w-3.5" />}
       {buttonText}
     </button>
   );

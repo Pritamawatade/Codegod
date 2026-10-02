@@ -1,403 +1,231 @@
-import React, { useState, useMemo, use } from "react";
+import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 import {
   Bookmark,
-  PencilIcon,
   Trash,
-  TrashIcon,
   Plus,
   Loader2,
   Search,
-  Filter,
-  Tag,
-  ChevronDown,
-  Building2,
-  Code,
+  CheckCircle2,
+  Circle,
+  ChevronLeft,
+  ChevronRight,
+  ListPlus,
+  X,
 } from "lucide-react";
 import { useActionStore } from "../store/useActionStore";
 import toast from "react-hot-toast";
 import { usePlaylistStore } from "../store/usePlaylistStore";
 import CreatePlaylistModal from "./CreatePlaylistPattern";
 import AddToPlaylistModal from "./AddToPlaylist";
-import Button from "./Button";
 
-const selectStyles = `
-    w-full pl-12 pr-10 py-3 
-    border border-gray-200 dark:border-gray-700 
-    rounded-xl 
-    bg-white dark:bg-gray-900 
-    text-gray-900 dark:text-gray-100 
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-    appearance-none cursor-pointer 
-    transition-all duration-200 
-    hover:border-gray-300 dark:hover:border-gray-600
-    shadow-sm hover:shadow-md
-    text-sm font-medium
-  `;
-
-const iconStyles =
-  "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 z-10";
-const chevronStyles =
-  "absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none";
+const DIFF_STYLE = {
+  EASY: "text-emerald-600 dark:text-emerald-400",
+  MEDIUM: "text-amber-600 dark:text-amber-400",
+  HARD: "text-rose-600 dark:text-rose-400",
+};
 
 const ProblemTable = ({ problems }) => {
   const { authUser } = useAuthStore();
-
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
-  const [company, setCompany] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
-    useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
   const { isDeletingProblem, onDeleteProblem } = useActionStore();
   const { createPlaylist } = usePlaylistStore();
 
   const allTags = useMemo(() => {
     if (!Array.isArray(problems)) return [];
-
-    const tagsSet = new Set();
-
-    problems.forEach((p) => p.tags?.forEach((t) => tagsSet.add(t)));
-
-    return Array.from(tagsSet);
+    const s = new Set();
+    problems.forEach((p) => p.tags?.forEach((t) => s.add(t)));
+    return Array.from(s).slice(0, 30);
   }, [problems]);
-
-  const companyTags = useMemo(() => {
-    if (!Array.isArray(problems)) return [];
-
-    const tagsSet = new Set();
-
-    problems.forEach((p) => p.companyTags?.forEach((t) => tagsSet.add(t)));
-
-    return Array.from(tagsSet);
-  }, [problems]);
-
-  const handleDelete = (id) => {
-    document.getElementById("my_modal_5").showModal();
-    const deleteButton = document.getElementById("delete-button");
-    deleteButton.addEventListener("click", () => {
-      deleteProblem(id);
-      document.getElementById("my_modal_5").close();
-    });
-  };
-
-  const deleteProblem = (id) => {
-    try {
-      onDeleteProblem(id);
-    } catch (error) {
-      console.log("error in delete Problem ", error);
-      toast.error("error in deleting problem");
-    }
-  };
-
-  const handleCreatePlaylist = async (data) => {
-    await createPlaylist(data);
-  };
-
-  const handleAddToPlaylist = (problemId) => {
-    setSelectedProblemId(problemId);
-    setIsAddToPlaylistModalOpen(true);
-  };
 
   const filteredProblems = useMemo(() => {
     return (problems || [])
-      .filter((problem) =>
-        problem.title.toLowerCase().includes(search.toLowerCase())
-      )
-      .filter((problem) =>
-        difficulty === "ALL" ? true : problem.difficulty === difficulty
-      )
-      .filter((problem) =>
-        selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
-      )
-      .filter((problem) =>
-        company === "ALL" ? true : problem.companyTags?.includes(company)
-      );
-  }, [
-    problems,
-    search,
-    difficulty,
-    selectedTag,
-    isDeletingProblem,
-    onDeleteProblem,
-    company,
-  ]);
+      .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
+      .filter((p) => (difficulty === "ALL" ? true : p.difficulty === difficulty))
+      .filter((p) => (selectedTag === "ALL" ? true : p.tags?.includes(selectedTag)));
+  }, [problems, search, difficulty, selectedTag]);
 
-  const itemsPerPage = 7;
-  const totalPages = Math.ceil(filteredProblems.length / itemsPerPage);
-  const paginatedProblems = useMemo(() => {
-    return filteredProblems.slice(
-      (currentPage - 1) * itemsPerPage, // 1 * 5 = 5 ( starting index = 0)
-      currentPage * itemsPerPage // 1 * 5  = (0 , 10)
-    );
-  }, [
-    filteredProblems,
-    currentPage,
-    handleDelete,
-    onDeleteProblem,
-    isDeletingProblem,
-  ]);
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [search, difficulty, selectedTag]);
 
-  const difficulties = ["EASY", "MEDIUM", "HARD"];
+  const itemsPerPage = 10;
+  const totalPages = Math.max(1, Math.ceil(filteredProblems.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filteredProblems.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage);
 
-  const handleEdit = (id) => {};
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      await onDeleteProblem(pendingDelete);
+      toast.success("Problem deleted");
+    } catch {
+      toast.error("Failed to delete problem");
+    } finally {
+      setPendingDelete(null);
+    }
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setDifficulty("ALL");
+    setSelectedTag("ALL");
+  };
+  const hasFilters = search || difficulty !== "ALL" || selectedTag !== "ALL";
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
-            Problems
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Practice coding problems and track your progress
-          </p>
-        </div>
-
-        <Button
-          onClick={() => {
-            setIsCreateModalOpen(true);
-          }}
-          buttonText="Create Playlist"
-          Icon={Plus}
-        />
-
-
-  {authUser.role == "ADMIN" && (
-          <Link
-            to="/add-problem"
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-          
-          >
-            <Code className="w-4 h-4 text-gray-400" />
-            <span>Add Problem</span>
-           
-          </Link>
-        )}
-
-        
-      </div>
-
-      {/* Filters Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Search Input */}
-        <div className="relative">
-          <Search className={iconStyles} />
+    <div>
+      {/* Toolbar */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
-            type="text"
-            placeholder="Search problems..."
-            className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search problems…"
+            className="h-10 w-full rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.03] pl-9 pr-8 text-sm outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-400 dark:focus:border-white/30"
           />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
-        {/* Difficulty Select */}
-        <div className="relative">
-          <Filter className={iconStyles} />
-          <select
-            className={selectStyles}
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-            }}
-          >
-            <option value="ALL">All Difficulties</option>
-            {difficulties.map((diff) => (
-              <option key={diff} value={diff} className="py-2">
-                {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
-              </option>
+        <div className="flex items-center gap-2">
+          {/* Difficulty segmented */}
+          <div className="flex h-10 items-center gap-0.5 rounded-lg border border-zinc-200 dark:border-white/10 p-1">
+            {["ALL", "EASY", "MEDIUM", "HARD"].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={`h-full rounded-md px-2.5 text-xs font-semibold transition-colors ${
+                  difficulty === d
+                    ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                {d === "ALL" ? "All" : d[0] + d.slice(1).toLowerCase()}
+              </button>
             ))}
-          </select>
-          <ChevronDown className={chevronStyles} />
-        </div>
+          </div>
 
-        {/* Tags Select */}
-        <div className="relative">
-          <Tag className={iconStyles} />
           <select
-            className={selectStyles}
             value={selectedTag}
             onChange={(e) => setSelectedTag(e.target.value)}
-            style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-            }}
+            className="h-10 max-w-[150px] truncate rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0c0c0e] px-3 text-[13px] font-medium outline-none"
           >
-            <option value="ALL">All Tags</option>
-            {allTags.map((tag) => (
-              <option key={tag} value={tag} className="py-2">
-                {tag}
-              </option>
+            <option value="ALL">All topics</option>
+            {allTags.map((t) => (
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
-          <ChevronDown className={chevronStyles} />
-        </div>
 
-        {/* Company Select */}
-        <div className="relative">
-          <Building2 className={iconStyles} />
-          <select
-            className={selectStyles}
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-            }}
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg bg-zinc-950 dark:bg-white px-3.5 text-[13px] font-semibold text-white dark:text-zinc-950 transition-opacity hover:opacity-85"
           >
-            <option value="ALL">All Companies</option>
-            {companyTags.map((tag) => (
-              <option key={tag} value={tag} className="py-2">
-                {tag}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className={chevronStyles} />
+            <ListPlus className="h-4 w-4" />
+            <span className="hidden sm:inline">Playlist</span>
+          </button>
+
+          {authUser?.role === "ADMIN" && (
+            <Link
+              to="/add-problem"
+              className="flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 dark:border-white/10 px-3.5 text-[13px] font-semibold transition-colors hover:bg-zinc-50 dark:hover:bg-white/5"
+            >
+              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New</span>
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Problems Table */}
-      <div className="bg-white dark:bg-[#0e0e0e] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-        {paginatedProblems.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="text-gray-400 dark:text-gray-500 text-sm">
-              No problems found matching your criteria
-            </div>
+      {hasFilters && (
+        <div className="mt-3 flex items-center gap-2 text-[13px] text-zinc-500">
+          <span>{filteredProblems.length} result{filteredProblems.length === 1 ? "" : "s"}</span>
+          <button onClick={clearFilters} className="font-semibold text-zinc-900 dark:text-white hover:underline">Clear filters</button>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="card-surface mt-3 overflow-hidden">
+        <div className="hidden grid-cols-[28px_1fr_110px_40px] items-center gap-3 border-b border-zinc-200 dark:border-white/[0.07] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 sm:grid">
+          <span>Status</span><span>Title</span><span className="text-right">Difficulty</span><span />
+        </div>
+
+        {paginated.length === 0 ? (
+          <div className="px-6 py-14 text-center">
+            <p className="text-sm font-semibold">No problems found</p>
+            <p className="mx-auto mt-1 max-w-xs text-[13px] text-zinc-500">Try a different search or clear your filters to see the full set.</p>
+            {hasFilters && (
+              <button onClick={clearFilters} className="mt-4 rounded-lg border border-zinc-200 dark:border-white/10 px-4 py-2 text-[13px] font-semibold hover:bg-zinc-50 dark:hover:bg-white/5">
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-800">
-            {paginatedProblems.map((problem, index) => {
-              const isSolved = problem.solvedBy.some(
-                (user) => user.userId === authUser?.id
-              );
-
+          <div className="divide-y divide-zinc-100 dark:divide-white/[0.06]">
+            {paginated.map((problem) => {
+              const isSolved = problem.solvedBy?.some((u) => u.userId === authUser?.id);
               return (
-                <div
-                  key={problem.id}
-                  className={`group hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150 ${
-                    index === 0 ? "" : ""
-                  }`}
-                >
-                  <div className="px-6 py-4">
-                    <div className="flex items-center justify-between gap-4">
-                      {/* Left Section: Checkbox + Problem Info */}
-                      <div className="flex items-center gap-4 min-w-0 flex-1">
-                        {/* Solved Checkbox */}
-                        <div className="flex-shrink-0">
-                          <input
-                            type="checkbox"
-                            checked={isSolved}
-                            readOnly
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                          />
-                        </div>
-
-                        {/* Problem Title and Tags */}
-                        <div className="min-w-0 flex-1">
-                          <Link
-                            to={`/problem/${problem.id}`}
-                            className="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 font-medium text-sm sm:text-base transition-colors duration-200 block truncate"
-                          >
-                            {problem.title}
-                            
-                          </Link>
-                          {(problem.tags || []).length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-2">
-                              {(problem.tags || [])
-                                .slice(0, 3)
-                                .map((tag, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              {(problem.tags || []).length > 3 && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                                  +{(problem.tags || []).length - 3}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Right Section: Difficulty + Actions */}
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        {/* Difficulty Badge */}
-                        <div className="hidden sm:block">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                              problem.difficulty === "EASY"
-                                ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400"
-                                : problem.difficulty === "MEDIUM"
-                                ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400"
-                                : "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-                            }`}
-                          >
-                            {problem.difficulty}
-                          </span>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-1">
-                          {authUser?.role === "ADMIN" && (
-                            <>
-                              <button
-                                onClick={() => handleDelete(problem.id)}
-                                className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-                                title="Delete problem"
-                              >
-                                {isDeletingProblem ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Trash className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                disabled
-                                className="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed rounded-lg"
-                                title="Edit problem (coming soon)"
-                              >
-                                <PencilIcon className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
+                <div key={problem.id} className="group grid grid-cols-[28px_1fr_40px] sm:grid-cols-[28px_1fr_110px_40px] items-center gap-3 px-4 sm:px-5 py-3 transition-colors hover:bg-zinc-50/80 dark:hover:bg-white/[0.03]">
+                  <span>
+                    {isSolved ? (
+                      <CheckCircle2 className="h-[18px] w-[18px] text-emerald-500" />
+                    ) : (
+                      <Circle className="h-[18px] w-[18px] text-zinc-300 dark:text-zinc-700" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <Link to={`/problem/${problem.id}`} className="block truncate text-sm font-medium hover:text-zinc-600 dark:hover:text-zinc-300">
+                      {problem.title}
+                    </Link>
+                    {(problem.tags?.length > 0) && (
+                      <div className="mt-1 hidden flex-wrap gap-1 sm:flex">
+                        {problem.tags.slice(0, 3).map((tag) => (
                           <button
-                            onClick={() => handleAddToPlaylist(problem.id)}
-                            className="p-2 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-                            title="Add to playlist"
+                            key={tag}
+                            onClick={() => setSelectedTag(tag)}
+                            className="rounded bg-zinc-100 dark:bg-white/[0.06] px-1.5 py-0.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                           >
-                            <Bookmark className="w-4 h-4" />
+                            {tag}
                           </button>
-                        </div>
+                        ))}
                       </div>
-                    </div>
-
-                    {/* Mobile Difficulty Badge */}
-                    <div className="sm:hidden mt-2">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                          problem.difficulty === "EASY"
-                            ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400"
-                            : problem.difficulty === "MEDIUM"
-                            ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400"
-                            : "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-                        }`}
-                      >
-                        {problem.difficulty}
-                      </span>
-                    </div>
+                    )}
+                    <span className={`mt-0.5 block text-xs font-semibold sm:hidden ${DIFF_STYLE[problem.difficulty] || ""}`}>
+                      {problem.difficulty?.[0] + problem.difficulty?.slice(1).toLowerCase()}
+                    </span>
                   </div>
+                  <span className={`hidden text-right text-[13px] font-medium sm:block ${DIFF_STYLE[problem.difficulty] || ""}`}>
+                    {problem.difficulty?.[0] + problem.difficulty?.slice(1).toLowerCase()}
+                  </span>
+                  <span className="flex justify-end gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    {authUser?.role === "ADMIN" && (
+                      <button
+                        onClick={() => setPendingDelete(problem.id)}
+                        title="Delete"
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                      >
+                        <Trash className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setSelectedProblemId(problem.id); setIsAddToPlaylistModalOpen(true); }}
+                      title="Save to playlist"
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
+                      <Bookmark className="h-3.5 w-3.5" />
+                    </button>
+                  </span>
                 </div>
               );
             })}
@@ -407,120 +235,48 @@ const ProblemTable = ({ problems }) => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            Showing page {currentPage} of {totalPages}
-          </div>
-          <div className="flex items-center gap-2">
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-[13px] text-zinc-500">Page {safePage} of {totalPages} · {filteredProblems.length} problems</p>
+          <div className="flex items-center gap-1.5">
             <button
-              className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#0e0e0e] border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={safePage === 1}
+              onClick={() => setCurrentPage(safePage - 1)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-white/5"
             >
-              Previous
+              <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#0e0e0e] border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={safePage === totalPages}
+              onClick={() => setCurrentPage(safePage + 1)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-white/5"
             >
-              Next
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      <dialog
-        id="my_modal_5"
-        className="modal modal-bottom sm:modal-middle backdrop-blur-sm"
-      >
-        <div className="modal-box bg-white dark:bg-[#0e0e0e] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-0 max-w-md mx-auto overflow-hidden">
-          {/* Header */}
-          <div className="px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-red-600 dark:text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Delete Problem
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  This action cannot be undone
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="px-6 py-4">
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-              Are you sure you want to delete this problem? All associated data
-              will be permanently removed.
-            </p>
-
-            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-lg">
-              <div className="flex items-start gap-2">
-                <svg
-                  className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
-                  This action is irreversible
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
-            <form method="dialog" className="flex gap-3 justify-end">
-              <button
-                onClick={() => document.getElementById("my_modal_5").close()}
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#0e0e0e] border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
-              >
-                Cancel
+      {/* Delete confirm */}
+      {pendingDelete && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-zinc-950/40 p-4 backdrop-blur-sm" onClick={() => setPendingDelete(null)}>
+          <div className="animate-modalshow w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#111113] p-6" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-[15px] font-semibold tracking-tight">Delete this problem?</h3>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-500">This removes the problem and all associated data. This can't be undone.</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button onClick={() => setPendingDelete(null)} className="h-9 rounded-lg border border-zinc-200 dark:border-white/10 px-4 text-[13px] font-semibold hover:bg-zinc-50 dark:hover:bg-white/5">Cancel</button>
+              <button onClick={confirmDelete} disabled={isDeletingProblem} className="flex h-9 items-center gap-2 rounded-lg bg-rose-600 px-4 text-[13px] font-semibold text-white hover:bg-rose-700 disabled:opacity-60">
+                {isDeletingProblem && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Delete
               </button>
-              <button
-                id="delete-button"
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
-              >
-                Delete Problem
-              </button>
-            </form>
+            </div>
           </div>
         </div>
-      </dialog>
+      )}
 
-      {/* Modals */}
       <CreatePlaylistModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreatePlaylist}
+        onSubmit={createPlaylist}
       />
-
       <AddToPlaylistModal
         isOpen={isAddToPlaylistModalOpen}
         onClose={() => setIsAddToPlaylistModalOpen(false)}

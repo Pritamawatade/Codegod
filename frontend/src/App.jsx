@@ -39,15 +39,29 @@ function App() {
 
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
+      <div className="flex items-center justify-center h-screen bg-white dark:bg-[#09090b]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 rounded-lg bg-zinc-950 dark:bg-white flex items-center justify-center">
+            <Loader className="size-4 animate-spin text-white dark:text-zinc-950" />
+          </div>
+          <p className="text-sm text-zinc-500">Loading workspace…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <Toaster />
+    <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-950 dark:text-zinc-50 antialiased">
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            borderRadius: "10px",
+            fontSize: "13px",
+            fontWeight: 500,
+          },
+        }}
+      />
 
       <Routes>
         <Route path="/" element={<Layout />}>

@@ -1,188 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html{
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Fira Code", monospace;
+}
+
+html {
   overflow-x: hidden;
-  
-}
-/* .calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 40px);
-  gap: 6px;
-  justify-content: center;
-  margin-top: 20px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-.calendar-day {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
-  background: #f9f9f9;
-  border-radius: 6px;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
-} */
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.011em;
+}
 
+/* ---- selection + focus ---- */
+::selection {
+  background: #09090b;
+  color: #fff;
+}
+.dark ::selection {
+  background: #fafafa;
+  color: #09090b;
+}
+
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- scrollbars: thin, neutral ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(161 161 170 / 0.4) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(161 161 170 / 0.35);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: rgb(63 63 70 / 0.8);
+}
+
+/* ---- split gutters (problem IDE) ---- */
 .split {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 .split1 {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
-.runcode{
-  z-index: 100 !important;
-}
-.gutter{
-  background-color: #484848;
+.gutter {
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: 50%;
-  cursor: col-resize;
-  overflow: hidden;
+  transition: background-color 0.15s ease;
+  position: relative;
 }
-.gutter:hover {
-    background-color: #3c83ff;
-    background-repeat: no-repeat;
-    background-position: 50%;
-    cursor: col-resize;
+.gutter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #e4e4e7;
 }
-.gutter.gutter-horizontal:hover {
-    background-color: #3c83ff;
-    background-repeat: no-repeat;
-    background-position: 50%;
+.dark .gutter::after {
+  background: #27272a;
 }
-.gutter-vertical{
-z-index: 100;
-}
-button{
-  cursor: pointer !important;
+.gutter:hover::after,
+.gutter.dragging::after {
+  background: #6366f1;
 }
 .gutter.gutter-horizontal {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
-    cursor: col-resize;
+  cursor: col-resize;
 }
-@keyframes modalshow {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.gutter.gutter-horizontal::after {
+  left: 50%;
+  right: auto;
+  width: 1px;
+  transform: translateX(-50%);
+}
+.gutter.gutter-horizontal:hover::after {
+  width: 2px;
+}
+.gutter.gutter-vertical {
+  cursor: row-resize;
+  z-index: 20;
+}
+.gutter.gutter-vertical::after {
+  top: 50%;
+  bottom: auto;
+  height: 1px;
+  transform: translateY(-50%);
 }
 
-.animate-modalshow {
-  animation: modalshow 0.3s ease-out forwards;
-}
-.nocopy {
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
-}
-.name{
-  color: rgb(121, 116, 116);
-}
-.icon{
-  color: rgb(244, 184, 184);
+button {
   cursor: pointer;
 }
-@keyframes blink {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
-    }
-  }
-
-  .animate-blink {
-    animation: blink 1s infinite;
-  }
-  
-  .animate-pulse {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  
-  .delay-100 {
-    animation-delay: 1s;
-  }
-  
-  .delay-200 {
-    animation-delay: 2s;
-  }
-  
-  .delay-300 {
-    animation-delay: 3s;
-  }
-  
-  .delay-500 {
-    animation-delay: 5s;
-  }
-  
-  .delay-700 {
-    animation-delay: 7s;
-  }
-  
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.3;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.8;
-      transform: scale(1.05);
-    }
-  }
-  
-
-
-
-
-@keyframes gradient {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+button:disabled {
+  cursor: not-allowed;
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
+/* ---- surfaces ---- */
+.card-surface {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+}
+.dark .card-surface {
+  background: #0c0c0e;
+  border-color: rgb(255 255 255 / 0.08);
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 1s ease-out;
+.hairline {
+  border-color: #e4e4e7;
+}
+.dark .hairline {
+  border-color: rgb(255 255 255 / 0.08);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ---- hero grid backdrop ---- */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(9 9 11 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(9 9 11 / 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.dark .bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+}
+.mask-fade-y {
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 100%);
+}
+
+.code-font {
+  font-family: var(--font-mono);
+}
+
+/* ---- animations (restrained) ---- */
+@keyframes modalshow {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-modalshow {
+  animation: modalshow 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.nocopy {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 html.dark {
   color-scheme: dark;
 }
 
-* {
-  transition-property: background-color, border-color, color, fill,
-    stroke;
-  transition-duration: 200ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+/* ---- console landing: phosphor terminal ---- */
+.console-root {
+  background: #060806;
+  color: #e8ede8;
+}
+.console-panel {
+  background: #0c100c;
+  border: 1px solid rgb(255 255 255 / 0.09);
+}
+.console-hairline {
+  border-color: rgb(255 255 255 / 0.09);
+}
+.console-muted {
+  color: #8b948b;
+}
+.console-phosphor {
+  color: #4ade80;
+}
+@keyframes caret-blink {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.caret::after {
+  content: "▊";
+  margin-left: 2px;
+  color: #4ade80;
+  animation: caret-blink 1.06s steps(1) infinite;
+}
+@keyframes feed-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.feed-line {
+  animation: feed-in 0.28s ease-out both;
+}
+@keyframes scan-drift {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+.scanline {
+  animation: scan-drift 7s linear infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .caret::after,
+  .feed-line,
+  .scanline,
+  .live-dot {
+    animation: none;
+  }
 }

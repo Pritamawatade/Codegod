@@ -1,332 +1,413 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  ChevronDown,
-  Zap,
-  Target,
-  Users,
-  Star,
-  ArrowRight,
-  Flame,
-  Globe,
-  BookOpen,
-  TrendingUp,
-} from "lucide-react";
-import BannerText from "../components/BannerText";
-import { motion } from "framer-motion";
-import WhyChooseCodeGod from "../components/WhyChooseCodeGod";
-import Navbar from "../components/Navbar";
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
+import { Copy, Check } from "lucide-react";
+import toast from "react-hot-toast";
 import Footer from "../components/Footer";
-import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import PricingCards from "../components/PricingCards";
 
-const CodeGodLanding = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState({});
-  const observerRef = useRef();
-  const { authUser } = useAuthStore();
-  const navigate = useNavigate();
+/* ---------- count-up numeral (starts when scrolled into view) ---------- */
+function useCountUp(target, start, duration = 1500) {
+  const reduce = useReducedMotion();
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    if (reduce) {
+      setValue(target);
+      return;
+    }
+    let raf;
+    const t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / duration);
+      setValue(Math.round(target * (1 - Math.pow(2, -10 * p))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setValue(target);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [start, target, duration, reduce]);
+  return value;
+}
+
+function Stat({ value, suffix, label, sub, started, format }) {
+  const n = useCountUp(value, started);
+  const text = format ? format(n) : n.toLocaleString("en-US");
+  return (
+    <div className="border-l console-hairline pl-5">
+      <p className="code-font text-4xl font-semibold tabular-nums tracking-tight text-zinc-50 sm:text-5xl">
+        {text}
+        <span className="console-phosphor">{suffix}</span>
+      </p>
+      <p className="mt-2 text-sm font-medium text-zinc-200">{label}</p>
+      <p className="console-muted mt-0.5 text-[13px]">{sub}</p>
+    </div>
+  );
+}
+
+/* ---------- live verdict feed ---------- */
+const FEED_POOL = [
+  { file: "two-sum.py", verdict: "accepted", detail: "48ms · 16.4mb" },
+  { file: "median-sort.cpp", verdict: "accepted", detail: "112ms · 11.2mb" },
+  { file: "lru-cache.java", verdict: "wrong answer", detail: "case 14/63" },
+  { file: "word-ladder.js", verdict: "accepted", detail: "96ms · 22.1mb" },
+  { file: "trap-rain.go", verdict: "time limit", detail: "case 41/58 · >2s" },
+  { file: "n-queens.py", verdict: "accepted", detail: "61ms · 15.0mb" },
+  { file: "merge-k-lists.c", verdict: "accepted", detail: "22ms · 9.8mb" },
+  { file: "coin-change.py", verdict: "wrong answer", detail: "case 7/22" },
+  { file: "detect-cycle.cpp", verdict: "accepted", detail: "74ms · 13.5mb" },
+];
+
+const VERDICT_COLOR = {
+  accepted: "text-[#4ade80]",
+  "wrong answer": "text-[#f87171]",
+  "time limit": "text-[#fbbf24]",
+};
+
+function JudgeFeed() {
+  const reduce = useReducedMotion();
+  const [lines, setLines] = useState(() =>
+    FEED_POOL.slice(0, reduce ? 7 : 3).map((l, i) => ({ ...l, key: i }))
+  );
+  const idx = useRef(3);
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsVisible((prev) => ({
-            ...prev,
-            [entry.target.id]: entry.isIntersecting,
-          }));
-        });
-      },
-      { threshold: 0.1, rootMargin: "-50px" }
-    );
+    if (reduce) return;
+    const t = setInterval(() => {
+      setLines((prev) => {
+        const next = { ...FEED_POOL[idx.current % FEED_POOL.length], key: Date.now() };
+        idx.current += 1;
+        return [...prev.slice(-6), next];
+      });
+    }, 1600);
+    return () => clearInterval(t);
+  }, [reduce]);
 
-    document.querySelectorAll("[data-animate]").forEach((el) => {
-      observerRef.current.observe(el);
-    });
+  return (
+    <div className="code-font text-[12.5px] leading-[2]">
+      {lines.map((l) => (
+        <p key={l.key} className="feed-line flex flex-wrap gap-x-3 whitespace-pre-wrap">
+          <span className="console-muted tabular-nums">
+            {new Date(l.key).toTimeString().slice(0, 8)}
+          </span>
+          <span className="text-zinc-200">{l.file}</span>
+          <span className={`font-semibold ${VERDICT_COLOR[l.verdict]}`}>{l.verdict}</span>
+          <span className="console-muted">{l.detail}</span>
+        </p>
+      ))}
+      <p className="console-muted">
+        <span className="live-dot console-phosphor">●</span> listening for submissions
+        <span className="caret" />
+      </p>
+    </div>
+  );
+}
 
-    return () => observerRef.current?.disconnect();
+/* ---------- typed hero line (single load-time sequence) ---------- */
+function TypedHeadline() {
+  const reduce = useReducedMotion();
+  const full = "Solve. Submit. Get judged.";
+  const [chars, setChars] = useState(reduce ? full.length : 0);
+  useEffect(() => {
+    if (reduce) return;
+    if (chars >= full.length) return;
+    const t = setTimeout(() => setChars((c) => c + 1), 55);
+    return () => clearTimeout(t);
+  }, [chars, reduce]);
+  const done = chars >= full.length;
+  return (
+    <h1 className="code-font text-balance text-4xl font-bold leading-[1.08] tracking-tight text-zinc-50 sm:text-6xl">
+      {full.slice(0, chars)}
+      {!done && <span className="caret" aria-hidden />}
+    </h1>
+  );
+}
+
+function Clock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
   }, []);
+  return <span className="tabular-nums">{now.toTimeString().slice(0, 8)}</span>;
+}
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-  };
+/* ---------- scroll-driven submission pipeline ---------- */
+function Pipeline() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 0.85", "end 0.45"],
+  });
+  const smooth = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
+  const fill = useTransform(smooth, [0, 1], ["0%", "100%"]);
+  const packetA = useTransform(smooth, [0, 1], ["2%", "98%"]);
+  const packetB = useTransform(smooth, [0, 1], ["-6%", "90%"]);
 
-  const features = [
+  const stages = [
     {
-      icon: <Globe className="w-8 h-8" />,
-      title: "13 Programming Languages",
-      description:
-        "Master DSA in Python, Java, C++, JavaScript, and Go with comprehensive support for all major languages.",
+      node: "stdin",
+      title: "Your code arrives",
+      body: "Picked from 13 runtimes, fenced off so a bad loop can't take down the box.",
+      at: 0.05,
     },
     {
-      icon: <Flame className="w-8 h-8" />,
-      title: "Streak Tracking",
-      description:
-        "Build discipline with our advanced streak system that motivates you to code consistently every day.",
+      node: "judge",
+      title: "Hidden cases run",
+      body: "Every submission faces the full case set, not just the samples you can see.",
+      at: 0.5,
     },
     {
-      icon: <Star className="w-8 h-8" />,
-      title: "Unique Questions",
-      description:
-        "Access thousands of handcrafted problems designed to challenge your thinking and improve your skills.",
-    },
-    {
-      icon: <Target className="w-8 h-8" />,
-      title: "Discipline Builder",
-      description:
-        "Structured learning paths and daily challenges that transform you into a disciplined problem solver.",
+      node: "verdict",
+      title: "A verdict lands",
+      body: "Accepted, wrong answer, or time limit — with runtime and memory attached.",
+      at: 0.95,
     },
   ];
 
-  const stats = [
-    {
-      number: "10+",
-      label: "Active Users",
-      icon: <Users className="w-6 h-6" />,
-    },
-    {
-      number: "50+",
-      label: "Unique Problems",
-      icon: <BookOpen className="w-6 h-6" />,
-    },
-    {
-      number: "95%",
-      label: "Success Rate",
-      icon: <TrendingUp className="w-6 h-6" />,
-    },
-    { number: "24/7", label: "Support", icon: <Zap className="w-6 h-6" /> },
-  ];
+  return (
+    <div ref={ref}>
+      {/* track */}
+      <div className="relative mb-10 h-px bg-white/10" aria-hidden>
+        <motion.div className="absolute inset-y-0 left-0 bg-[#4ade80]" style={{ width: fill }} />
+        <motion.span
+          className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4ade80] shadow-[0_0_12px_#4ade80]"
+          style={{ left: packetA }}
+        />
+        <motion.span
+          className="absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4ade80]/50"
+          style={{ left: packetB }}
+        />
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {stages.map((s) => (
+          <Stage key={s.node} stage={s} progress={smooth} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  const isVisible1 = {
-    "why-us-header": true,
-    "why-us-content": true,
-    "why-us-visual": true,
+function Stage({ stage, progress }) {
+  const lo = Math.max(0, stage.at - 0.18);
+  const opacity = useTransform(progress, [lo, stage.at], [0.35, 1]);
+  const border = useTransform(progress, [lo, stage.at], ["#ffffff17", "#4ade8066"]);
+  return (
+    <motion.div
+      className="console-panel rounded-xl p-6"
+      style={{ opacity, borderColor: border, borderWidth: 1, borderStyle: "solid" }}
+    >
+      <p className="code-font console-phosphor text-[13px]">{stage.node}</p>
+      <h3 className="mt-2 text-lg font-semibold tracking-tight text-zinc-50">{stage.title}</h3>
+      <p className="console-muted mt-1.5 max-w-[46ch] text-sm leading-relaxed">{stage.body}</p>
+    </motion.div>
+  );
+}
+
+/* ---------- page ---------- */
+const CodeGodLanding = () => {
+  const navigate = useNavigate();
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
+  const [copied, setCopied] = useState(false);
+
+  const copySignup = () => {
+    navigator.clipboard.writeText("npx codegod signup --free");
+    setCopied(true);
+    toast.success("Command copied — paste it anywhere");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 `}>
-      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950 dark:to-[#0e0e0e] text-slate-900 dark:dark:text-white">
-        {/* Navigation */}
-
-        {/* Hero Section */}
-        <section className="relative pt-32 pb-20 overflow-hidden dark:bg-[#0e0e0e]">
-          <div className="absolute inset-0 "></div>
-
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="animate-fade-in-up">
-              <h1 className="text-5xl md:text-7xl font-bold dark:text-white mb-6 leading-tight">
-                Master{" "}
-                <span className="dark:text-white animate-gradient">DSA</span>{" "}
-                Like a
-                <br />
-                <span className="dark:text-white animate-gradient">
-                  CodeGod
+    <div className="console-root">
+      {/* hero: the machine room */}
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+          <div className="scanline absolute inset-x-0 h-40 bg-gradient-to-b from-transparent via-[#4ade80]/[0.04] to-transparent" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-10 sm:px-6 sm:pt-16">
+          <div className="console-panel overflow-hidden rounded-2xl">
+            {/* status bar */}
+            <div className="code-font flex items-center gap-2 border-b border-white/10 px-4 py-3 text-xs">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#f87171]/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#fbbf24]/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#4ade80]/70" />
+              <span className="console-muted ml-2 hidden sm:inline">codegod — judge v2.4</span>
+              <span className="ml-auto flex items-center gap-3">
+                <span className="console-muted hidden items-center gap-1.5 sm:flex">
+                  <span className="live-dot console-phosphor">●</span> online
                 </span>
-              </h1>
+                <span className="console-muted tabular-nums">
+                  <Clock />
+                </span>
+              </span>
+            </div>
 
-              <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Transform from a coding novice to a problem-solving deity.
-                Master Data Structures & Algorithms with our revolutionary
-                platform designed for the gods of code.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                <button
-                  onClick={() => navigate("/problems")}
-                  className="group bg-black text-white dark:bg-white dark:hover:bg-blue-600 cursor-pointer  dark:text-black px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform shadow-2xl hover:shadow-blue-500/25 flex items-center space-x-2"
-                >
-                  <span>Start Your Journey</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-               
-              </div>
-
-              {/* Hero Stats */}
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
-                {stats.map((stat, index) => (
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    key={index}
-                    className="text-center group hover:scale-105 transition-transform duration-300"
+            <div className="grid gap-10 p-6 sm:p-10 lg:grid-cols-[1.1fr_1fr]">
+              <div>
+                <p className="code-font console-muted text-[13px]">
+                  <span className="console-phosphor">$</span> whoami — guest
+                </p>
+                <div className="mt-4">
+                  <TypedHeadline />
+                </div>
+                <p className="mt-5 max-w-[52ch] text-[15px] leading-relaxed text-zinc-400">
+                  CodeGod is a practice ground for data structures and algorithms with a
+                  real online judge. Write code, submit, and find out exactly where you
+                  stand — then close the gap.
+                </p>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    onClick={() => navigate("/problems")}
+                    className="code-font h-11 rounded-lg bg-[#4ade80] px-6 text-sm font-bold text-black transition-colors hover:bg-[#7bef9f]"
+                                     >
+                    start solving
+                  </button>
+                  <button
+                    onClick={() => navigate("/sheets")}
+                    className="code-font h-11 rounded-lg border border-white/15 px-6 text-sm font-semibold text-zinc-100 transition-colors hover:border-white/35 hover:bg-white/5"
                   >
-                    <div className="flex justify-center mb-2 text-blue-600 dark:text-blue-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                      {stat.icon}
-                    </div>
-                    <div className="text-2xl font-bold text-slate-900 dark:dark:text-white">
-                      {stat.number}
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                ))}
+                    browse the problem set
+                  </button>
+                </div>
+                <p className="code-font console-muted mt-6 text-xs">
+                  free to start · 13 runtimes · no setup
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/40 p-5">
+                <JudgeFeed />
               </div>
             </div>
           </div>
+          <p className="code-font console-muted mt-6 text-center text-xs">
+            scroll to inspect the machine
+          </p>
+        </div>
+      </section>
 
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <ChevronDown className="w-8 h-8 text-slate-400" />
+      {/* animated numbers */}
+      <section className="border-t border-white/10">
+        <div ref={statsRef} className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+            Judge performance
+          </h2>
+          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+            <Stat value={50} suffix="+" label="Problems in the bank" sub="curated, company-tagged" started={statsInView} />
+            <Stat value={13} suffix="" label="Language runtimes" sub="python to c to go" started={statsInView} />
+            <Stat value={12408} suffix="" label="Verdicts served" sub="and counting" started={statsInView} />
+            <Stat value={84} suffix="ms" label="Median judge time" sub="submit to verdict" started={statsInView} />
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Features Section */}
-        <section
-          id="features"
-          className="py-16 md:py-20 lg:py-24 bg-gray-50 dark:bg-[#0e0e0e] transition-colors duration-300"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Header Section */}
-            <div
-              data-animate
-              id="features-header"
-              className={`text-center mb-12 md:mb-16 lg:mb-20 transition-all duration-1000 ${
-                isVisible["features-header"]
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-            >
-              <motion.h2
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white"
-              >
-                Godlike Features
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
-              >
-                Unleash your coding potential with features designed by the
-                gods, for the gods
-              </motion.p>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 50, scale: 1 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.02 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  key={index}
-                  data-animate
-                  id={`feature-${index}`}
-                  className={`group relative bg-white dark:bg-gray-900 rounded-xl md:rounded-2xl p-6 md:p-8 
-            hover:bg-gray-50 dark:hover:bg-gray-800 
-            transition-all duration-300 ease-out
-            hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50
-            cursor-pointer 
-            border border-gray-200 dark:border-gray-700
-            hover:border-gray-300 dark:hover:border-gray-600
-            ${
-              isVisible[`feature-${index}`]
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-10"
-            }`}
-                  style={{ transitionDelay: `${index * 200}ms` }}
-                >
-                  {/* Content */}
-                  <div className="relative z-10">
-                    {/* Icon */}
-                    <div className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 mb-4 md:mb-6">
-                      {feature.icon}
-                    </div>
-
-                    {/* Title */}
-                    <h3
-                      className="text-lg md:text-xl font-semibold mb-3 md:mb-4 
-              text-gray-900 dark:text-white 
-              group-hover:text-gray-900 dark:group-hover:text-white 
-              transition-colors duration-300"
-                    >
-                      {feature.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p
-                      className="text-sm md:text-base text-gray-600 dark:text-gray-400 
-              group-hover:text-gray-700 dark:group-hover:text-gray-300
-              leading-relaxed transition-colors duration-300"
-                    >
-                      {feature.description}
-                    </p>
-                  </div>
-
-                  {/* Subtle hover background */}
-                  <div
-                    className="absolute inset-0 bg-gradient-to-br from-gray-100/50 to-gray-200/30 
-            dark:from-gray-800/30 dark:to-gray-700/20 
-            rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 
-            transition-opacity duration-300 pointer-events-none"
-                  ></div>
-                </motion.div>
-              ))}
-            </div>
+      {/* pipeline draws with scroll */}
+      <section className="border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+            How a submission travels
+          </h2>
+          <p className="console-muted mt-3 max-w-[60ch] text-[15px] leading-relaxed">
+            Keep scrolling. The packet follows your scroll position from your editor to
+            the verdict.
+          </p>
+          <div className="mt-12">
+            <Pipeline />
           </div>
-        </section>
+        </div>
+      </section>
 
-        <BannerText
-          title="Level up from mortal to CodeGod—one problem at a time."
-          description="Level up from mortal to CodeGod—one problem at a time."
-          buttonText="try for free"
-        />
-
-        {/* <PricingCards /> */}
-        <WhyChooseCodeGod isVisible={isVisible1} />
-
-        {/* CTA Section */}
-        <section className="py-20 bg-white dark:bg-black relative overflow-hidden">
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              id="cta-section"
-            >
-              <h2 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
-                Ready to Become a
-                <span className="block text-yellow-500">CodeGod?</span>
-              </h2>
-              <p className="text-xl text-slate-700 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-                Join thousands of developers who've transcended their limits.
-                Your journey to coding divinity starts with a single click.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.button
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  onClick={() => navigate("/problems")}
-                  className="group bg-black dark:bg-white text-white dark:text-blue-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-blue-600  hover:text-black cursor-pointer transition-all duration-300 shadow-2xl flex items-center justify-center space-x-2"
+      {/* the loop, as shell history */}
+      <section className="border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+            The practice loop
+          </h2>
+          <div className="mt-10 divide-y divide-white/10 border-y border-white/10">
+            {[
+              {
+                cmd: "$ pick",
+                title: "Choose your battleground",
+                body: "Filter by difficulty, topic, or the companies asking the question. Follow a sheet instead of grinding at random.",
+                cta: "See sheets",
+                to: "/sheets",
+              },
+              {
+                cmd: "$ solve",
+                title: "Work in a real editor",
+                body: "A full IDE with 13 runtimes, instant runs, and per-case feedback when something breaks.",
+                cta: "Open problems",
+                to: "/problems",
+              },
+              {
+                cmd: "$ repeat",
+                title: "Build the streak",
+                body: "Daily activity, submission history, and discussions keep you coming back until hard feels routine.",
+                cta: "View your profile",
+                to: "/profile",
+              },
+            ].map((row) => (
+              <div
+                key={row.cmd}
+                className="group grid gap-2 py-7 transition-colors hover:bg-white/[0.02] sm:grid-cols-[120px_1fr_auto] sm:items-center sm:gap-6 sm:px-4"
+              >
+                <p className="code-font console-phosphor text-sm font-semibold">{row.cmd}</p>
+                <div>
+                  <h3 className="text-lg font-semibold tracking-tight text-zinc-50">{row.title}</h3>
+                  <p className="console-muted mt-1 max-w-[62ch] text-sm leading-relaxed">{row.body}</p>
+                </div>
+                <button
+                  onClick={() => navigate(row.to)}
+                  className="code-font w-fit rounded-lg border border-white/15 px-4 py-2 text-[13px] font-semibold text-zinc-100 transition-colors group-hover:border-[#4ade80]/50 group-hover:text-[#4ade80]"
                 >
-                  <span>Start Your Divine Journey</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
-              
+                  {row.cta}
+                </button>
               </div>
-            </motion.div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          {/* Minimal Animated Background Elements */}
-          {/* <div className="absolute top-10 left-10 w-16 h-16 bg-black/10 dark:bg-white/10 rounded-full animate-bounce delay-100"></div>
-          <div className="absolute bottom-10 right-10 w-12 h-12 bg-yellow-400/20 rounded-full animate-bounce delay-300"></div>
-          <div className="absolute top-1/2 left-20 w-8 h-8 bg-black/20 dark:bg-white/20 rounded-full animate-pulse"></div> */}
-        </section>
+      {/* signup command */}
+      <section className="border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <div className="console-panel rounded-2xl p-6 sm:p-10">
+            <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+              Ship your first solution tonight
+            </h2>
+            <p className="console-muted mt-3 max-w-[58ch] text-[15px] leading-relaxed">
+              One account, the full judge, and your streak starts counting from day one.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button
+                onClick={copySignup}
+                className="code-font flex h-12 flex-1 items-center gap-3 rounded-lg border border-white/15 bg-black/50 px-4 text-left text-sm text-zinc-200 transition-colors hover:border-[#4ade80]/50"
+              >
+                <span className="console-phosphor">$</span>
+                <span className="flex-1 truncate">npx codegod signup --free</span>
+                {copied ? (
+                  <Check className="h-4 w-4 shrink-0 text-[#4ade80]" />
+                ) : (
+                  <Copy className="h-4 w-4 shrink-0 text-zinc-500" />
+                )}
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                className="code-font h-12 rounded-lg bg-[#4ade80] px-7 text-sm font-bold text-black transition-colors hover:bg-[#7bef9f]"
+              >
+                create account
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {/* Footer */}
+      <div className="dark">
         <Footer />
       </div>
     </div>

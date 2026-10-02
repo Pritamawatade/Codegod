@@ -1,16 +1,15 @@
 import React, { useEffect } from "react";
-
 import useProblemStore from "../store/useProblemStore";
-import { Loader, Star } from "lucide-react";
+import { Loader2, Flame, Trophy, Target, ArrowRight } from "lucide-react";
 import ProblemTable from "../components/ProblemTable";
 import { useActionStore } from "../store/useActionStore";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import StreakCalendar from "../components/StreakCalender";
 
 function HomePage() {
   const { getAllProblems, problems, isProblemsLoading } = useProblemStore();
   const { isDeletingProblem } = useActionStore();
+  const { authUser } = useAuthStore();
 
   useEffect(() => {
     getAllProblems();
@@ -18,164 +17,76 @@ function HomePage() {
 
   if (isProblemsLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
+          <p className="text-sm text-zinc-500">Loading problems…</p>
+        </div>
       </div>
     );
   }
 
+  const solved = (problems || []).filter((p) =>
+    p.solvedBy?.some((u) => u.userId === authUser?.id)
+  ).length;
+  const total = problems?.length || 0;
+  const pct = total ? Math.round((solved / total) * 100) : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-[#0a0a0a] dark:via-[#0e0e0e] dark:to-[#0a0a0a]">
-      {/* Hero Section with Geometric Background */}
-      <div className="relative overflow-hidden">
-        {/* Geometric Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-30"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-100 dark:bg-purple-900/20 rounded-full blur-3xl opacity-30"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/10 dark:to-purple-900/10 rounded-full blur-3xl opacity-20"></div>
+    <div className="bg-white dark:bg-[#09090b]">
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6">
+        {/* Page header */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[13px] font-medium text-zinc-400">
+              Welcome back{authUser?.name ? `, ${authUser.name.split(" ")[0]}` : ""} — keep the streak alive.
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-[32px]">Problem set</h1>
+            <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+              Work through curated problems by difficulty, topic, or company. Every solve moves the needle.
+            </p>
+          </div>
+          <Link
+            to="/sheets"
+            className="group flex w-fit items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-white/10 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-zinc-50 dark:hover:bg-white/5"
+          >
+            Explore sheets <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
 
-        {/* Content Container */}
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-          <div className="max-w-7xl mx-auto">
-            {/* Hero Content */}
-            <div className="text-center mb-16">
-              {/* Badge */}
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm font-medium mb-6 border border-blue-200 dark:border-blue-800">
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Transform Your Coding Journey
-              </div>
-
-              {/* Main Heading */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-                
-                <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
-                  Become CodeGod
-                </span>
-                <br />
-                <span className="text-gray-700 dark:text-gray-300 text-3xl sm:text-4xl lg:text-5xl">
-                  in 30 days
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8">
-                Purchase FAANG DSA sheet and unlock Premium collections of
-                problem.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex justify-center items-center gap-4 px-6 pb-6">
-                <Link
-                  to="/sheets"
-                  className="w- inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 group/btn"
-                >
-                  Explore Sheets
-                </Link>
+        {/* Stats */}
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          {[
+            { icon: Trophy, label: "Solved", value: `${solved}/${total}`, hint: `${pct}% complete` },
+            { icon: Target, label: "Remaining", value: `${total - solved}`, hint: "to full completion" },
+            { icon: Flame, label: "Streak", value: "Today", hint: "solve to keep it going" },
+          ].map((s) => (
+            <div key={s.label} className="card-surface flex items-center gap-3 p-3.5 sm:p-4">
+              <span className="hidden h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/[0.06] sm:flex">
+                <s.icon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">{s.label}</p>
+                <p className="truncate text-[15px] font-bold tracking-tight sm:text-lg">{s.value}</p>
+                <p className="hidden truncate text-xs text-zinc-400 sm:block">{s.hint}</p>
               </div>
             </div>
+          ))}
+        </div>
 
-        
-
-            {/* Problems Content */}
-            <div className="relative">
-              {problems.length > 0 ? (
-                <div>
-                  {/* Section Header */}
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        Practice Problems
-                      </h2>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Choose from our curated collection of coding challenges
-                      </p>
-                    </div>
-
-                    {/* Quick Stats */}
-                    <div className="hidden sm:flex items-center gap-4">
-                      <div className="text-center">
-                        <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {problems.length}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Total Problems
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Problems Table Container */}
-                  <div className="bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden">
-                    <ProblemTable problems={problems} />
-                  </div>
-                </div>
-              ) : (
-                /* Empty State */
-                <div className="text-center py-16">
-                  <div className="bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 max-w-md mx-auto">
-                    {/* Empty State Icon */}
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <svg
-                        className="w-8 h-8 text-gray-400 dark:text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </div>
-
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                      No Problems Available
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">
-                      We're working hard to bring you the best coding
-                      challenges. Check back soon for new problems!
-                    </p>
-
-                    {/* Action Button */}
-                    <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                      Refresh Page
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+        {/* Progress bar */}
+        <div className="card-surface mt-3 flex items-center gap-4 p-4">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-white/10">
+            <div className="h-full rounded-full bg-zinc-950 dark:bg-white transition-all" style={{ width: `${pct}%` }} />
           </div>
+          <span className="code-font text-xs text-zinc-500">{pct}%</span>
+        </div>
+
+        {/* Table */}
+        <div className="mt-6">
+          <ProblemTable problems={problems} />
         </div>
       </div>
-
-      {/* Bottom Gradient */}
-      <div className="h-32 bg-gradient-to-t from-white to-transparent dark:from-[#0e0e0e] dark:to-transparent"></div>
     </div>
   );
 }
