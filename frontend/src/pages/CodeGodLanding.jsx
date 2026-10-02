@@ -10,6 +10,7 @@ import {
 import { Copy, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import Footer from "../components/Footer";
+import useThemeStore from "../store/useThemeStore";
 import { useNavigate } from "react-router-dom";
 
 /* ---------- count-up numeral (starts when scrolled into view) ---------- */
@@ -41,11 +42,11 @@ function Stat({ value, suffix, label, sub, started, format }) {
   const text = format ? format(n) : n.toLocaleString("en-US");
   return (
     <div className="border-l console-hairline pl-5">
-      <p className="code-font text-4xl font-semibold tabular-nums tracking-tight text-zinc-50 sm:text-5xl">
+      <p className="code-font text-4xl font-semibold tabular-nums tracking-tight console-text sm:text-5xl">
         {text}
         <span className="console-phosphor">{suffix}</span>
       </p>
-      <p className="mt-2 text-sm font-medium text-zinc-200">{label}</p>
+      <p className="mt-2 text-sm font-medium console-text">{label}</p>
       <p className="console-muted mt-0.5 text-[13px]">{sub}</p>
     </div>
   );
@@ -65,9 +66,9 @@ const FEED_POOL = [
 ];
 
 const VERDICT_COLOR = {
-  accepted: "text-[#4ade80]",
-  "wrong answer": "text-[#f87171]",
-  "time limit": "text-[#fbbf24]",
+  accepted: "verdict-ok",
+  "wrong answer": "verdict-err",
+  "time limit": "verdict-warn",
 };
 
 function JudgeFeed() {
@@ -96,7 +97,7 @@ function JudgeFeed() {
           <span className="console-muted tabular-nums">
             {new Date(l.key).toTimeString().slice(0, 8)}
           </span>
-          <span className="text-zinc-200">{l.file}</span>
+          <span className="console-text">{l.file}</span>
           <span className={`font-semibold ${VERDICT_COLOR[l.verdict]}`}>{l.verdict}</span>
           <span className="console-muted">{l.detail}</span>
         </p>
@@ -122,7 +123,7 @@ function TypedHeadline() {
   }, [chars, reduce]);
   const done = chars >= full.length;
   return (
-    <h1 className="code-font text-balance text-4xl font-bold leading-[1.08] tracking-tight text-zinc-50 sm:text-6xl">
+    <h1 className="code-font text-balance text-4xl font-bold leading-[1.08] tracking-tight console-text sm:text-6xl">
       {full.slice(0, chars)}
       {!done && <span className="caret" aria-hidden />}
     </h1>
@@ -174,14 +175,14 @@ function Pipeline() {
   return (
     <div ref={ref}>
       {/* track */}
-      <div className="relative mb-10 h-px bg-white/10" aria-hidden>
-        <motion.div className="absolute inset-y-0 left-0 bg-[#4ade80]" style={{ width: fill }} />
+      <div className="relative mb-10 h-px bg-[var(--con-line)]" aria-hidden>
+        <motion.div className="absolute inset-y-0 left-0 bg-[var(--con-phos)]" style={{ width: fill }} />
         <motion.span
-          className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4ade80] shadow-[0_0_12px_#4ade80]"
-          style={{ left: packetA }}
+          className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--con-phos)]"
+          style={{ left: packetA, boxShadow: "0 0 12px var(--con-phos)" }}
         />
         <motion.span
-          className="absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4ade80]/50"
+          className="absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--con-phos)] opacity-50"
           style={{ left: packetB }}
         />
       </div>
@@ -195,16 +196,23 @@ function Pipeline() {
 }
 
 function Stage({ stage, progress }) {
+  const { theme } = useThemeStore();
   const lo = Math.max(0, stage.at - 0.18);
   const opacity = useTransform(progress, [lo, stage.at], [0.35, 1]);
-  const border = useTransform(progress, [lo, stage.at], ["#ffffff17", "#4ade8066"]);
+  const border = useTransform(
+    progress,
+    [lo, stage.at],
+    theme === "dark"
+      ? ["rgba(255,255,255,0.09)", "rgba(74,222,128,0.4)"]
+      : ["rgba(9,9,11,0.12)", "rgba(22,163,74,0.45)"]
+  );
   return (
     <motion.div
       className="console-panel rounded-xl p-6"
       style={{ opacity, borderColor: border, borderWidth: 1, borderStyle: "solid" }}
     >
       <p className="code-font console-phosphor text-[13px]">{stage.node}</p>
-      <h3 className="mt-2 text-lg font-semibold tracking-tight text-zinc-50">{stage.title}</h3>
+      <h3 className="mt-2 text-lg font-semibold tracking-tight console-text">{stage.title}</h3>
       <p className="console-muted mt-1.5 max-w-[46ch] text-sm leading-relaxed">{stage.body}</p>
     </motion.div>
   );
@@ -228,13 +236,13 @@ const CodeGodLanding = () => {
     <div className="console-root">
       {/* hero: the machine room */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="pointer-events-none absolute inset-0 hidden overflow-hidden dark:block" aria-hidden>
           <div className="scanline absolute inset-x-0 h-40 bg-gradient-to-b from-transparent via-[#4ade80]/[0.04] to-transparent" />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-10 sm:px-6 sm:pt-16">
           <div className="console-panel overflow-hidden rounded-2xl">
             {/* status bar */}
-            <div className="code-font flex items-center gap-2 border-b border-white/10 px-4 py-3 text-xs">
+            <div className="code-font flex items-center gap-2 border-b console-hairline px-4 py-3 text-xs">
               <span className="h-2.5 w-2.5 rounded-full bg-[#f87171]/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-[#fbbf24]/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-[#4ade80]/70" />
@@ -257,7 +265,7 @@ const CodeGodLanding = () => {
                 <div className="mt-4">
                   <TypedHeadline />
                 </div>
-                <p className="mt-5 max-w-[52ch] text-[15px] leading-relaxed text-zinc-400">
+                <p className="mt-5 max-w-[52ch] text-[15px] leading-relaxed console-muted">
                   CodeGod is a practice ground for data structures and algorithms with a
                   real online judge. Write code, submit, and find out exactly where you
                   stand — then close the gap.
@@ -271,7 +279,7 @@ const CodeGodLanding = () => {
                   </button>
                   <button
                     onClick={() => navigate("/sheets")}
-                    className="code-font h-11 rounded-lg border border-white/15 px-6 text-sm font-semibold text-zinc-100 transition-colors hover:border-white/35 hover:bg-white/5"
+                    className="code-font console-outline console-hover h-11 rounded-lg px-6 text-sm font-semibold console-text transition-colors"
                   >
                     browse the problem set
                   </button>
@@ -280,7 +288,7 @@ const CodeGodLanding = () => {
                   free to start · 13 runtimes · no setup
                 </p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-black/40 p-5">
+              <div className="console-inset rounded-xl p-5">
                 <JudgeFeed />
               </div>
             </div>
@@ -292,9 +300,9 @@ const CodeGodLanding = () => {
       </section>
 
       {/* animated numbers */}
-      <section className="border-t border-white/10">
+      <section className="border-t console-hairline">
         <div ref={statsRef} className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+          <h2 className="code-font text-2xl font-bold tracking-tight console-text sm:text-3xl">
             Judge performance
           </h2>
           <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
@@ -307,9 +315,9 @@ const CodeGodLanding = () => {
       </section>
 
       {/* pipeline draws with scroll */}
-      <section className="border-t border-white/10">
+      <section className="border-t console-hairline">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+          <h2 className="code-font text-2xl font-bold tracking-tight console-text sm:text-3xl">
             How a submission travels
           </h2>
           <p className="console-muted mt-3 max-w-[60ch] text-[15px] leading-relaxed">
@@ -323,12 +331,12 @@ const CodeGodLanding = () => {
       </section>
 
       {/* the loop, as shell history */}
-      <section className="border-t border-white/10">
+      <section className="border-t console-hairline">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+          <h2 className="code-font text-2xl font-bold tracking-tight console-text sm:text-3xl">
             The practice loop
           </h2>
-          <div className="mt-10 divide-y divide-white/10 border-y border-white/10">
+          <div className="console-divide mt-10 divide-y border-y console-hairline">
             {[
               {
                 cmd: "$ pick",
@@ -354,16 +362,16 @@ const CodeGodLanding = () => {
             ].map((row) => (
               <div
                 key={row.cmd}
-                className="group grid gap-2 py-7 transition-colors hover:bg-white/[0.02] sm:grid-cols-[120px_1fr_auto] sm:items-center sm:gap-6 sm:px-4"
+                className="console-hover group grid gap-2 py-7 transition-colors sm:grid-cols-[120px_1fr_auto] sm:items-center sm:gap-6 sm:px-4"
               >
                 <p className="code-font console-phosphor text-sm font-semibold">{row.cmd}</p>
                 <div>
-                  <h3 className="text-lg font-semibold tracking-tight text-zinc-50">{row.title}</h3>
+                  <h3 className="text-lg font-semibold tracking-tight console-text">{row.title}</h3>
                   <p className="console-muted mt-1 max-w-[62ch] text-sm leading-relaxed">{row.body}</p>
                 </div>
                 <button
                   onClick={() => navigate(row.to)}
-                  className="code-font w-fit rounded-lg border border-white/15 px-4 py-2 text-[13px] font-semibold text-zinc-100 transition-colors group-hover:border-[#4ade80]/50 group-hover:text-[#4ade80]"
+                  className="code-font console-outline w-fit rounded-lg px-4 py-2 text-[13px] font-semibold console-text transition-colors group-hover:text-[var(--con-phos)]"
                 >
                   {row.cta}
                 </button>
@@ -374,10 +382,10 @@ const CodeGodLanding = () => {
       </section>
 
       {/* signup command */}
-      <section className="border-t border-white/10">
+      <section className="border-t console-hairline">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="console-panel rounded-2xl p-6 sm:p-10">
-            <h2 className="code-font text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+            <h2 className="code-font text-2xl font-bold tracking-tight console-text sm:text-3xl">
               Ship your first solution tonight
             </h2>
             <p className="console-muted mt-3 max-w-[58ch] text-[15px] leading-relaxed">
@@ -386,12 +394,12 @@ const CodeGodLanding = () => {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <button
                 onClick={copySignup}
-                className="code-font flex h-12 flex-1 items-center gap-3 rounded-lg border border-white/15 bg-black/50 px-4 text-left text-sm text-zinc-200 transition-colors hover:border-[#4ade80]/50"
+                className="code-font console-inset console-text flex h-12 flex-1 items-center gap-3 rounded-lg px-4 text-left text-sm transition-colors hover:border-[var(--con-phos)]"
               >
                 <span className="console-phosphor">$</span>
                 <span className="flex-1 truncate">npx codegod signup --free</span>
                 {copied ? (
-                  <Check className="h-4 w-4 shrink-0 text-[#4ade80]" />
+                  <Check className="h-4 w-4 shrink-0 console-phosphor" />
                 ) : (
                   <Copy className="h-4 w-4 shrink-0 text-zinc-500" />
                 )}
@@ -407,9 +415,7 @@ const CodeGodLanding = () => {
         </div>
       </section>
 
-      <div className="dark">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 };

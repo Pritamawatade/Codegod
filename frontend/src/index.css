@@ -189,24 +189,70 @@ html.dark {
   color-scheme: dark;
 }
 
-/* ---- console landing: phosphor terminal ---- */
+/* ---- console landing: phosphor terminal (theme-aware) ---- */
 .console-root {
-  background: #060806;
-  color: #e8ede8;
+  --con-bg: #ffffff;
+  --con-panel: #f4f4f5;
+  --con-inset: #fafafa;
+  --con-text: #09090b;
+  --con-muted: #52525b;
+  --con-line: rgb(9 9 11 / 0.12);
+  --con-phos: #16a34a;
+  --con-hover: rgb(9 9 11 / 0.04);
+  --con-ok: #16a34a;
+  --con-warn: #b45309;
+  --con-err: #dc2626;
+  background: var(--con-bg);
+  color: var(--con-text);
+}
+.dark .console-root {
+  --con-bg: #060806;
+  --con-panel: #0c100c;
+  --con-inset: rgb(0 0 0 / 0.4);
+  --con-text: #e8ede8;
+  --con-muted: #8b948b;
+  --con-line: rgb(255 255 255 / 0.09);
+  --con-phos: #4ade80;
+  --con-hover: rgb(255 255 255 / 0.04);
+  --con-ok: #4ade80;
+  --con-warn: #fbbf24;
+  --con-err: #f87171;
 }
 .console-panel {
-  background: #0c100c;
-  border: 1px solid rgb(255 255 255 / 0.09);
+  background: var(--con-panel);
+  border: 1px solid var(--con-line);
+}
+.console-inset {
+  background: var(--con-inset);
+  border: 1px solid var(--con-line);
+}
+.console-text {
+  color: var(--con-text);
 }
 .console-hairline {
-  border-color: rgb(255 255 255 / 0.09);
+  border-color: var(--con-line);
+}
+.console-divide > * + * {
+  border-color: var(--con-line);
 }
 .console-muted {
-  color: #8b948b;
+  color: var(--con-muted);
 }
 .console-phosphor {
-  color: #4ade80;
+  color: var(--con-phos);
 }
+.console-hover:hover {
+  background: var(--con-hover);
+}
+.console-outline {
+  border: 1px solid var(--con-line);
+}
+button.console-outline:hover {
+  border-color: var(--con-phos);
+}
+.verdict-ok { color: var(--con-ok); }
+.verdict-warn { color: var(--con-warn); }
+.verdict-err { color: var(--con-err); }
 @keyframes caret-blink {
   0%, 45% { opacity: 1; }
   50%, 100% { opacity: 0; }
@@ -214,7 +260,7 @@ html.dark {
 .caret::after {
   content: "▊";
   margin-left: 2px;
-  color: #4ade80;
+  color: var(--con-phos, #4ade80);
   animation: caret-blink 1.06s steps(1) infinite;
 }
 @keyframes feed-in {

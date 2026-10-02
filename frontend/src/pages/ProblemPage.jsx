@@ -411,23 +411,23 @@ const ProblemPage = () => {
             {/* Right: editor + console */}
             <div className="flex min-h-0 flex-col">
               <Split className="split1 flex h-full min-h-0 flex-col" minSize={140} gutterSize={6} direction="vertical">
-                <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-[#1e1e1e]">
-                  <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-2">
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-zinc-400">
-                      <Terminal className="h-3.5 w-3.5" /> {selectedLanguage} <span className="text-zinc-600">·</span> <span className="code-font">solution.{selectedLanguage === "Python" ? "py" : selectedLanguage === "Java" ? "java" : "txt"}</span>
+                <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1e1e1e]">
+                  <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 dark:border-white/10 px-4 py-2">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                      <Terminal className="h-3.5 w-3.5" /> {selectedLanguage} <span className="text-zinc-400 dark:text-zinc-600">·</span> <span className="code-font">solution.{selectedLanguage === "Python" ? "py" : selectedLanguage === "Java" ? "java" : "txt"}</span>
                     </span>
                     <button
                       onClick={() => setIsFullscreen(!isFullscreen)}
-                      className="rounded-md p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                      className="rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
                     >
                       {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                     </button>
                   </div>
-                  <div ref={wrapperRef} className={isFullscreen ? "fixed inset-0 z-[100] bg-[#1e1e1e]" : "min-h-0 flex-1"}>
+                  <div ref={wrapperRef} className={isFullscreen ? "fixed inset-0 z-[100] bg-white dark:bg-[#1e1e1e]" : "min-h-0 flex-1"}>
                     <Editor
                       height="100%"
                       language={selectedLanguage.toLowerCase()}
-                      theme="vs-dark"
+                      theme={theme === "dark" ? "vs-dark" : "light"}
                       value={code}
                       onChange={(v) => setCode(v || "")}
                       options={{
