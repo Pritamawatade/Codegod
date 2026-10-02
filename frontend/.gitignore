@@ -7,6 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# PIDs / runtime files
+*.pid
+
+# Sentry crash reports
+.sentry-native/
+.sentry/
+
 node_modules
 dist
 dist-ssr

@@ -52,6 +52,9 @@ COPY --from=build /app/src ./src
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/generated ./generated
 
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Change ownership to nodejs user
 RUN chown -R nodejs:nodejs /app
 
@@ -65,6 +68,6 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:8080/healthcheck', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
-# Start the application
-CMD ["pnpm", "start"]
+# Apply migrations then start (set SKIP_PRISMA_MIGRATE=true to skip)
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 

@@ -1,3 +1,4 @@
+import './sanitize-env.js';
 import express from 'express';
 import dotenv from 'dotenv';
 import authRouter from './routes/auth.routes.js';
@@ -41,7 +42,7 @@ app.get('/healthcheck', (req, res)=>{
   res.status(200).json({
     message: 'Server is running',
   });
-});
+})
 
 const port = process.env.PORT || 8080;
 

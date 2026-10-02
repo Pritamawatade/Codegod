@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -11,9 +9,12 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - DATABASE_URL=${DATABASE_URL}
+      # Do not use DATABASE_URL from .env here: compose interpolates ${DATABASE_URL} from
+      # backend/.env, which often points to localhost and breaks Prisma inside this container.
+      # Hostname must be the compose service name `postgres`.
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-codegod}
       - JWT_SECRET=${JWT_SECRET}
-      - JUDGE0_API_URL=${JUDGE0_API_URL}
+      - JUDGE0_API_URL=${JUDGE0_API_URL:-http://judge0:2358}
       - JUDGE0_API_KEY=${JUDGE0_API_KEY}
       - CLOUDINARY_NAME=${CLOUDINARY_NAME}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
@@ -45,7 +46,14 @@ services:
       retries: 3
       start_period: 40s
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      judge0-db:
+        condition: service_started
+      redis:
+        condition: service_started
+      judge0:
+        condition: service_started
 
   postgres:
     image: postgres:15-alpine
@@ -53,8 +61,10 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-codegod}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    # Default 5433 on the host avoids clashing with another Postgres already bound to 5432 (common on dev machines).
+    # Override: set HOST_POSTGRES_PORT=5432 in backend/.env if this port must be standard.
     ports:
-      - "5432:5432"
+      - "${HOST_POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -64,5 +74,65 @@ services:
       timeout: 5s
       retries: 5
 
+  judge0:
+    image: judge0/judge0:1.13.1
+    ports:
+      - "2358:2358"
+    privileged: true
+    environment:
+      - POSTGRES_HOST=judge0-db
+      - POSTGRES_DB=judge0
+      - POSTGRES_USER=${JUDGE0_POSTGRES_USER:-judge0}
+      - POSTGRES_PASSWORD=${JUDGE0_POSTGRES_PASSWORD:-judge0}
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-judge0redis}
+      - AUTH_TOKEN=${JUDGE0_AUTH_TOKEN:-}
+    restart: unless-stopped
+    depends_on:
+      - judge0-db
+      - redis
+
+  worker:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    privileged: true
+    environment:
+      - POSTGRES_HOST=judge0-db
+      - POSTGRES_DB=judge0
+      - POSTGRES_USER=${JUDGE0_POSTGRES_USER:-judge0}
+      - POSTGRES_PASSWORD=${JUDGE0_POSTGRES_PASSWORD:-judge0}
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-judge0redis}
+    restart: unless-stopped
+    depends_on:
+      - judge0-db
+      - redis
+
+  judge0-db:
+    image: postgres:13.0
+    environment:
+      - POSTGRES_DB=judge0
+      - POSTGRES_USER=${JUDGE0_POSTGRES_USER:-judge0}
+      - POSTGRES_PASSWORD=${JUDGE0_POSTGRES_PASSWORD:-judge0}
+    volumes:
+      - judge0_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:6.0
+    command:
+      [
+        "bash",
+        "-c",
+        "docker-entrypoint.sh --appendonly yes --requirepass \"$${REDIS_PASSWORD}\"",
+      ]
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-judge0redis}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  judge0_postgres_data:
+  redis_data:

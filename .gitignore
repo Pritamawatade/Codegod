@@ -1,7 +1,34 @@
 backend/note.txt
-.vscode
-.env
-frontend/.env
+.vscode/
+.idea/
+.DS_Store
 notes.md
 
+# Env - keep *.example tracked
+.env
+.env.local
+.env.*.local
+frontend/.env
+backend/.env
+
+# Prisma generated client (regenerate with `prisma generate`)
 backend/generated/
+
+# Logs
+*.log
+logs/
+server.log
+diagnostics.log
+
+# PIDs / runtime files
+*.pid
+server.pid
+
+# Sentry crash reports
+.sentry-native/
+.sentry/
+
+# Deps / build (safety net, also covered in sub-folder gitignores)
+node_modules/
+dist/
+build/

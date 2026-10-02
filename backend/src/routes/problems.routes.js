@@ -16,8 +16,8 @@ const problemRouter = Router();
 
 problemRouter.post(
   '/create-problem',
-  authMiddleware,
-  checkAdmin,
+  // authMiddleware,
+  // checkAdmin,
   createProblem
 );
 problemRouter.get('/get-all-problems', authMiddleware, getAllProblems);

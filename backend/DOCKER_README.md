@@ -20,13 +20,19 @@ NODE_ENV=production
 CLIENT_URL=http://localhost:5173
 SERVER_URL=http://localhost:8080
 
-# Database
+# Database — inside Compose the backend connects to hostname `postgres` on port 5432 (internal network).
 DATABASE_URL=postgresql://postgres:password@postgres:5432/codegod
 
-# PostgreSQL (for local development with docker-compose)
+# Prisma CLI / npm run dev on your machine uses the Postgres port published to the host (default **5433**).
+# If another Postgres already uses localhost:5432, keep 5433. Match DATABASE_URL accordingly, e.g.:
+# HOST_POSTGRES_PORT=5433
+# DATABASE_URL=postgresql://postgres:password@localhost:5433/codegod
+
+# PostgreSQL (compose service)
 POSTGRES_DB=codegod
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
+HOST_POSTGRES_PORT=5433
 
 # JWT
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -35,9 +41,13 @@ ACCESS_TOKEN_EXPIRY=15m
 REFRESH_TOKEN_SECRET=your-refresh-token-secret
 REFRESH_TOKEN_EXPIRY=1d
 
-# Judge0 API
+# Judge0 API (local dockerized Judge0)
 JUDGE0_API_URL=http://localhost:2358
-JUDGE0_API_KEY=your-judge0-api-key
+JUDGE0_API_KEY=
+JUDGE0_POSTGRES_USER=judge0
+JUDGE0_POSTGRES_PASSWORD=judge0
+REDIS_PASSWORD=judge0redis
+JUDGE0_AUTH_TOKEN=
 
 # Cloudinary
 CLOUDINARY_NAME=your-cloudinary-name
@@ -98,17 +108,27 @@ RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 
 ## Database Setup
 
-The application uses PostgreSQL. When running with docker-compose, the database will be automatically set up. For production, you'll need to:
+The application uses PostgreSQL and Prisma Migrate. When you start the **backend** container (`docker compose up`), the entrypoint runs **`pnpm prisma migrate deploy`** before `pnpm start`, so tables are created automatically on a fresh database.
 
-1. **Run database migrations:**
-   ```bash
-   docker-compose exec backend pnpm prisma migrate deploy
-   ```
+**If you run the backend on the host** (`pnpm run dev`), apply migrations once:
 
-2. **Seed the database (if needed):**
-   ```bash
-   docker-compose exec backend pnpm prisma db seed
-   ```
+```bash
+pnpm prisma migrate deploy
+```
+
+**Manual migration** (e.g. after pulling new migrations) inside Docker:
+
+```bash
+docker compose exec backend pnpm prisma migrate deploy
+```
+
+**Seed the database (if you add a seed script):**
+
+```bash
+docker compose exec backend pnpm prisma db seed
+```
+
+To start the API **without** running migrations (not recommended unless you know why), set `SKIP_PRISMA_MIGRATE=true` on the backend service.
 
 ## Health Check
 

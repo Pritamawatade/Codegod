@@ -1,7 +1,7 @@
 import {
   getLanguageName,
-  poolBatchResult,
-  submitBatch,
+  judgeStdoutMatchesExpected,
+  submitJudge0SingleWait,
 } from '../libs/judge0.libs.js';
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
@@ -25,26 +25,22 @@ export const executeCode = async (req, res) => {
       throw new ApiError(400, 'Invalid test cases');
     }
 
-    const submission1 = stdin.map((input) => ({
-      source_code,
-      language_id,
-      stdin: input,
-    }));
-
-
-    const submitResponse = await submitBatch(submission1);
-
-    const tokens = submitResponse.map((res) => res.token);
-
-    const result = await poolBatchResult(tokens);
-
+    const result = await Promise.all(
+      stdin.map((input) =>
+        submitJudge0SingleWait({
+          source_code,
+          language_id,
+          stdin: input,
+        })
+      )
+    );
 
     let allPassed = true;
 
     const detailedResult = result.map((result, i) => {
-      const stdout = result.stdout.trim();
+      const stdout = result.stdout ?? '';
       const expected_output = expected_outputs[i];
-      const passed = stdout === expected_output;
+      const passed = judgeStdoutMatchesExpected(expected_output, stdout);
 
      
 
