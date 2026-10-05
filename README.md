@@ -4,7 +4,7 @@ Codegod is a full-stack, LeetCode-style online judge and coding practice platfor
 
 The platform reached **200+ active users within the first week of launch**, validating both product demand and infrastructure stability under real-world load.
 
-Live product: [https://www.codegod.com](https://www.codegod.com)
+Live product: [https://codegod-frontend.vercel.app/](https://codegod-frontend.vercel.app/)
 
 ## Overview
 
