@@ -300,15 +300,6 @@ Codegod/
 - **Monetization integrity:** Razorpay signature verification before granting sheet access; purchase checks enforced by middleware.
 - **Operational repeatability:** containerized setup with automatic migrations and health checks reduces environment drift between development and production.
 
-## Contributing
-
-Contributions are welcome.
-
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit changes: `git commit -m "Add my feature"`
-4. Push the branch: `git push origin feature/my-feature`
-5. Open a pull request with a clear description and testing notes.
 
 For bugs, include reproduction steps, expected behavior, request/response samples where applicable, and environment details.
 
