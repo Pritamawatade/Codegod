@@ -71,26 +71,9 @@ function ProfilePage() {
     window.scrollTo(0, 0);
   }, []);
 
-  if (!authUser) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
-      </div>
-    );
-  }
-
   useEffect(() => {
     getStreakData();
   }, []);
-  useEffect(() => {
-    if (!authUser) {
-      return (
-        <div className="flex items-center justify-center h-screen">
-          <Loader className="size-10 animate-spin" />
-        </div>
-      );
-    }
-  });
 
   const [file, setFile] = React.useState(null);
 
@@ -109,6 +92,14 @@ function ProfilePage() {
   } = useForm({
     resolver: zodResolver(updatePasswordSchema),
   });
+
+  if (!authUser) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
+  }
 
   const passwordSubmit = async (data) => {
     try {

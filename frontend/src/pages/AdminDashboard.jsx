@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -46,20 +46,17 @@ import {
 import { useAuthStore } from "../store/useAuthStore";
 import useProblemStore from "../store/useProblemStore";
 import { useSubmissionStore } from "../store/useSubmissionStore";
-import { all } from "axios";
-import useThemeStore from "../store/useThemeStore";
 import { Link, Navigate } from "react-router-dom";
 import AdminUsersPage from "./AdminUsersPage";
 import ProblemTable from "../components/ProblemTable";
 import Navbar from "../components/Navbar";
 
 const AdminDashboard = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode] = useState(false);
   const { allUsers, getAllUsers } = useAuthStore();
   const { authUser } = useAuthStore();
   const { problems, getAllProblems } = useProblemStore();
   const { getAllSubmissionsForAdmin, allSubmissions } = useSubmissionStore();
-  const { theme, toggleTheme } = useThemeStore();
 
   useEffect(() => {
     getAllSubmissionsForAdmin();
@@ -70,16 +67,6 @@ const AdminDashboard = () => {
   if(authUser?.role !== "ADMIN"){
     return <Navigate to="/" />;
   }
-
-  // Sample data for charts
-  const userGrowthData = [
-    { month: "Jan", users: 1200, problems: 45 },
-    { month: "Feb", users: 1890, problems: 52 },
-    { month: "Mar", users: 2800, problems: 61 },
-    { month: "Apr", users: 3908, problems: 78 },
-    { month: "May", users: 4800, problems: 89 },
-    { month: "Jun", users: 6200, problems: 95 },
-  ];
 
   const submissionData = [
     {

@@ -37,7 +37,7 @@ const containerVariants = {
 };
 
 export default function Sheets() {
-  const { sheets, getAllSheets, getSheet, sheet } = useSheetStore();
+  const { sheets, getAllSheets, getSheet } = useSheetStore();
   const [isPaymentLoading, setIsPaymentLoading] = useState(null);
   const { authUser } = useAuthStore();
   const navigate = useNavigate();

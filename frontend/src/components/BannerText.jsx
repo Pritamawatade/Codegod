@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const BannerText = ({ title, description, buttonText }) => {
+const BannerText = ({ buttonText }) => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen flex items-center  dark:bg-gray-900 bg-gray-300 ">

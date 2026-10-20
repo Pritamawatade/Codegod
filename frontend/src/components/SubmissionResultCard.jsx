@@ -10,12 +10,6 @@ export default function SubmissionResultCard({ submission }) {
     ? (submission.testcaseresult.reduce((sum, tc) => sum + parseFloat(tc.time), 0) / totalCases).toFixed(3)
     : "N/A";
 
-  const statusColorMap = {
-    Accepted: "bg-green-100 text-green-700 dark:bg-green-800/30 dark:text-green-300",
-    Rejected: "bg-red-100 text-red-700 dark:bg-red-800/30 dark:text-red-300",
-    Pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-800/30 dark:text-yellow-300"
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

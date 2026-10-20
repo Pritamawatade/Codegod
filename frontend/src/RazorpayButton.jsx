@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useAuthStore } from "./store/useAuthStore";
 import { axiosInstance } from "./lib/axios";
 

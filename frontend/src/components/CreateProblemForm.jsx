@@ -865,7 +865,7 @@ const CreateProblemForm = () => {
 
               {/* Code Editor Sections */}
               <div className="space-y-8">
-                {["JAVASCRIPT", "PYTHON", "JAVA"].map((language, langIndex) => (
+                {["JAVASCRIPT", "PYTHON", "JAVA"].map((language) => (
                   <div
                     key={language}
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 md:p-8 border-2 border-gray-200 dark:border-gray-700 shadow-sm"

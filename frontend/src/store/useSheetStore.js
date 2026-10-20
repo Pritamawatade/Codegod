@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 
-const useSheetStore = create((set, get) => ({
+const useSheetStore = create((set) => ({
   sheets: [],
   sheet: null,
   sheetProblems: [],
