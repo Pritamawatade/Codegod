@@ -1,4 +1,4 @@
-import { Check, Star, Zap, Crown, Infinity } from "lucide-react";
+import { Check, Star, Zap, Crown, Infinity as InfinityIcon } from "lucide-react";
 import RazorpayButton from "../RazorpayButton";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +40,7 @@ const PricingCards = () => {
       name: "Beyond God",
       price: 599,
       period: "/month",
-      icon: <Infinity className="h-6 w-6" />,
+      icon: <InfinityIcon className="h-6 w-6" />,
       description: "Ultimate package for competitive programming masters",
       features: [
         "Unlimited access to all problems",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -7,9 +7,6 @@ import {
 } from "lucide-react";
 
 const SubmissionResults = ({ submission }) => {
-  const passedTests = submission?.filter((tc) => tc.passed).length;
-  const totalTests = submission?.length || 3;
-
   const [selectedTest, setSelectedTest] = useState(0);
 
 

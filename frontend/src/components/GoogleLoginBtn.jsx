@@ -8,7 +8,7 @@ function GoogleLoginBtn() {
   const {checkAuth} = useAuthStore();
   const handleLoginSuccess = async (credentialResponse) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/v1/users/google-login`,
         { credential: credentialResponse.credential },
         { withCredentials: true }

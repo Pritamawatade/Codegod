@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDiscussionStore } from "../store/useDiscussionStore";
 import {
   ArrowDown,
@@ -23,7 +23,6 @@ export default function DiscussionList({ problemId }) {
 
   const {
     discussions,
-    discussion: disc,
     fetchDiscussion,
     fetchDiscussions,
     toggleLike,

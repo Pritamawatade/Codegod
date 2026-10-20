@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Flame, TrendingUp, Award } from 'lucide-react';
 
@@ -253,7 +253,7 @@ const ContributionHeatmap = ({ data = [] }) => {
       <div className="relative">
         {/* Month labels */}
         <div className="flex mb-2 ml-8">
-          {months.map((month, index) => (
+          {months.map((month) => (
             <div
               key={month}
               className="flex-1 text-xs text-gray-600 dark:text-gray-400 text-center"
