@@ -3,9 +3,7 @@ import { motion } from "framer-motion";
 import {
   BookOpen,
   ArrowRight,
-  Users,
   Clock,
-  Star,
   Trophy,
   CheckCircle,
 } from "lucide-react";
@@ -17,11 +15,11 @@ import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "../store/useAuthStore";
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, type: "spring", stiffness: 120, damping: 12 },
+    transition: { delay: i * 0.08, duration: 0.4, ease: "easeOut" },
   }),
 };
 
@@ -30,17 +28,38 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
     },
   },
 };
+
+const getDifficultyColor = (difficulty) => {
+  if (difficulty?.includes("Beginner")) return "verdict-ok";
+  if (difficulty?.includes("Intermediate")) return "verdict-warn";
+  if (difficulty?.includes("Advanced") || difficulty?.includes("Expert"))
+    return "verdict-err";
+  return "console-muted";
+};
+
+function Stat({ value, label, sub }) {
+  return (
+    <div className="border-l console-hairline pl-5">
+      <p className="code-font text-4xl font-semibold tabular-nums tracking-tight console-text sm:text-5xl">
+        {value}
+      </p>
+      <p className="mt-2 text-sm font-medium console-text">{label}</p>
+      <p className="console-muted mt-0.5 text-[13px]">{sub}</p>
+    </div>
+  );
+}
 
 export default function Sheets() {
   const { sheets, getAllSheets, getSheet } = useSheetStore();
   const [isPaymentLoading, setIsPaymentLoading] = useState(null);
   const { authUser } = useAuthStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     getAllSheets();
   }, []);
@@ -60,7 +79,6 @@ export default function Sheets() {
 
           const order = res.data.data;
 
-
           const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -69,14 +87,12 @@ export default function Sheets() {
             description: `Purchase ${sheets[i].title}`,
             order_id: order.id,
             handler: async function (response) {
-
-              // Optional: store transaction in DB via another API
               await axiosInstance.post("/payments/save-payment", {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
                 sheetId,
-                userId: authUser.id, // get from auth context
+                userId: authUser.id,
               });
             },
             prefill: {
@@ -97,7 +113,6 @@ export default function Sheets() {
         navigate(`/sheets/${sheetId}`);
       }
     } catch (error) {
-      
       console.log(error);
       toast.error(error.message);
     } finally {
@@ -105,196 +120,190 @@ export default function Sheets() {
     }
   };
 
-  const getDifficultyColor = (difficulty) => {
-    if (difficulty?.includes("Beginner"))
-      return "text-emerald-600 dark:text-emerald-400";
-    if (difficulty?.includes("Intermediate"))
-      return "text-amber-600 dark:text-amber-400";
-    if (difficulty?.includes("Advanced") || difficulty?.includes("Expert"))
-      return "text-red-600 dark:text-red-400";
-    return "text-gray-600 dark:text-gray-400";
-  };
+  const totalProblems = sheets.reduce(
+    (total, sheet) => total + (sheet._count?.problems || 0),
+    0
+  );
+  const freeSheets = sheets.filter((sheet) => sheet.price === 0).length;
+  const premiumSheets = sheets.length - freeSheets;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+    <div className="console-root min-h-screen">
+      <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14">
+        {/* hero */}
+        <motion.header
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.5 }}
+          className="console-panel overflow-hidden rounded-2xl"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-full mb-6">
-            <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-              Curated Learning Paths
+          <div className="code-font flex items-center gap-2 border-b console-hairline px-4 py-3 text-xs">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#f87171]/70" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#fbbf24]/70" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#4ade80]/70" />
+            <span className="console-muted ml-2 hidden sm:inline">
+              codegod — sheet index
+            </span>
+            <span className="ml-auto flex items-center gap-1.5 console-muted">
+              <span className="live-dot console-phosphor">●</span> live
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-            DSA <span className="text-blue-600 dark:text-blue-400">Sheets</span>
-          </h1>
+          <div className="p-6 sm:p-10">
+            <p className="code-font console-muted text-[13px]">
+              <span className="console-phosphor">$</span> ls sheets/ —curated
+            </p>
+            <h1 className="code-font mt-3 text-balance text-3xl font-bold leading-tight tracking-tight console-text sm:text-5xl">
+              Problem sheets
+            </h1>
+            <p className="mt-4 max-w-[62ch] text-[15px] leading-relaxed console-muted">
+              Structured sets of problems that build from fundamentals to
+              interview-hard. Pick a path, work top to bottom, and let the
+              judge keep score.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={() => navigate("/problems")}
+                className="code-font h-11 rounded-lg bg-[#4ade80] px-6 text-sm font-bold text-black transition-colors hover:bg-[#7bef9f]"
+              >
+                browse all problems
+              </button>
+              <Link
+                to="/profile"
+                className="code-font console-outline console-hover inline-flex h-11 items-center justify-center rounded-lg px-6 text-sm font-semibold console-text transition-colors"
+              >
+                view your progress
+              </Link>
+            </div>
+          </div>
+        </motion.header>
 
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Premium curated problem sheets designed by experts to accelerate
-            your data structures and algorithms mastery journey.
-          </p>
-        </motion.div>
-
-        {/* Stats Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+        {/* stats */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t console-hairline pt-10 lg:grid-cols-4"
         >
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <Stat value={sheets.length} label="Sheets" sub="curated paths" />
+          <Stat value={totalProblems} label="Problems" sub="across all sheets" />
+          <Stat value={freeSheets} label="Free" sub="no purchase needed" />
+          <Stat value={premiumSheets} label="Premium" sub="one-time unlock" />
+        </motion.section>
+
+        {/* sheet grid */}
+        <section className="mt-14">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className="code-font text-lg font-semibold tracking-tight console-text">
+                <span className="console-phosphor">$</span> ls sheets/
+              </h2>
+              <p className="console-muted mt-1 text-[13px]">
+                Pick a path and pick up where you left off.
+              </p>
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {sheets.length}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Expert Sheets
-            </div>
+            <span className="code-font console-inset rounded-md px-2.5 py-1 text-xs console-muted">
+              {sheets.length} entries
+            </span>
           </div>
 
-          <div className="text-center">
-            <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          {sheets.length === 0 ? (
+            <div className="console-panel mt-4 rounded-2xl px-6 py-16 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border console-hairline console-text">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <p className="code-font mt-4 text-sm font-semibold console-text">
+                no sheets found
+              </p>
+              <p className="mx-auto mt-1.5 max-w-xs text-[13px] console-muted">
+                Sheets are being prepared. Try the full problem set meanwhile.
+              </p>
+              <button
+                onClick={() => navigate("/problems")}
+                className="code-font console-outline console-hover mt-5 inline-flex h-9 items-center gap-2 rounded-lg px-4 text-[13px] font-semibold console-text"
+              >
+                open problems
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {sheets.reduce(
-                (total, sheet) => total + sheet._count.problems,
-                0
-              )}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Total Problems
-            </div>
-          </div>
-
-          <div className="text-center">
-            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              10K+
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Students
-            </div>
-          </div>
-
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Star className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              4.9
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Rating
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Sheets Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
-        >
-          {sheets.map((sheet, i) => (
+          ) : (
             <motion.div
-              key={sheet.id}
-              custom={i}
-              variants={cardVariants}
-              whileHover={{ y: -4 }}
-              className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 overflow-hidden"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3"
             >
-              {/* Card Header */}
-              <div className="p-6 pb-4">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                    <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div
-                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${
-                      sheet.price === 0
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800"
-                        : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800"
-                    }`}
+              {sheets.map((sheet, i) => {
+                const isFree = sheet.price === 0;
+                const isLoading = isPaymentLoading === sheet.id;
+                return (
+                  <motion.article
+                    key={sheet.id}
+                    custom={i}
+                    variants={cardVariants}
+                    className="console-panel group flex flex-col overflow-hidden rounded-2xl transition-colors hover:border-[var(--con-phos)]"
                   >
-                    {sheet.price === 0 ? "Free" : `₹${sheet.price}`}
-                  </div>
-                </div>
-
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {sheet.title}
-                </h2>
-
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                  {sheet.description}
-                </p>
-
-                {/* Stats */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {sheet._count.problems}
-                      </span>{" "}
-                      Problems
-                    </span>
-                  </div>
-
-                  {sheet.difficulty && (
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center justify-between border-b console-hairline px-5 py-2.5">
+                      <span className="code-font text-[11px] uppercase tracking-wider console-muted">
+                        sheet_{String(i + 1).padStart(2, "0")}
+                      </span>
                       <span
-                        className={`text-sm font-medium ${getDifficultyColor(
-                          sheet.difficulty
-                        )}`}
+                        className={`code-font text-[12px] font-semibold ${
+                          isFree ? "verdict-ok" : "verdict-warn"
+                        }`}
                       >
-                        {sheet.difficulty}
+                        {isFree ? "free" : `₹${sheet.price}`}
                       </span>
                     </div>
-                  )}
 
-                  {sheet.estimatedTime && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {sheet.estimatedTime}
-                      </span>
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="text-lg font-semibold tracking-tight console-text">
+                        {sheet.title}
+                      </h3>
+                      <p className="console-muted mt-2 line-clamp-3 flex-1 text-[13px] leading-relaxed">
+                        {sheet.description}
+                      </p>
+
+                      <div className="code-font mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t console-hairline pt-4 text-[12px] console-muted">
+                        <div className="flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          <span>{sheet._count?.problems || 0} problems</span>
+                        </div>
+                        {sheet.difficulty && (
+                          <div className="flex items-center gap-1.5">
+                            <Trophy className="h-3.5 w-3.5" />
+                            <span className={getDifficultyColor(sheet.difficulty)}>
+                              {sheet.difficulty}
+                            </span>
+                          </div>
+                        )}
+                        {sheet.estimatedTime && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{sheet.estimatedTime}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => handleSheetClick(sheet.id, i)}
+                        disabled={isLoading}
+                        className="code-font mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border console-hairline px-4 text-[13px] font-semibold console-text transition-colors hover:border-[var(--con-phos)] hover:text-[var(--con-phos)] disabled:opacity-60"
+                      >
+                        {isLoading ? "loading…" : "start learning"}
+                        {!isLoading && (
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                        )}
+                      </button>
                     </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="px-6 pb-6">
-                <button
-                  onClick={() => handleSheetClick(sheet.id, i)}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 group/btn"
-                >
-                  {isPaymentLoading && isPaymentLoading === sheet.id ? (
-                    <span>Loading...</span>
-                  ) : (
-                    <span>Start learning</span>
-                  )}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
-                </button>
-              </div>
+                  </motion.article>
+                );
+              })}
             </motion.div>
-          ))}
-        </motion.div>
+          )}
+        </section>
       </div>
+
       <Footer />
     </div>
   );
